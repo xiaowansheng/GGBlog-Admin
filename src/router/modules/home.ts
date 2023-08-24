@@ -9,7 +9,7 @@ export default {
   redirect: "/welcome",
   meta: {
     icon: "homeFilled",
-    title: $t("menus.hshome"),
+    title: $t("menus.home"),
     rank: 0
   },
   children: [
@@ -18,7 +18,7 @@ export default {
       name: "Welcome",
       component: () => import("@/views/home/welcome/index.vue"),
       meta: {
-        title: $t("menus.hshome"),
+        title: $t("menus.welcome"),
         showLink: VITE_HIDE_HOME === "true" ? false : true
       }
     },
@@ -27,7 +27,7 @@ export default {
       name: "Analysis",
       component: () => import("@/views/home/analysis/index.vue"),
       meta: {
-        title:"分析页",
+        title: $t("menus.analysis"),
         showLink: VITE_HIDE_HOME === "true" ? false : true
       }
     }
