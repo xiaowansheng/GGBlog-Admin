@@ -13,9 +13,14 @@ import { stringify } from "qs";
 import NProgress from "../progress";
 import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
+import { baseURL } from "../utils";
+// 消息提示
+import { ElMessage } from "element-plus";
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
+  // 请求基路径
+  baseURL: baseURL,
   // 请求超时时间
   timeout: 10000,
   headers: {
@@ -132,7 +137,16 @@ class PureHttp {
           PureHttp.initConfig.beforeResponseCallback(response);
           return response.data;
         }
-        return response.data;
+        // 自定义数据处理
+        const { code, message, data } = response.data;
+        if (code&&code == 200) {
+          return data;
+        } else if(code&&message){
+          ElMessage.error(message);
+          return response.data;
+        } else {
+          return response.data;
+        }
       },
       (error: PureHttpError) => {
         const $error = error;
@@ -152,12 +166,17 @@ class PureHttp {
     param?: AxiosRequestConfig,
     axiosConfig?: PureHttpRequestConfig
   ): Promise<T> {
+    console.log("params:",param);
     const config = {
       method,
       url,
-      ...param,
+      // 已修改的BUG，防止参数没有配置
+      params: {
+        ...param
+      },
       ...axiosConfig
     } as PureHttpRequestConfig;
+    console.log("request:", config);
 
     // 单独处理自定义请求/响应回调
     return new Promise((resolve, reject) => {

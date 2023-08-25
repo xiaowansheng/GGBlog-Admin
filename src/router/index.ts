@@ -27,6 +27,10 @@ import { isUrl, openLink, storageSession, isAllEmpty } from "@pureadmin/utils";
 
 import remainingRouter from "./modules/remaining";
 
+// TODO 静态路由
+import { addPathMatch } from "./utils";
+
+
 /** 自动导入全部静态路由，无需再手动引入！匹配 src/router/modules 目录（任何嵌套级别）中具有 .ts 扩展名的所有文件，除了 remaining.ts 文件
  * 如何匹配所有文件请看：https://github.com/mrmlnc/fast-glob#basic-syntax
  * 如何排除文件请看：https://cn.vitejs.dev/guide/features.html#negative-patterns
@@ -148,37 +152,58 @@ router.beforeEach((to: ToRouteType, _from, next) => {
         usePermissionStoreHook().wholeMenus.length === 0 &&
         to.path !== "/login"
       ) {
-        initRouter().then((router: Router) => {
-          if (!useMultiTagsStoreHook().getMultiTagsCache) {
-            const { path } = to;
-            const route = findRouteByPath(
-              path,
-              router.options.routes[0].children
-            );
-            getTopMenu(true);
-            // query、params模式路由传参数的标签页不在此处处理
-            if (route && route.meta?.title) {
-              if (isAllEmpty(route.parentId) && route.meta?.backstage) {
-                // 此处为动态顶级路由（目录）
-                const { path, name, meta } = route.children[0];
-                useMultiTagsStoreHook().handleTags("push", {
-                  path,
-                  name,
-                  meta
-                });
-              } else {
-                const { path, name, meta } = route;
-                useMultiTagsStoreHook().handleTags("push", {
-                  path,
-                  name,
-                  meta
-                });
-              }
-            }
+        // TOOD 动态路由
+        // initRouter().then((router: Router) => {
+        //   if (!useMultiTagsStoreHook().getMultiTagsCache) {
+        //     const { path } = to;
+        //     const route = findRouteByPath(
+        //       path,
+        //       router.options.routes[0].children
+        //     );
+        //     getTopMenu(true);
+        //     // query、params模式路由传参数的标签页不在此处处理
+        //     if (route && route.meta?.title) {
+        //       if (isAllEmpty(route.parentId) && route.meta?.backstage) {
+        //         // 此处为动态顶级路由（目录）
+        //         const { path, name, meta } = route.children[0];
+        //         useMultiTagsStoreHook().handleTags("push", {
+        //           path,
+        //           name,
+        //           meta
+        //         });
+        //       } else {
+        //         const { path, name, meta } = route;
+        //         useMultiTagsStoreHook().handleTags("push", {
+        //           path,
+        //           name,
+        //           meta
+        //         });
+        //       }
+        //     }
+        //   }
+        //   // 确保动态路由完全加入路由列表并且不影响静态路由（注意：动态路由刷新时router.beforeEach可能会触发两次，第一次触发动态路由还未完全添加，第二次动态路由才完全添加到路由列表，如果需要在router.beforeEach做一些判断可以在to.name存在的条件下去判断，这样就只会触发一次）
+        //   if (isAllEmpty(to.name)) router.push(to.fullPath);
+        // });
+
+        // TODO 动态路由
+        // 使用下面方法替换initRouter
+        usePermissionStoreHook().handleWholeMenus([]);
+        addPathMatch();
+        if (!useMultiTagsStoreHook().getMultiTagsCache) {
+          const { path } = to;
+          const route = findRouteByPath(
+            path,
+            router.options.routes[0].children
+          );
+          // query、params模式路由传参数的标签页不在此处处理
+          if (route && route.meta?.title) {
+            useMultiTagsStoreHook().handleTags("push", {
+              path: route.path,
+              name: route.name,
+              meta: route.meta
+            });
           }
-          // 确保动态路由完全加入路由列表并且不影响静态路由（注意：动态路由刷新时router.beforeEach可能会触发两次，第一次触发动态路由还未完全添加，第二次动态路由才完全添加到路由列表，如果需要在router.beforeEach做一些判断可以在to.name存在的条件下去判断，这样就只会触发一次）
-          if (isAllEmpty(to.name)) router.push(to.fullPath);
-        });
+        }
       }
       toCorrectRoute();
     }

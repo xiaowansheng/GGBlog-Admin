@@ -145,4 +145,21 @@ const transitionMain = defineComponent({
 .main-content {
   margin: 24px;
 }
+
+/* 自定义内容外边距 */
+@media screen and (min-width: 768px) and (max-width: 992px) {
+  .main-content {
+    margin: 18px;
+  }
+}
+@media screen and (min-width: 480px) and (max-width: 768px) {
+  .main-content {
+    margin: 12px;
+  }
+}
+@media screen and (max-width: 480px) {
+  .main-content {
+    margin: 6px;
+  }
+}
 </style>

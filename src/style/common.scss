@@ -1,0 +1,17 @@
+// 公用卡片样式
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .title{
+    font-size: 18px;
+  }
+}
+
+// 表格样式
+
+// 分页样式
+.el-pagination{
+  // 分页靠右展示
+  justify-content: flex-end;
+}

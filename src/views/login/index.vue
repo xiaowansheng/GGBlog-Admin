@@ -23,6 +23,11 @@ import Lock from "@iconify-icons/ri/lock-fill";
 import Check from "@iconify-icons/ep/check";
 import User from "@iconify-icons/ri/user-3-fill";
 
+// TODO 静态路由
+import { setToken } from "@/utils/auth";
+import { addPathMatch } from "@/router/utils";
+import { usePermissionStoreHook } from "@/store/modules/permission";
+
 defineOptions({
   name: "Login"
 });
@@ -49,17 +54,28 @@ const onLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   await formEl.validate((valid, fields) => {
     if (valid) {
-      useUserStoreHook()
-        .loginByUsername({ username: ruleForm.username, password: "admin123" })
-        .then(res => {
-          if (res.success) {
-            // 获取后端路由
-            initRouter().then(() => {
-              router.push(getTopMenu(true).path);
-              message("登录成功", { type: "success" });
-            });
-          }
-        });
+      // TODO 动态路由
+      // useUserStoreHook()
+      //   .loginByUsername({ username: ruleForm.username, password: "admin123" })
+      //   .then(res => {
+      //     if (res.success) {
+      //       // 获取后端路由
+      //       initRouter().then(() => {
+      //         router.push(getTopMenu(true).path);
+      //         message("登录成功", { type: "success" });
+      //       });
+      //     }
+      //   });
+      // TODO 全部采取静态路由模式
+      usePermissionStoreHook().handleWholeMenus([]);
+      addPathMatch();
+      setToken({
+        username: "admin",
+        roles: ["admin"],
+        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI1MzQ0ODkwNTRAcXEuY29tIiwiaW5mbyI6e30sImV4cCI6MTY5NDEwOTE0NH0.GZYZgJSVu5F1bv8mEoS4jtySJWv04YjZToJJOdeCBeE"
+      } as any);
+      router.push("/");
+      message("登录成功", { type: "success" });
     } else {
       loading.value = false;
       return fields;
@@ -86,7 +102,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="select-none">
     <img :src="bg" class="wave" />
-    <div class="flex-c absolute right-5 top-3">
+    <div class="absolute flex-c right-5 top-3">
       <!-- 主题 -->
       <el-switch
         v-model="dataTheme"
