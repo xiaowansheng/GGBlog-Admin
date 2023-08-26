@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue";
-import { getAllRoles } from "@api/Role.ts";
-import { RoleDto } from "./role";
+import { getAllRoles, RoleDto } from "@/api/role";
 import ModifyModal from "./modifyModal.vue";
+import MenuAuthorizationModal from "./menuAuthorizationModal.vue";
+import ResourceAuthorizationModal from "./resourceAuthorizationModal.vue";
 defineOptions({
   name: "Role"
 });
@@ -14,24 +15,34 @@ const getData = () => {
   const tempParams = {
     ...params
   };
-  getAllRoles(tempParams).then(data => {
+  getAllRoles(tempParams).then((data: any) => {
     list.value = data;
   });
 };
 
-let total: number = 0;
+const total = ref<number>(0);
 const params = {
   page: 1,
   limit: 10
 };
-const list = ref<RoleDto[]>();
+const list = ref<RoleDto[]>([
+  {
+    id: 0,
+    name: "unknow",
+    label: "未知",
+    description: "aaa",
+    disable: 0,
+    createTime: "",
+    updateTime: ""
+  }
+]);
 
-const modifyRef=ref()
+const modifyRef = ref();
 const showDialog = ref(false);
 const selected = ref<RoleDto>();
 const show = (item: RoleDto = null) => {
   console.log("11");
-  
+
   if (item != null) {
     selected.value = item;
   } else {
@@ -39,6 +50,10 @@ const show = (item: RoleDto = null) => {
   }
   showDialog.value = true;
 };
+
+const menuAuthorizationShow = ref<boolean>(false);
+const resourceAuthorizationShow = ref<boolean>(false);
+const selectRoleId = ref<number>();
 </script>
 
 <template>
@@ -87,15 +102,36 @@ const show = (item: RoleDto = null) => {
             label="创建时间"
             width="200"
           />
-          <el-table-column
+          <!-- <el-table-column
             prop="updateTime"
             :align="'center'"
             label="修改时间"
             width="200"
-          />
-          <el-table-column :align="'center'" label="操作" width="250">
+          /> -->
+          <el-table-column :align="'center'" label="权限设置" width="230">
             <template #default="scope">
-              <el-button size="default" type="primary">权限</el-button>
+              <el-button
+                size="default"
+                type="primary"
+                @click="
+                  selectRoleId = scope.row.id;
+                  menuAuthorizationShow = true;
+                "
+                >菜单权限</el-button
+              >
+              <el-button
+                size="default"
+                type="primary"
+                @click="
+                  selectRoleId = scope.row.id;
+                  resourceAuthorizationShow = true;
+                "
+                >资源权限</el-button
+              >
+            </template>
+          </el-table-column>
+          <el-table-column :align="'center'" label="操作" width="180">
+            <template #default="scope">
               <el-button size="default" type="primary" @click="show(scope.row)"
                 >编辑</el-button
               >
@@ -112,11 +148,15 @@ const show = (item: RoleDto = null) => {
         />
       </div>
     </el-card>
-    <modify-modal
-    ref="modifyRef"
-    v-model:show="showDialog"
-      :item="selected"
-    ></modify-modal>
+    <modify-modal ref="modifyRef" v-model:show="showDialog" :item="selected" />
+    <menu-authorization-modal
+      v-model:show="menuAuthorizationShow"
+      :roleId="selectRoleId"
+    />
+    <resource-authorization-modal
+      v-model:show="resourceAuthorizationShow"
+      :roleId="selectRoleId"
+    />
   </div>
 </template>
 

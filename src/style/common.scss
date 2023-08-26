@@ -3,7 +3,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  .title{
+  .title {
     font-size: 18px;
   }
 }
@@ -11,7 +11,18 @@
 // 表格样式
 
 // 分页样式
-.el-pagination{
+.el-pagination {
   // 分页靠右展示
   justify-content: flex-end;
+}
+
+// 弹窗大小
+.el-dialog.form {
+  max-width: 576px;
+  min-width: 360px;
+  .el-dialog__body{
+    // 表单内容过长出现滚动条
+  max-height: 50vh;
+  overflow-y: auto;
+  }
 }
