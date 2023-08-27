@@ -4,6 +4,8 @@ const Layout = () => import("@/layout/index.vue");
 
 export default {
   path: "/permission",
+  name: "Permission",
+  component: Layout,
   meta: {
     title: $t("menus.permission"),
     icon: "lollipop",

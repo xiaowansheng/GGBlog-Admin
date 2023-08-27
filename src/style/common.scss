@@ -20,9 +20,18 @@
 .el-dialog.form {
   max-width: 576px;
   min-width: 360px;
-  .el-dialog__body{
+  .el-dialog__body {
     // 表单内容过长出现滚动条
-  max-height: 50vh;
-  overflow-y: auto;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+}
+.el-dialog.detail {
+  max-width: 768px;
+  min-width: 360px;
+  .el-dialog__body {
+    // 表单内容过长出现滚动条
+    max-height: 55vh;
+    overflow-y: auto;
   }
 }
