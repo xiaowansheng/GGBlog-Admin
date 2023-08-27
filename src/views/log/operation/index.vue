@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from "vue";
-import { OperationDto } from "@/api/operationLog";
+import { onBeforeMount, reactive, ref } from "vue";
+import { OperationDto, getOperationPage } from "@/api/operationLog";
 import DetailModal from "./detailModal.vue";
 defineOptions({
   name: "OperationLog"
@@ -11,11 +11,14 @@ onBeforeMount(() => {
 
 const getData = () => {
   const tempParams = {
-    ...params
+    ...params,
+    ...queryParams
   };
-  // getOperationPage(tempParams).then((data: any) => {
-  //   list.value = data;
-  // });
+  getOperationPage(tempParams).then((data: any) => {
+    console.log(data);
+    total.value = data.total;
+    list.value = data.list;
+  });
 };
 
 const total = ref<number>(0);
@@ -23,6 +26,13 @@ const params = {
   page: 1,
   limit: 10
 };
+const queryParams = reactive({
+  id: "",
+  requestMethod: "",
+  requestUrl: "",
+  module: "",
+  type: ""
+});
 const list = ref<OperationDto[]>([
   {
     id: 1,
@@ -67,82 +77,147 @@ const show = (item: OperationDto = null) => {
         </div>
       </template>
       <div class="content">
+        <div class="table-operation">
+          <div class="op">
+            <label>操作ID:</label>
+            <el-input
+              style="min-width: 100px"
+              @change="getData()"
+              v-model="queryParams.id"
+              placeholder="输入操作ID"
+              size="default"
+            />
+          </div>
+          <div class="op">
+            
+            <label>请求方法:</label>
+            <el-select
+              @change="getData()"
+              v-model="queryParams.requestMethod"
+              placeholder="选择请求方法"
+              size="default"
+              style="min-width: 120px"
+            >
+              <el-option label="全部" value="" />
+              <el-option label="GET" value="GET" />
+              <el-option label="POST" value="POST" />
+              <el-option label="PUT" value="PUT" />
+              <el-option label="DELETE" value="DELETE" />
+            </el-select>
+          </div>
+
+          <div class="op">
+            <label>请求地址:</label>
+            <el-input
+              style="min-width: 200px"
+              @change="getData()"
+              v-model="queryParams.requestUrl"
+              placeholder="输入请求地址"
+              size="default"
+            />
+          </div>
+          <div class="op">
+            <label>操作模块:</label>
+            <el-input
+              style="min-width: 200px"
+              @change="getData()"
+              v-model="queryParams.module"
+              placeholder="输入操作模块"
+              size="default"
+            />
+          </div>
+          <div class="op">
+            <label>操作类型:</label>
+            <el-input
+              style="min-width: 200px"
+              @change="getData()"
+              v-model="queryParams.type"
+              placeholder="输入操作类型"
+              size="default"
+            />
+          </div>
+          <!-- <div class="op">
+            <label>系统版本:</label>
+            <el-select
+              @change="getData()"
+              v-model="queryParams.requestMethod"
+              placeholder="选择系统版本"
+              size="default"
+              style="max-width: 150px"
+            >
+              <el-option label="全部" value="" />
+              <el-option label="1.0" value="1.0" />
+              <el-option label="2.0" value="2.0" />
+            </el-select>
+          </div> -->
+        </div>
         <el-table :data="list" style="width: 100%">
           <el-table-column prop="id" :align="'center'" label="ID" width="50" />
-          <el-table-column
-            prop="id"
-            :align="'center'"
-            label="ID"
-            width="150"
-          />
-          <el-table-column
+          <!-- <el-table-column
             prop="userAuthId"
             :align="'center'"
             label="用户账号"
             width="150"
-          />
-          <el-table-column
-            prop="userName"
-            :align="'center'"
-            label="用户名称"
-          />
-          <el-table-column
-            prop="version"
-            :align="'center'"
-            label="版本信息"
-          />
+          /> -->
+          <el-table-column prop="userName" :align="'center'" label="用户名称" 
+            width="180"/>
+          <el-table-column :align="'center'" label="请求方法" width="80">
+            <template #default="scope">
+              <el-tag>{{ scope.row.requestMethod }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="requestUrl"
             :align="'center'"
             label="请求地址"
+            width="130"
           />
           <el-table-column
             prop="module"
             :align="'center'"
             label="访问模块"
-          />
-          <el-table-column
-            prop="callingMethod"
-            :align="'center'"
-            label="调用方法"
+            width="130"
           />
           <el-table-column
             prop="type"
             :align="'center'"
             label="操作类型"
-            width="200"
-          />
+            width="80"
+          >
+            <!-- <template #default="scope">
+              <el-tag type="success">{{ scope.row.type }}</el-tag>
+            </template> -->
+          </el-table-column>
           <el-table-column
             prop="description"
             :align="'center'"
             label="操作类信息"
-            width="200"
+            width="160"
           />
-          <el-table-column
-            prop="requestMethod"
+          <!-- <el-table-column
+            prop="callingMethod"
             :align="'center'"
-            label="请求方法"
-            width="200"
-          />
-          <el-table-column
+            label="调用方法"
+          /> -->
+          <!-- <el-table-column
             prop="requestParam"
             :align="'center'"
             label="请求参数"
             width="200"
-          />
-          <el-table-column
+          /> -->
+          <!-- <el-table-column
             prop="responseData"
             :align="'center'"
             label="响应数据"
             width="200"
-          />
-          <el-table-column
+          /> -->
+          <!-- <el-table-column
             prop="ipAddress"
             :align="'center'"
             label="IP 地址"
-            width="200"
-          />
-          <el-table-column
+            width="160"
+          /> -->
+          <!-- <el-table-column
             prop="ipSource"
             :align="'center'"
             label="IP 位置"
@@ -152,21 +227,27 @@ const show = (item: OperationDto = null) => {
             prop="device"
             :align="'center'"
             label="设备信息"
-            width="200"
+            width="150"
           />
           <el-table-column
             prop="browser"
             :align="'center'"
             label="浏览器信息"
-            width="200"
-          />
+            width="150"
+          /> -->
+          <el-table-column prop="version" :align="'center'" label="版本信息" />
           <el-table-column
             prop="createTime"
             :align="'center'"
             label="创建时间"
-            width="200"
+            width="180"
           />
-          <el-table-column :align="'center'" label="操作" width="180">
+          <el-table-column
+            fixed="right"
+            :align="'center'"
+            label="操作"
+            width="115"
+          >
             <template #default="scope">
               <el-button size="default" type="primary" @click="show(scope.row)"
                 >查看详情</el-button
@@ -178,6 +259,10 @@ const show = (item: OperationDto = null) => {
         <el-pagination
           :hide-on-single-page="true"
           background
+          v-model:current-page="params.page"
+          v-model:page-size="params.limit"
+          @update:current-page="getData()"
+          @update:page-size="getData()"
           layout="total,prev, pager, next,sizes,jumper"
           :total="total"
           :page-sizes="[10, 20, 30, 40, 50]"

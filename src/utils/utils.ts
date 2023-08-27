@@ -9,4 +9,5 @@ export const baseUrlApi = (url: string) =>
     : `/api/${url}`;
 
 export const baseURL =
-  process.env.NODE_ENV === "development" ? `http://192.168.2.120:8081` : `/api`;
+  // process.env.NODE_ENV === "development" ? `http://192.168.2.120:8081` : `/api`;
+  process.env.NODE_ENV === "development" ? `http://192.168.31.90:8081` : `/api`;

@@ -39,6 +39,6 @@ export interface Menu {
  * @returns
  */
 export const getAllMenus = (params?: any, config?: any) => {
-  return http.get<any, Result<MenuDto[]>>("/menu/list", params, config);
+  return http.get<any, Result<MenuDto[]>>("/system/menu/tree", params, config);
   // return http.request<Result<PageData<RoleDto>>>("get", "/role/list");
 };

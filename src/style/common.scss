@@ -35,3 +35,37 @@
     overflow-y: auto;
   }
 }
+
+// 表格筛选栏
+.content {
+    $op-height:32px;
+  .table-operation {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    .op:not(:last-of-type) {
+      margin-right: 25px;
+    }
+    .op {
+      display: flex;
+      flex-wrap: nowrap;
+       white-space: nowrap; /* 让文字不换行 */
+      label{
+        margin-right: 12px;
+        line-height: $op-height;
+      }
+      // 表单空间行高和label一样
+      div{
+        height: $op-height;
+      }
+    }
+  }
+}
+
+// 表格分页插件
+.el-pagination {
+  // 一页显示不下换行显示
+  flex-wrap: wrap;
+  gap: 10px;
+}

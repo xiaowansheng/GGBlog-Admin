@@ -64,7 +64,7 @@ const form = reactive<Menu>({
   description: ""
 });
 const formRef = ref<FormInstance>();
-const rules = reactive<FormRules<typeof form>>({
+const rules = reactive<FormRules>({
   name: [
     {
       validator: (rule: any, value: any, callback: any) => {
@@ -134,7 +134,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
       <el-form-item v-if="!form.id" label="菜单类型">
         <el-input :value="isChildren ? '子目录菜单' : '根目录菜单'" disabled />
       </el-form-item>
-      <el-form-item v-if="!form.id" label="父菜单名称">
+      <el-form-item v-if="!form.id&&parentName" label="父菜单名称">
         <el-input :value="parentName" disabled/>
       </el-form-item>
       <el-form-item v-if="form.id" label="菜单ID">

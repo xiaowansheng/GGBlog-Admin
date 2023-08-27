@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { FormInstance, FormRules } from "element-plus";
-import { reactive, ref, toRefs, watch } from "vue";
+import {  ref, toRefs, watch } from "vue";
 import { OperationDto } from "@/api/operationLog";
 defineOptions({
   name: "OperationDetailModal"
@@ -25,7 +24,7 @@ watch(visiable, () => {
 
 <template>
   <el-dialog v-model="visiable" :title="'操作日志详情'" class="detail" style="">
-    <el-descriptions :title="item.type" :column="2" border>
+    <el-descriptions :title="item.type" :column="1" border>
       <!-- <el-descriptions-item
         label="Username"
         label-align="left"

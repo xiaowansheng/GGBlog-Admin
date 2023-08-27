@@ -16,13 +16,14 @@ const getData = () => {
   };
   getAllMenus(tempParams).then((data: any) => {
     list.value = data;
+    total.value=list.value.length
   });
 };
 
 const total = ref<number>(0);
 const params = {
   page: 1,
-  limit: 10
+  limit: 99
 };
 const list = ref<MenuDto[]>([
   {
@@ -193,11 +194,9 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
           </el-table-column>
         </el-table>
         <el-pagination
-          :hide-on-single-page="true"
-          background
-          layout="total,prev, pager, next,sizes,jumper"
+          :hide-on-single-page="false"
+          layout="total"
           :total="total"
-          :page-sizes="[10, 20, 30, 40, 50]"
         />
       </div>
     </el-card>
