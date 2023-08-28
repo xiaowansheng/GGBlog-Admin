@@ -1,8 +1,13 @@
 ,
 <script setup lang="ts">
-import { onBeforeMount, ref, reactive } from "vue";
+import { onBeforeMount, reactive, ref } from "vue";
 import ModifyModal from "./modifyModal.vue";
-import { ResourceDto, getResourcePage } from "@/api/resource";
+import {
+  ResourceDto,
+  updateResourceStatus,
+  getTree
+} from "@/api/resource";
+import { ElMessage } from "element-plus";
 defineOptions({
   name: "Resource"
 });
@@ -12,45 +17,37 @@ onBeforeMount(() => {
 
 const getData = () => {
   const tempParams = {
-    ...params
+    ...params,
+    ...queryParams
   };
-  getResourcePage(tempParams).then((data: any) => {
+  getTree(tempParams).then((data: any) => {
     list.value = data;
+    total.value = data.length;
   });
 };
 
 const total = ref<number>(0);
-const params = reactive({
+const params = {
   page: 1,
-  limit: 10
-});
-const list = ref<ResourceDto[]>([
-  {
-    id: 1,
-    name: "string",
-    requestMethod: "string",
-    path: "string",
-    parentId: 0,
-    open: 0,
-    description: "string",
-    createTime: "string",
-    updateTime: "string",
-    children: [
-      {
-        id: 2,
-        name: "string",
-        requestMethod: "string",
-        path: "string",
-        parentId: 1,
-        open: 0,
-        description: "string",
-        createTime: "string",
-        updateTime: "string",
-        children: []
-      }
-    ]
-  }
-]);
+  limit: 99
+};
+const queryParams = reactive({});
+const list = ref<ResourceDto[]>([]);
+const updateStatus = (item: ResourceDto) => {
+  
+  // TODO BUG 页面初始加载时每一条都会执行一次
+  return
+  updateResourceStatus(null, {
+    data: {
+      id: item.id,
+    status:item.open
+    }
+  }).then(() => {
+    ElMessage.success("修改成功！")
+  }).catch(() => {
+    item.open=item.open==1?0:1
+  })
+}
 
 const modifyRef = ref();
 const showDialog = ref(false);
@@ -64,11 +61,11 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
     if (item) {
       // 添加子菜单
       parentId.value = item.id;
-      parentName.value = item.name;
+      parentName.value = item.label;
       selected.value = null;
     } else {
       // 添加根菜单
-      parentId.value = null;
+      parentId.value = 0;
       parentName.value = "";
       selected.value = null;
     }
@@ -88,10 +85,8 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <span class="title">菜单信息</span>
-          <el-button class="button" @click="getResourcePage()"
-            >刷新数据</el-button
-          >
+          <span class="title">资源信息</span>
+          <el-button class="button" @click="getData()">刷新数据</el-button>
         </div>
       </template>
       <div class="content">
@@ -99,6 +94,7 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
           >添加</el-button
         >
         <el-table
+          border
           :data="list"
           row-key="id"
           :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
@@ -107,30 +103,30 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
           <!-- <el-table-column prop="id" :align="'center'" label="ID" width="80" /> -->
           <el-table-column
             prop="name"
-            :align="'center'"
-            label="名称"
-            width="150"
+            header-align="center"
+            label="资源名称"
+            width="180"
           />
-          <el-table-column
-            prop="requestMethod"
-            :align="'center'"
-            label="请求方法"
-            width="150"
-          />
+          <el-table-column :align="'center'" label="请求方法" width="100">
+            <template #default="scope">
+              <el-tag type="default">{{ scope.row.requestMethod }}</el-tag>
+            </template></el-table-column
+          >
           <el-table-column
             prop="path"
             :align="'center'"
             label="访问路径"
-            width="150"
+            width="180"
           />
           <el-table-column
             prop="description"
             :align="'center'"
-            label="描述信息"
+            label="资源描述"
           />
           <el-table-column :align="'center'" label="是否开放" width="100">
             <template #default="scope">
               <el-switch
+              @change="updateStatus(scope.row)"
                 v-model="scope.row.open"
                 :active-value="1"
                 :inactive-value="0"
@@ -142,12 +138,12 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
             label="创建时间"
             width="200"
           />
-          <el-table-column
+          <!-- <el-table-column
             prop="updateTime"
             :align="'center'"
             label="修改时间"
             width="200"
-          />
+          /> -->
           <el-table-column :align="'center'" label="操作" width="250">
             <template #default="scope">
               <el-button
@@ -160,19 +156,23 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
               <el-button
                 size="default"
                 type="primary"
-                @click="show(false, true, scope.row)"
+                @click="show(false, false, scope.row)"
                 >编辑</el-button
               >
-              <el-button size="default" type="danger">删除</el-button>
+              <el-button
+                v-if="!scope.row.children || scope.row.children.length == 0"
+                size="default"
+                type="danger"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
         <el-pagination
-          :hide-on-single-page="true"
+          :hide-on-single-page="false"
           background
-          layout="total,prev, pager, next,sizes,jumper"
+          layout="total"
           :total="total"
-          :page-sizes="[10, 20, 30, 40, 50]"
         />
       </div>
     </el-card>
@@ -183,11 +183,19 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
       :parentId="parentId"
       :parentName="parentName"
       :item="selected"
+      @refresh="getData()"
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .card-header {
+}
+
+// 表格中的图标居中
+.el-table {
+  svg {
+    display: inline-block;
+  }
 }
 </style>

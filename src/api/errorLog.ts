@@ -1,38 +1,35 @@
 import { http } from "@/utils/http";
 import Result, { PageData } from "./constant/result";
 
-export interface OperationDto {
+export interface ErrorDto {
   id: number;
   userAuthId: number;
   userName: string;
   version: string;
   requestUrl: string;
-  module: string;
-  callingMethod: string;
-  type: string;
-  description: string;
   requestMethod: string;
   requestParam: string;
-  responseData: string;
-  elapsedTime: number;
+  module: string;
+  callingMethod: string;
+  errorName: string;
+  errorMessage: string;
   ipAddress: string;
-  ipSource: string;
+  ipSource:string;
   device: string;
   browser: string;
   createTime: string;
   updateTime: string;
 }
 
-
 /**
- * 分页获取操作日志信息
+ * 分页获取异常日志信息
  * @param params
  * @param config
  * @returns
  */
-export const getOperationPage = (params?: any, config?: any) => {
-  return http.get<any, Result<PageData<OperationDto[]>>>(
-    "/log/operation/page",
+export const getErrorPage = (params?: any, config?: any) => {
+  return http.get<any, Result<PageData<ErrorDto[]>>>(
+    "/log/error/page",
     params,
     config
   );

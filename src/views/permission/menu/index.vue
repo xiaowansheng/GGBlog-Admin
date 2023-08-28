@@ -2,7 +2,8 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue";
 import ModifyModal from "./modifyModal.vue";
-import { MenuDto, getAllMenus } from "@/api/menu";
+import { MenuDto, getAllMenus, deleteMenu, updateMenuStatus } from "@/api/menu";
+import { ElMessage } from "element-plus";
 defineOptions({
   name: "Menu"
 });
@@ -16,7 +17,7 @@ const getData = () => {
   };
   getAllMenus(tempParams).then((data: any) => {
     list.value = data;
-    total.value=list.value.length
+    total.value = list.value.length;
   });
 };
 
@@ -25,41 +26,24 @@ const params = {
   page: 1,
   limit: 99
 };
-const list = ref<MenuDto[]>([
-  {
-    id: 1,
-    name: "string",
-    label: "string",
-    icon: "string",
-    redirect: "string",
-    path: "string",
-    component: "string",
-    parentId: 0,
-    hidden: 0,
-    sort: 0,
-    description: "string",
-    createTime: "string",
-    updateTime: "string",
-    children: [
-      {
-        id: 2,
-        name: "string",
-        label: "string",
-        icon: "string",
-        redirect: "string",
-        path: "string",
-        component: "string",
-        parentId: 1,
-        hidden: 0,
-        sort: 0,
-        description: "string",
-        createTime: "string",
-        updateTime: "string",
-        children: []
-      }
-    ]
-  }
-]);
+const list = ref<MenuDto[]>([]);
+
+const updateStatus = (item: MenuDto) => {
+  // TODO BUG 页面初始加载时每一条都会执行一次
+  return
+  updateMenuStatus(null, {
+    data: {
+      id: item.id,
+      status: item.hidden
+    }
+  })
+    .then(() => {
+      ElMessage.success("修改成功！");
+    })
+    .catch(() => {
+      item.hidden = item.hidden == 1 ? 0 : 1;
+    });
+};
 
 const modifyRef = ref();
 const showDialog = ref(false);
@@ -77,7 +61,7 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
       selected.value = null;
     } else {
       // 添加根菜单
-      parentId.value = null;
+      parentId.value = 0;
       parentName.value = "";
       selected.value = null;
     }
@@ -106,6 +90,7 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
           >添加</el-button
         >
         <el-table
+          border
           :data="list"
           row-key="id"
           :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
@@ -113,67 +98,73 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
         >
           <!-- <el-table-column prop="id" :align="'center'" label="ID" width="80" /> -->
           <el-table-column
+            prop="title"
+            header-align="center"
+            label="标题"
+            width="180"
+          />
+          <el-table-column
             prop="name"
             :align="'center'"
             label="名称"
-            width="150"
+            width="130"
           />
-          <el-table-column
-            prop="label"
-            :align="'center'"
-            label="标签"
-            width="150"
-          />
-          <el-table-column
-            prop="icon"
-            :align="'center'"
-            label="图标"
-            width="150"
-          />
-          <el-table-column
+          <el-table-column :align="'center'" label="图标" width="80">
+            <template #default="scope">
+              <IconifyIconOnline
+                :icon="scope.row.icon"
+                width="20px"
+                height="20px"
+              />
+              <!-- <IconifyIconOffline icon="homeFilled" /> -->
+            </template>
+          </el-table-column>
+          <!-- <el-table-column
             prop="redirect"
             :align="'center'"
             label="重定向"
-            width="150"
-          />
-          <el-table-column
-            prop="path"
-            :align="'center'"
-            label="访问路径"
-            width="150"
-          />
+            width="140"
+          /> -->
           <el-table-column
             prop="component"
             :align="'center'"
             label="组件路径"
-            width="150"
+            width="180"
           />
           <el-table-column
+            prop="path"
+            :align="'center'"
+            label="访问地址"
+            width="180"
+          />
+          <!-- <el-table-column
             prop="description"
             :align="'center'"
             label="描述信息"
-          />
+            width="160"
+          /> -->
           <el-table-column :align="'center'" label="是否隐藏" width="100">
             <template #default="scope">
               <el-switch
+                @change="updateStatus(scope.row)"
                 v-model="scope.row.disable"
                 :active-value="1"
                 :inactive-value="0"
               /> </template
           ></el-table-column>
           <el-table-column prop="sort" :align="'center'" label="排序" />
-          <el-table-column
+          <!-- <el-table-column
             prop="createTime"
             :align="'center'"
             label="创建时间"
             width="200"
-          />
-          <el-table-column
+          /> -->
+          <!-- <el-table-column
             prop="updateTime"
             :align="'center'"
             label="修改时间"
             width="200"
-          />
+          /> -->
           <el-table-column :align="'center'" label="操作" width="250">
             <template #default="scope">
               <el-button
@@ -189,7 +180,12 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
                 @click="show(false, false, scope.row)"
                 >编辑</el-button
               >
-              <el-button size="default" type="danger">删除</el-button>
+              <el-button
+                v-if="!scope.row.children || scope.row.children.length == 0"
+                size="default"
+                type="danger"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -207,11 +203,19 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
       :parentId="parentId"
       :parentName="parentName"
       :item="selected"
+      @refresh="getData()"
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .card-header {
+}
+
+// 表格中的图标居中
+.el-table {
+  svg {
+    display: inline-block;
+  }
 }
 </style>

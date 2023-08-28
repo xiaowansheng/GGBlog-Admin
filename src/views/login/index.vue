@@ -46,7 +46,7 @@ const { locale, translationCh, translationEn } = useTranslationLang();
 
 const ruleForm = reactive({
   username: "admin",
-  password: "admin123"
+  password: "admin"
 });
 
 const onLogin = async (formEl: FormInstance | undefined) => {
@@ -55,27 +55,37 @@ const onLogin = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid, fields) => {
     if (valid) {
       // TODO 动态路由
-      // useUserStoreHook()
-      //   .loginByUsername({ username: ruleForm.username, password: "admin123" })
-      //   .then(res => {
-      //     if (res.success) {
-      //       // 获取后端路由
-      //       initRouter().then(() => {
-      //         router.push(getTopMenu(true).path);
-      //         message("登录成功", { type: "success" });
-      //       });
-      //     }
-      //   });
+      useUserStoreHook()
+        .loginByUsername({
+          username: ruleForm.username,
+          password: ruleForm.password
+        })
+        .then(data => {
+          console.log("data:", data);
+
+          // 获取后端路由
+          initRouter()
+            .then(() => {
+              router.push(getTopMenu(true).path);
+              message("登录成功", { type: "success" });
+            })
+            .catch(() => {
+              loading.value = false;
+            });
+        })
+        .catch(() => {
+          loading.value = false;
+        });
       // TODO 全部采取静态路由模式
-      usePermissionStoreHook().handleWholeMenus([]);
-      addPathMatch();
-      setToken({
-        username: "admin",
-        roles: ["admin"],
-        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI1MzQ0ODkwNTRAcXEuY29tIiwiaW5mbyI6e30sImV4cCI6MTY5NDEwOTE0NH0.GZYZgJSVu5F1bv8mEoS4jtySJWv04YjZToJJOdeCBeE"
-      } as any);
-      router.push("/");
-      message("登录成功", { type: "success" });
+      // usePermissionStoreHook().handleWholeMenus([]);
+      // addPathMatch();
+      // setToken({
+      //   username: "admin",
+      //   roles: ["admin"],
+      //   accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI1MzQ0ODkwNTRAcXEuY29tIiwiaW5mbyI6e30sImV4cCI6MTY5NDEwOTE0NH0.GZYZgJSVu5F1bv8mEoS4jtySJWv04YjZToJJOdeCBeE"
+      // } as any);
+      // router.push("/");
+      // message("登录成功", { type: "success" });
     } else {
       loading.value = false;
       return fields;

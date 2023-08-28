@@ -38,23 +38,6 @@ export default {
         title: $t("menus.permissionResource"),
         roles: ["admin", "common"]
       }
-    },
-    {
-      path: "/permission/page/index",
-      name: "PermissionPage",
-      meta: {
-        title: $t("menus.permissionPage"),
-        roles: ["admin", "common"]
-      }
-    },
-    {
-      path: "/permission/button/index",
-      name: "PermissionButton",
-      meta: {
-        title: $t("menus.permissionButton"),
-        roles: ["admin", "common"],
-        auths: ["btn_add", "btn_edit", "btn_delete"]
-      }
     }
   ]
 } as RouteConfigsTable;

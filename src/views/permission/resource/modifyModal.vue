@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { FormInstance, FormRules } from "element-plus";
 import { reactive, ref, toRefs, watch } from "vue";
-import { Resource } from "@/api/resource";
+import { Resource, addResource, updateResource } from "@/api/resource";
+import { ElMessage } from "element-plus";
 defineOptions({
   name: "MenuAddAndModifyModal"
 });
-const emits = defineEmits(["update:show"]);
+const emits = defineEmits(["update:show", "refresh"]);
 const props = defineProps({
   show: Boolean,
   isChildren: Boolean,
@@ -14,26 +15,17 @@ const props = defineProps({
   item: null
 });
 
-const { show, parentId,isChildren, item } = toRefs(props);
+const { show, isChildren, parentId, item } = toRefs(props);
 const visiable = ref(show.value);
 watch(show, () => {
   // console.log(item?.value);
   if (item?.value != null) {
     form.id = item.value.id;
-    form.name = item.value.name;
-    form.requestMethod = item.value.requestMethod;
-    form.path = item.value.path;
-    form.parentId = item.value.parentId;
-    form.open = item.value.open;
-    form.description = item.value.description;
+    resetForm()
   } else {
+    resetForm();
     form.id = null;
-    form.name = "";
-    form.requestMethod = "";
-    form.path = "";
-    form.parentId = parentId.value;
-    form.open = 0;
-    form.description = "";
+    form.parentId=parentId?.value
   }
   visiable.value = show.value;
 });
@@ -45,51 +37,74 @@ watch(visiable, () => {
 const form = reactive<Resource>({
   id: null,
   name: "",
-  requestMethod: "",
+  requestMethod: null,
   path: "",
-  open: 0,
   parentId: null,
+  open: 0,
   description: ""
 });
 const formRef = ref<FormInstance>();
-const rules = reactive<FormRules<typeof form>>({
+const rules = reactive<FormRules>({
   name: [
     {
       validator: (rule: any, value: any, callback: any) => {
         if (value) {
           callback();
         } else {
-          callback(new Error("角色名称不能为空!"));
+          callback(new Error("资源称不能为空!"));
         }
       },
       trigger: "blur"
     }
   ],
-  label: [
+  requestMethod: [
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (!isChildren||value) {
+          callback();
+        } else {
+          callback(new Error("请求方式不能为空!"));
+        }
+      },
+      trigger: "blur"
+    }
+  ],
+  path: [
     {
       validator: (rule: any, value: any, callback: any) => {
         if (value) {
           callback();
         } else {
-          callback(new Error("角色标签不能为空!"));
+          callback(new Error("访问路径不能为空!"));
         }
       },
       trigger: "blur"
     }
   ],
-  disable: [
-    {
-      validator: (rule: any, value: any, callback: any) => {
-        callback();
-      },
-      trigger: "blur"
-    }
-  ]
 });
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
+      if (form.id) {
+        updateResource(null, { data: form }).then(() => {
+          ElMessage({
+            message: "修改成功！",
+            type: "success"
+          });
+          emits("refresh");
+          visiable.value = false;
+        });
+      } else {
+        addResource(null, { data: form }).then(() => {
+          ElMessage({
+            message: "保存成功！",
+            type: "success"
+          });
+          emits("refresh");
+          visiable.value = false;
+        });
+      }
       console.log("submit!");
     } else {
       console.log("error submit!");
@@ -98,16 +113,20 @@ const submitForm = (formEl: FormInstance | undefined) => {
   });
 };
 
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
+const resetForm = () => {
+  form.name = "";
+  form.requestMethod = null;
+  form.path = "";
+  form.parentId = null;
+  form.open = 0;
+  form.description = "";
 };
 </script>
 
 <template>
   <el-dialog
     v-model="visiable"
-    :title="form.id ? '修改菜单信息' : '新增菜单信息'"
+    :title="form.id ? '修改资源信息' : '新增资源信息'"
     class="form"
     style=""
   >
@@ -122,22 +141,35 @@ const resetForm = (formEl: FormInstance | undefined) => {
       <el-form-item v-if="!form.id" label="资源类型">
         <el-input :value="isChildren ? '接口' : '模块'" disabled />
       </el-form-item>
-      <el-form-item v-if="isChildren" label="模块名称">
+      <el-form-item v-if="!form.id && parentName" label="模块">
         <el-input :value="parentName" disabled />
       </el-form-item>
-      <el-form-item v-if="form.id" label="资源ID">
+      <el-form-item v-if="form.id" label="模块ID">
         <el-input v-model="form.id" disabled />
       </el-form-item>
-      <el-form-item :label="isChildren ? '接口名称' : '模块名称'" prop="name">
+      <el-form-item :label="isChildren?'接口名称':'模块名称'" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item v-if="form.parentId" label="请求方法" prop="label">
-        <el-input v-model="form.requestMethod" />
+      <el-form-item v-if="isChildren" label="请求方法" prop="requestMethod">
+                <el-select
+              v-model="form.requestMethod"
+              placeholder="选择请求方法"
+              size="default"
+              style="min-width: 120px"
+            >
+              <el-option label="GET" value="GET" />
+              <el-option label="POST" value="POST" />
+              <el-option label="PUT" value="PUT" />
+              <el-option label="DELETE" value="DELETE" />
+            </el-select>
       </el-form-item>
-      <el-form-item v-if="form.parentId" label="请求地址" prop="label">
+      <el-form-item   label="访问路径" prop="path">
         <el-input v-model="form.path" />
       </el-form-item>
-      <el-form-item v-if="form.parentId" label="是否开放">
+      <el-form-item label="描述信息">
+        <el-input v-model="form.description" />
+      </el-form-item>
+      <el-form-item label="是否开放">
         <el-switch
           v-model="form.open"
           inline-prompt
@@ -145,16 +177,13 @@ const resetForm = (formEl: FormInstance | undefined) => {
           :inactive-value="0"
         />
       </el-form-item>
-      <el-form-item label="描述信息">
-        <el-input v-model="form.description" />
-      </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="visiable = false">Cancel</el-button>
-        <el-button @click="resetForm(formRef)">重置</el-button>
+        <el-button @click="visiable = false">取消</el-button>
+        <el-button @click="resetForm()">重置</el-button>
         <el-button type="primary" @click="submitForm(formRef)">
-          Confirm
+          提交
         </el-button>
       </span>
     </template>

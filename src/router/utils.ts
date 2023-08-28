@@ -28,6 +28,7 @@ const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 
 // 动态路由
 import { getAsyncRoutes } from "@/api/routes";
+import { MenuDto } from "@/api/menu";
 
 function handRank(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo;
@@ -172,6 +173,7 @@ function handleAsyncRoutes(routeList) {
           const flattenRouters: any = router
             .getRoutes()
             .find(n => n.path === "/");
+          
           router.addRoute(flattenRouters);
         }
       }
@@ -194,21 +196,64 @@ function initRouter() {
       });
     } else {
       return new Promise(resolve => {
-        getAsyncRoutes().then(({ data }) => {
-          handleAsyncRoutes(cloneDeep(data));
-          storageSession().setItem(key, data);
+        getAsyncRoutes().then((data: any) => {
+          const routes = convertToRoutes(data);
+          handleAsyncRoutes(cloneDeep(routes));
+          storageSession().setItem(key, routes);
           resolve(router);
         });
       });
     }
   } else {
     return new Promise(resolve => {
-      getAsyncRoutes().then(({ data }) => {
-        handleAsyncRoutes(cloneDeep(data));
+      getAsyncRoutes().then((data: any) => {
+        console.log("data route", data);
+
+        const routes = convertToRoutes(data);
+        console.log("routes", routes);
+        handleAsyncRoutes(cloneDeep(routes));
         resolve(router);
       });
     });
   }
+}
+/**
+ * 自定义
+ * 将自己的路由配置转换为通用的配置
+ */
+function convertToRoutes(data: any[]) {
+  const arr: any = [];
+  data.forEach(route => {
+    const temp: any = convertToRoute(route);
+    if (route.children && route.children.length != 0) {
+      temp.children = convertToRoutes(route.children);
+    }
+    arr.push(temp);
+  });
+  return arr;
+}
+/**
+ * 自定义
+ * 将一个自己的路由配置转换为通用路由配置
+ * @param data 从数据库获取的routes树结构
+ * @returns
+ */
+function convertToRoute(data: any) {
+  const route: any = {
+    path: data.path,
+    name: data.name,
+    redirect: data.redirect,
+    meta: {
+      title: data.meta.title,
+      icon: data.meta.icon
+    }
+  };
+  if (data.parentId && data.parentId != 0) {
+    route.component = data.component;
+    route.meta.showLink = true;
+    route.meta.keepAlive = true;
+  }
+  return route;
 }
 
 /**

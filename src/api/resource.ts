@@ -24,17 +24,75 @@ export interface Resource {
   description: string;
 }
 
+
 /**
- * 分页获取资源信息
+ * 添加资源信息
  * @param params
  * @param config
  * @returns
  */
-export const getResourcePage = (params?: any, config?: any) => {
-  return http.get<any, Result<PageData<ResourceDto>>>(
-    "/resource/page",
+export const addResource = (params?: any, config?: any) => {
+  return http.post<any, Result<any>>(
+    "/system/resource",
     params,
     config
   );
-  // return http.request<Result<PageData<RoleDto>>>("get", "/role/list");
+};
+
+
+/**
+ * 修改资源信息
+ * @param params
+ * @param config
+ * @returns
+ */
+export const updateResource = (params?: any, config?: any) => {
+  return http.put<any, Result<any>>(
+    "/system/resource",
+    params,
+    config
+  );
+};
+
+/**
+ * 删除资源信息
+ * @param params
+ * @param config
+ * @returns
+ */
+export const deleteResource = (params?: any, config?: any) => {
+  return http.post<any, Result<any>>(
+    "/system/resource",
+    params,
+    config
+  );
+};
+
+
+/**
+ * 修改资源开放状态
+ * @param params
+ * @param config
+ * @returns
+ */
+export const updateResourceStatus = (params?: any, config?: any) => {
+  return http.put<any, Result<any>>(
+    "/system/resource/status",
+    params,
+    config
+  );
+};
+
+/**
+ * 获取菜单树结构
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getTree = (params?: any, config?: any) => {
+  return http.get<any, Result<ResourceDto[]>>(
+    "/system/resource/tree",
+    params,
+    config
+  );
 };

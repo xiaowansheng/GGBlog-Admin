@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue";
-import { getAllRoles, RoleDto } from "@/api/role";
+import { getAllRoles, updateRoleStatus, RoleDto, deleteRole } from "@/api/role";
 import ModifyModal from "./modifyModal.vue";
 import MenuAuthorizationModal from "./menuAuthorizationModal.vue";
 import ResourceAuthorizationModal from "./resourceAuthorizationModal.vue";
+
+import { ElMessage, ElMessageBox } from "element-plus";
 defineOptions({
   name: "Role"
 });
@@ -17,13 +19,14 @@ const getData = () => {
   };
   getAllRoles(tempParams).then((data: any) => {
     list.value = data;
+    total.value=list.value.length
   });
 };
 
 const total = ref<number>(0);
 const params = {
   page: 1,
-  limit: 10
+  limit: 99
 };
 const list = ref<RoleDto[]>([
   {
@@ -41,7 +44,6 @@ const modifyRef = ref();
 const showDialog = ref(false);
 const selected = ref<RoleDto>();
 const show = (item: RoleDto = null) => {
-  console.log("11");
 
   if (item != null) {
     selected.value = item;
@@ -54,6 +56,34 @@ const show = (item: RoleDto = null) => {
 const menuAuthorizationShow = ref<boolean>(false);
 const resourceAuthorizationShow = ref<boolean>(false);
 const selectRoleId = ref<number>();
+const updateR = (item: RoleDto) => {
+  
+  // TODO BUG 页面初始加载时每一条都会执行一次
+  return
+  const form = {
+    id: item.id,
+    status: item.disable
+  };
+  updateRoleStatus(null, { data: form })
+    .then(() => {
+      ElMessage.success("修改成功！");
+    })
+    .catch(() => {
+      item.disable = item.disable == 1 ? 0 : 1;
+    });
+};
+const deleteR = (item: RoleDto) => {
+  ElMessageBox.confirm(`是否确认删除角色【${item.name}】？`, "Warning", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    deleteRole(item.id).then(() => {
+      getData();
+      ElMessage.success("删除成功");
+    });
+  });
+};
 </script>
 
 <template>
@@ -69,7 +99,7 @@ const selectRoleId = ref<number>();
         <el-button size="default" type="primary" @click="show()"
           >添加</el-button
         >
-        <el-table :data="list" style="width: 100%">
+        <el-table border :data="list" style="width: 100%">
           <el-table-column prop="id" :align="'center'" label="ID" width="50" />
           <el-table-column
             prop="name"
@@ -92,8 +122,9 @@ const selectRoleId = ref<number>();
             <template #default="scope">
               <el-switch
                 v-model="scope.row.disable"
-                active-value="1"
-                inactive-value="0"
+                @change="updateR(scope.row)"
+                :active-value="1"
+                :inactive-value="0"
               /> </template
           ></el-table-column>
           <el-table-column
@@ -135,20 +166,29 @@ const selectRoleId = ref<number>();
               <el-button size="default" type="primary" @click="show(scope.row)"
                 >编辑</el-button
               >
-              <el-button size="default" type="danger">删除</el-button>
+              <el-button
+                size="default"
+                type="danger"
+                @click="deleteR(scope.row)"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
         <el-pagination
-          :hide-on-single-page="true"
+          :hide-on-single-page="false"
           background
-          layout="total,prev, pager, next,sizes,jumper"
+          layout="total"
           :total="total"
-          :page-sizes="[10, 20, 30, 40, 50]"
         />
       </div>
     </el-card>
-    <modify-modal ref="modifyRef" v-model:show="showDialog" :item="selected" />
+    <modify-modal
+      ref="modifyRef"
+      v-model:show="showDialog"
+      :item="selected"
+      @refresh="getData()"
+    />
     <menu-authorization-modal
       v-model:show="menuAuthorizationShow"
       :roleId="selectRoleId"

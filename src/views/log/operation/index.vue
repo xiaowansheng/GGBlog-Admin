@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, reactive, ref } from "vue";
 import { OperationDto, getOperationPage } from "@/api/operationLog";
-import DetailModal from "./detailModal.vue";
+import OperationDetailModal from "./operationDetailModal.vue";
 defineOptions({
   name: "OperationLog"
 });
@@ -24,7 +24,7 @@ const getData = () => {
 const total = ref<number>(0);
 const params = {
   page: 1,
-  limit: 10
+  limit: 8
 };
 const queryParams = reactive({
   id: "",
@@ -151,7 +151,7 @@ const show = (item: OperationDto = null) => {
             </el-select>
           </div> -->
         </div>
-        <el-table :data="list" style="width: 100%">
+        <el-table border :data="list" style="width: 100%">
           <el-table-column prop="id" :align="'center'" label="ID" width="50" />
           <!-- <el-table-column
             prop="userAuthId"
@@ -265,11 +265,11 @@ const show = (item: OperationDto = null) => {
           @update:page-size="getData()"
           layout="total,prev, pager, next,sizes,jumper"
           :total="total"
-          :page-sizes="[10, 20, 30, 40, 50]"
+          :page-sizes="[8, 15, 20, 30, 50]"
         />
       </div>
     </el-card>
-    <detail-modal v-model:show="showDialog" :item="selected" />
+    <operation-detail-modal v-model:show="showDialog" :item="selected" />
   </div>
 </template>
 

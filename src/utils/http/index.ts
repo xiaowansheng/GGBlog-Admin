@@ -78,7 +78,7 @@ class PureHttp {
           return config;
         }
         /** 请求白名单，放置一些不需要token的接口（通过设置请求白名单，防止token过期后再请求造成的死循环问题） */
-        const whiteList = ["/refreshToken", "/login"];
+        const whiteList = ["/auth/user/refreshToken", "/user/auth/login"];
         return whiteList.some(v => config.url.indexOf(v) > -1)
           ? config
           : new Promise(resolve => {
@@ -93,7 +93,7 @@ class PureHttp {
                     useUserStoreHook()
                       .handRefreshToken({ refreshToken: data.refreshToken })
                       .then(res => {
-                        const token = res.data.accessToken;
+                        const token = res.accessToken;
                         config.headers["Authorization"] = formatToken(token);
                         PureHttp.requests.forEach(cb => cb(token));
                         PureHttp.requests = [];
@@ -139,11 +139,11 @@ class PureHttp {
         }
         // 自定义数据处理
         const { code, message, data } = response.data;
-        if (code&&code == 200) {
+        if (code && code == 200) {
           return data;
-        } else if(code&&message){
+        } else if (code && message) {
           ElMessage.error(message);
-          return response.data;
+          throw new Error("Error");
         } else {
           return response.data;
         }
@@ -166,7 +166,7 @@ class PureHttp {
     param?: AxiosRequestConfig,
     axiosConfig?: PureHttpRequestConfig
   ): Promise<T> {
-    console.log("params:",param);
+    console.log("params:", param);
     const config = {
       method,
       url,
@@ -208,6 +208,23 @@ class PureHttp {
   ): Promise<P> {
     return this.request<P>("get", url, params, config);
   }
-}
 
+  /** 单独抽离的put工具函数 */
+  public put<T, P>(
+    url: string,
+    params?: AxiosRequestConfig<T>,
+    config?: PureHttpRequestConfig
+  ): Promise<P> {
+    return this.request<P>("put", url, params, config);
+  }
+  /** 单独抽离的post工具函数 */
+  public delete<T, P>(
+    url: string,
+    params?: AxiosRequestConfig<T>,
+    config?: PureHttpRequestConfig
+  ): Promise<P> {
+    return this.request<P>("delete", url, params, config);
+  }
+}
+// url
 export const http = new PureHttp();

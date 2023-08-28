@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, toRefs, watch } from "vue";
-import { ElTree } from "element-plus";
+import { ElTree, ElMessage } from "element-plus";
+import { getTree } from "@/api/resource";
+import { getRoleResource, updateRoleResources } from "@/api/role";
 interface Tree {
   id: number;
-  label: string;
+  name: string;
+  title: string;
   children?: Tree[];
 }
 defineOptions({
@@ -17,19 +20,39 @@ const props = defineProps({
 
 const { show, roleId } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref<boolean>(false);
 watch(show, () => {
   visiable.value = show.value;
   if (visiable.value) {
-    defaultSelected.value = [5, 7];
+    loading.value = true;
+    // 获取菜单树
+    getTree()
+      .then((data: any) => {
+        tree.value = data;
+        getRoleResource(roleId!.value).then((list: any) => {
+          const arr: any = [];
+          list.forEach(m => {
+            arr.push(m.menuId);
+          });
+          defaultSelected.value = arr;
+          loading.value = false;
+        });
+      })
+      .catch(() => {
+        loading.value = false;
+      });
+  } else {
+    tree.value = [];
+    defaultSelected.value = [];
   }
-  console.log(roleId.value);
+  console.log(roleId?.value);
 });
 
-watch(roleId, () => {
-  if (roleId.value) {
-    //更新角色菜单
-  }
-});
+// watch(roleId, () => {
+//   if (roleId.value) {
+//     //更新角色菜单
+//   }
+// });
 watch(visiable, () => {
   if (!visiable.value) {
     emits("update:show", false);
@@ -39,81 +62,62 @@ watch(visiable, () => {
 const treeRef = ref<InstanceType<typeof ElTree>>();
 const defaultProps = {
   children: "children",
-  label: "label"
+  label: "title"
 };
 const defaultSelected = ref<number[]>([]);
 // const setCheckedKeys = (arr: number[] = []) => {
 //   selected = arr;
 //   treeRef.value!.setCheckedKeys(arr, false);
 // };
-const tree: Tree[] = [
-  {
-    id: 1,
-    label: "Level one 1",
-    children: [
-      {
-        id: 4,
-        label: "Level two 1-1"
-      }
-    ]
-  },
-  {
-    id: 2,
-    label: "Level one 2",
-    children: [
-      {
-        id: 5,
-        label: "Level two 2-1"
-      },
-      {
-        id: 6,
-        label: "Level two 2-2"
-      }
-    ]
-  },
-  {
-    id: 3,
-    label: "Level one 3",
-    children: [
-      {
-        id: 7,
-        label: "Level two 3-1"
-      },
-      {
-        id: 8,
-        label: "Level two 3-2"
-      }
-    ]
-  }
-];
+const tree = ref<Tree[]>([]);
+const btnLoading = ref<boolean>(false);
 const submitForm = () => {
-  const data = {
-    roleId: roleId.value,
-    menuIds: selected
-  };
-  console.log("submit!", data);
+  if (selected.value.length == 0) {
+    return;
+  }
+  btnLoading.value = true;
+  const data: any = [];
+  selected.value.forEach(menuId => {
+    console.log("submit!", data);
+    data.push({
+      roleId: roleId!.value,
+      menuId
+    });
+  });
+  updateRoleResources(null, { data })
+    .then(() => {
+      ElMessage({
+        message: "资源权限授权成功！",
+        type: "success"
+      });
+      visiable.value = false;
+      btnLoading.value = false;
+    })
+    .catch(() => {
+      btnLoading.value = false;
+    });
 };
 const selectAll = () => {
-  const arr = [];
-  tree.forEach(node => {
+  const arr: any = [];
+  tree.value.forEach(node => {
     if (node.children) {
-      node.children.forEach(n => {
+      node.children.forEach((n: any) => {
         arr.push(n.id);
       });
     }
   });
-  selected = arr;
+  selected.value = arr;
   treeRef.value!.setCheckedKeys(arr, false);
 };
 const resetChecked = () => {
   treeRef.value!.setCheckedKeys([], false);
-  selected = [];
+  selected.value = [];
 };
-let selected: number[] = [];
+let selected = ref<number[]>([]);
 const check = (node: any, status: any) => {
   const { checkedNodes, checkedKeys } = status;
   console.log(checkedNodes, checkedKeys);
-  const arr = [];
+  const arr: any = [];
   for (let i = 0; i < checkedNodes.length; i++) {
     const temp = checkedNodes[i];
     console.log(temp);
@@ -122,35 +126,53 @@ const check = (node: any, status: any) => {
       arr.push(temp.id);
     }
   }
-  selected = arr;
+  selected.value = arr;
   console.log("选中的id", arr);
 };
 </script>
 
 <template>
-  <el-dialog v-model="visiable" :title="'设置角色资源权限'" class="form" style="">
-    <div class="buttons">
-      <el-button @click="selectAll()">全选</el-button>
-      <el-button @click="resetChecked()">重置</el-button>
+  <el-dialog
+    v-model="visiable"
+    :title="'设置角色资源权限'"
+    class="form"
+    style=""
+  >
+    <div v-loading="loading">
+      <div class="buttons">
+        <el-button @click="selectAll()">全选</el-button>
+        <el-button @click="resetChecked()">重置</el-button>
+      </div>
+      <el-tree
+        ref="treeRef"
+        :data="tree"
+        show-checkbox
+        node-key="id"
+        highlight-current
+        :props="defaultProps"
+        @check="check"
+        :default-checked-keys="defaultSelected"
+      />
     </div>
-    <el-tree
-      ref="treeRef"
-      :data="tree"
-      show-checkbox
-      node-key="id"
-      highlight-current
-      :props="defaultProps"
-      @check="check"
-      :default-checked-keys="defaultSelected"
-    />
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="visiable = false">Cancel</el-button>
-        <el-button type="primary" @click="submitForm()"> Confirm </el-button>
+        <el-button @click="visiable = false">取消</el-button>
+        <el-button
+          type="primary"
+          :disabled="btnLoading || selected.length == 0"
+          v-loading="btnLoading"
+          @click="submitForm()"
+        >
+          提交
+        </el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.buttons {
+  margin-bottom: 15px;
+}
+</style>

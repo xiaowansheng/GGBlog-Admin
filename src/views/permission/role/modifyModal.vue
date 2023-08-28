@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { FormInstance, FormRules } from "element-plus";
+import { ElMessage } from "element-plus";
 import { reactive, ref, toRefs, watch } from "vue";
-import { Role } from "@/api/role";
+
+import { Role, addRole, updateRole } from "@/api/role";
 defineOptions({
   name: "RoleAddAndModifyModal"
 });
-const emits = defineEmits(["update:show"]);
+const emits = defineEmits(["update:show", "refresh"]);
 const props = defineProps({
   show: Boolean,
   item: null
@@ -24,10 +26,7 @@ watch(show, () => {
     form.disable = item.value.disable;
   } else {
     form.id = null;
-    form.name = "";
-    form.label = "";
-    form.description = "";
-    form.disable = 0;
+    resetForm()
   }
   visiable.value = show.value;
 });
@@ -44,7 +43,7 @@ const form = reactive<Role>({
   disable: 0
 });
 const formRef = ref<FormInstance>();
-const rules = reactive<FormRules<typeof form>>({
+const rules = reactive<FormRules>({
   name: [
     {
       validator: (rule: any, value: any, callback: any) => {
@@ -82,7 +81,25 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
-      console.log("submit!");
+      if (form.id) {
+        updateRole(null, { data: form }).then(() => {
+          ElMessage({
+            message: "修改成功！",
+            type: "success"
+          });
+          emits("refresh");
+          visiable.value = false;
+        });
+      } else {
+        addRole(null, { data: form }).then(() => {
+          ElMessage({
+            message: "保存成功！",
+            type: "success"
+          });
+          emits("refresh");
+          visiable.value = false;
+        });
+      }
     } else {
       console.log("error submit!");
       return false;
@@ -90,9 +107,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
   });
 };
 
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
+const resetForm = () => {
+
+    form.name = "";
+    form.label = "";
+    form.description = "";
+    form.disable = 0;
 };
 </script>
 
@@ -121,7 +141,13 @@ const resetForm = (formEl: FormInstance | undefined) => {
         <el-input v-model="form.label" />
       </el-form-item>
       <el-form-item label="角色描述">
-        <el-input v-model="form.description" />
+        <el-input
+          v-model="form.description"
+          :rows="2"
+          type="textarea"
+          placeholder=""
+        />
+        <!-- <el-input v-model="form.description" /> -->
       </el-form-item>
       <el-form-item label="是否禁用">
         <el-switch
@@ -134,9 +160,10 @@ const resetForm = (formEl: FormInstance | undefined) => {
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="visiable = false">Cancel</el-button>
+        <el-button @click="visiable = false">取消</el-button>
+        <el-button @click="resetForm(formRef)">重置</el-button>
         <el-button type="primary" @click="submitForm(formRef)">
-          Confirm
+          提交
         </el-button>
       </span>
     </template>
