@@ -16,7 +16,7 @@ const props = defineProps({
   item: null
 });
 
-const { show, isChildren, parentId, item } = toRefs(props);
+const { show, isChildren, parentId, parentName,item } = toRefs(props);
 const visiable = ref(show.value);
 watch(show, () => {
   // console.log(item?.value);
@@ -78,6 +78,18 @@ const rules = reactive<FormRules>({
           callback();
         } else {
           callback(new Error("菜单标题不能为空!"));
+        }
+      },
+      trigger: "blur"
+    }
+  ],
+  icon: [
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (value) {
+          callback();
+        } else {
+          callback(new Error("菜单图标不能为空!"));
         }
       },
       trigger: "blur"
@@ -171,7 +183,7 @@ const resetForm = () => {
       <el-form-item v-if="!form.id" label="菜单类型">
         <el-input :value="isChildren ? '子目录菜单' : '根目录菜单'" disabled />
       </el-form-item>
-      <el-form-item v-if="!form.id && parentName" label="父菜单名称">
+      <el-form-item v-if="isChildren" label="父菜单名称">
         <el-input :value="parentName" disabled />
       </el-form-item>
       <el-form-item v-if="form.id" label="菜单ID">
@@ -183,7 +195,7 @@ const resetForm = () => {
       <el-form-item label="菜单名称" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item label="菜单图标">
+      <el-form-item label="菜单图标" prop="icon">
         <!-- <el-input v-model="form.icon" /> -->
         <IconSelect v-model="form.icon" />
       </el-form-item>

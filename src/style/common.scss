@@ -39,7 +39,7 @@
 
 // 表格筛选栏
 .content {
-    $op-height:32px;
+  $op-height: 32px;
   .table-operation {
     display: flex;
     flex-direction: row;
@@ -51,13 +51,13 @@
     .op {
       display: flex;
       flex-wrap: nowrap;
-       white-space: nowrap; /* 让文字不换行 */
-      label{
+      white-space: nowrap; /* 让文字不换行 */
+      label {
         margin-right: 12px;
         line-height: $op-height;
       }
       // 表单空间行高和label一样
-      div{
+      div {
         height: $op-height;
       }
     }
@@ -71,3 +71,55 @@
   gap: 10px;
 }
 
+// 系统配置信息展示
+// 表格筛选栏
+.content {
+  $op-height: 32px;
+  .information {
+    // display: flex;
+    // flex-direction: row;
+    // flex-wrap: wrap;
+    // gap: 10px;
+    // .op:not(:last-of-type) {
+    //   margin-right: 25px;
+    // }
+    .config {
+      margin: 0 auto;
+      max-width: 768px;
+      display: flex;
+      flex-wrap: nowrap;
+      white-space: nowrap; /* 让文字不换行 */
+      font-size: 18px;
+      .el-input,
+      .el-textarea {
+        min-width: 150px;
+        // max-width: 350px;
+        // padding: 15px 5px;
+        input,
+        textarea {
+          font-size: 18px;
+        }
+      }
+      label,
+      textarea {
+        margin-right: 12px;
+        // min-width: 120px;
+        line-height: $op-height;
+      }
+      // input空间行高和label一样 ==> 会导致其他类型的表单结构错乱
+      // div {
+      //   height: $op-height;
+      // }
+    }
+    .config:not(:first-of-type) {
+      margin-top: 15px;
+    }
+  }
+  .update {
+    .el-button {
+      margin: 0 25px;
+    }
+    margin-top: 18px;
+    text-align: center;
+  }
+}

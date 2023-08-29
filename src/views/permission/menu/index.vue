@@ -49,15 +49,15 @@ const modifyRef = ref();
 const showDialog = ref(false);
 const selected = ref<any>();
 const parentId = ref<number>();
-const parentName = ref<string>();
+const parentName = ref<string>("");
 const isChildren = ref(false);
 const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
   console.log("11");
   if (isAdd) {
-    if (item) {
+    if (isChild) {
       // 添加子菜单
       parentId.value = item.id;
-      parentName.value = item.label;
+      parentName.value = item.title;
       selected.value = null;
     } else {
       // 添加根菜单

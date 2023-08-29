@@ -61,7 +61,7 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
     if (item) {
       // 添加子菜单
       parentId.value = item.id;
-      parentName.value = item.label;
+      parentName.value = item.name;
       selected.value = null;
     } else {
       // 添加根菜单

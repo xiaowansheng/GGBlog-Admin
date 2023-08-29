@@ -78,12 +78,12 @@ const submitForm = () => {
   btnLoading.value = true;
   const data: any = [];
   selected.value.forEach(menuId => {
-    console.log("submit!", data);
     data.push({
       roleId: roleId!.value,
       menuId
     });
   });
+    console.log("submit!", data);
   updateRoleMenus(null, { data })
     .then(() => {
       ElMessage({

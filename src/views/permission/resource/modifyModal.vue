@@ -15,17 +15,22 @@ const props = defineProps({
   item: null
 });
 
-const { show, isChildren, parentId, item } = toRefs(props);
+const { show, isChildren, parentId, parentName, item } = toRefs(props);
 const visiable = ref(show.value);
 watch(show, () => {
   // console.log(item?.value);
-  if (item?.value != null) {
+  if (item?.value) {
     form.id = item.value.id;
-    resetForm()
+    form.name = item.value.name;
+    form.requestMethod = item.value.requestMethod;
+    form.path = item.value.path;
+    form.parentId = parentId.value;
+    form.open = item.value.open;
+    form.description = item.value.description;
   } else {
-    resetForm();
     form.id = null;
-    form.parentId=parentId?.value
+    resetForm();
+    form.parentId = parentId?.value;
   }
   visiable.value = show.value;
 });
@@ -51,7 +56,7 @@ const rules = reactive<FormRules>({
         if (value) {
           callback();
         } else {
-          callback(new Error("资源称不能为空!"));
+          callback(new Error("资源名称不能为空!"));
         }
       },
       trigger: "blur"
@@ -60,7 +65,7 @@ const rules = reactive<FormRules>({
   requestMethod: [
     {
       validator: (rule: any, value: any, callback: any) => {
-        if (!isChildren||value) {
+        if (!isChildren || value) {
           callback();
         } else {
           callback(new Error("请求方式不能为空!"));
@@ -80,7 +85,7 @@ const rules = reactive<FormRules>({
       },
       trigger: "blur"
     }
-  ],
+  ]
 });
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
@@ -141,29 +146,29 @@ const resetForm = () => {
       <el-form-item v-if="!form.id" label="资源类型">
         <el-input :value="isChildren ? '接口' : '模块'" disabled />
       </el-form-item>
-      <el-form-item v-if="!form.id && parentName" label="模块">
+      <el-form-item v-if="isChildren" label="模块名称">
         <el-input :value="parentName" disabled />
       </el-form-item>
       <el-form-item v-if="form.id" label="模块ID">
         <el-input v-model="form.id" disabled />
       </el-form-item>
-      <el-form-item :label="isChildren?'接口名称':'模块名称'" prop="name">
+      <el-form-item :label="isChildren ? '接口名称' : '模块名称'" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item v-if="isChildren" label="请求方法" prop="requestMethod">
-                <el-select
-              v-model="form.requestMethod"
-              placeholder="选择请求方法"
-              size="default"
-              style="min-width: 120px"
-            >
-              <el-option label="GET" value="GET" />
-              <el-option label="POST" value="POST" />
-              <el-option label="PUT" value="PUT" />
-              <el-option label="DELETE" value="DELETE" />
-            </el-select>
+        <el-select
+          v-model="form.requestMethod"
+          placeholder="选择请求方法"
+          size="default"
+          style="min-width: 120px"
+        >
+          <el-option label="GET" value="GET" />
+          <el-option label="POST" value="POST" />
+          <el-option label="PUT" value="PUT" />
+          <el-option label="DELETE" value="DELETE" />
+        </el-select>
       </el-form-item>
-      <el-form-item   label="访问路径" prop="path">
+      <el-form-item label="访问路径" prop="path">
         <el-input v-model="form.path" />
       </el-form-item>
       <el-form-item label="描述信息">

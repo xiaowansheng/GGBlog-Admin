@@ -28,8 +28,19 @@ const params = {
 };
 const queryParams = reactive({
   id: "",
+  requestMethod: "",
+  requestUrl: "",
+  module: "",
+  callingMethod: "",
+  errorName: "",
+  version: ""
 });
 const list = ref<ErrorDto[]>([]);
+
+const getCallMethod = (method: string) => {
+  const arr = method.split('.');
+  return arr[arr.length-2]+'.'+arr[arr.length-1]
+}
 
 // const detailRef = ref();
 const showDialog = ref(false);
@@ -51,7 +62,7 @@ const show = (item: ErrorDto = null) => {
         </div>
       </template>
       <div class="content">
-        <!-- <div class="table-operation">
+        <div class="table-operation">
           <div class="op">
             <label>错误ID:</label>
             <el-input
@@ -100,17 +111,26 @@ const show = (item: ErrorDto = null) => {
             />
           </div>
           <div class="op">
-            <label>操作类型:</label>
+            <label>调用方法:</label>
             <el-input
               style="min-width: 200px"
               @change="getData()"
-              v-model="queryParams.type"
+              v-model="queryParams.callingMethod"
               placeholder="输入操作类型"
               size="default"
             />
           </div>
-
-        </div> -->
+          <div class="op">
+            <label>错误名称:</label>
+            <el-input
+              style="min-width: 200px"
+              @change="getData()"
+              v-model="queryParams.errorName"
+              placeholder="输入错误名称"
+              size="default"
+            />
+          </div>
+        </div>
         <el-table border :data="list" style="width: 100%">
           <el-table-column prop="id" :align="'center'" label="ID" width="50" />
           <!-- <el-table-column
@@ -122,8 +142,8 @@ const show = (item: ErrorDto = null) => {
           <el-table-column
             prop="userName"
             :align="'center'"
-            label="用户名称"
-            width="130"
+            label="用户名"
+            width="110"
           />
           <el-table-column :align="'center'" label="请求方法" width="80">
             <template #default="scope">
@@ -140,19 +160,21 @@ const show = (item: ErrorDto = null) => {
             prop="module"
             :align="'center'"
             label="访问模块"
-            width="130"
+            width="140"
           />
           <el-table-column
             prop="callingMethod"
             :align="'center'"
             label="调用方法"
-            width="130"
-          />
+            width="150"
+          >
+            <template #default="scope">{{ getCallMethod(scope.row.callingMethod) }} </template>
+          </el-table-column>
           <el-table-column
             prop="errorName"
             :align="'center'"
             label="错误名称"
-            width="150"
+            width="200"
           >
             <!-- <template #default="scope">
               <el-tag type="success">{{ scope.row.type }}</el-tag>
@@ -210,7 +232,7 @@ const show = (item: ErrorDto = null) => {
             prop="createTime"
             :align="'center'"
             label="创建时间"
-            width="180"
+            width="160"
           />
           <el-table-column
             fixed="right"
@@ -227,7 +249,7 @@ const show = (item: ErrorDto = null) => {
           </el-table-column>
         </el-table>
         <el-pagination
-          :hide-on-single-page="true"
+          :hide-on-single-page="false"
           background
           v-model:current-page="params.page"
           v-model:page-size="params.limit"

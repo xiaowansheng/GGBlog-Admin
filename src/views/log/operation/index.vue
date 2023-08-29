@@ -257,7 +257,7 @@ const show = (item: OperationDto = null) => {
           </el-table-column>
         </el-table>
         <el-pagination
-          :hide-on-single-page="true"
+          :hide-on-single-page="false"
           background
           v-model:current-page="params.page"
           v-model:page-size="params.limit"
