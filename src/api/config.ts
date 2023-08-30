@@ -12,13 +12,12 @@ export interface ConfigDto {
 }
 
 export interface Config {
-  id: number |null;
+  id: number | null;
   name: string;
   label: string;
   value: string;
   description: string;
 }
-
 
 /**
  * 修改配置信息
@@ -54,6 +53,118 @@ export const getMenuConfig = (params?: any, config?: any) => {
 export const getWebsiteConfig = (params?: any, config?: any) => {
   return http.get<any, Result<ConfigDto>>(
     "/website/config/information",
+    params,
+    config
+  );
+};
+
+/**
+ * 获取作者信息
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getAuthorConfig = (params?: any, config?: any) => {
+  return http.get<any, Result<ConfigDto>>(
+    "/website/config/author/info",
+    params,
+    config
+  );
+};
+
+/**
+ * 获取作者社交方式
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getContactConfig = (params?: any, config?: any) => {
+  return http.get<any, Result<ConfigDto>>(
+    "/website/config/author/contact",
+    params,
+    config
+  );
+};
+
+/**
+ * 获取登录配置
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getLoginConfig = (params?: any, config?: any) => {
+  return http.get<any, Result<ConfigDto>>(
+    "/website/config/login/thirdparty",
+    params,
+    config
+  );
+};
+
+/**
+ * 获取登录配置
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getModuleConfig = (params?: any, config?: any) => {
+  return http.get<any, Result<ConfigDto>>(
+    "/website/config/component",
+    params,
+    config
+  );
+};
+
+/**
+ * 获取隐私和安全配置
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getPrivacyConfig = (params?: any, config?: any) => {
+  return http.get<any, Result<ConfigDto>>(
+    "/website/config/privacy",
+    params,
+    config
+  );
+};
+
+/**
+ * 获取系统通知配置
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getNoticeConfig = (params?: any, config?: any) => {
+  return http.get<any, Result<ConfigDto>>(
+    "/website/config/notice",
+    params,
+    config
+  );
+};
+
+/**
+ * 获取系统通知配置
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getAvatarConfig = (params?: any, config?: any) => {
+  return http.get<any, Result<ConfigDto>>(
+    "/website/config/avatar",
+    params,
+    config
+  );
+};
+
+/**
+ * 获取打赏配置
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getRewardConfig = (params?: any, config?: any) => {
+  return http.get<any, Result<ConfigDto>>(
+    "/website/config/reward",
     params,
     config
   );

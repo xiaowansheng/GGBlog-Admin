@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: "informationLine",
     title: $t("menus.hsabnormal"),
-    // showLink: false,
+    showLink: false,
     rank: 9
   },
   children: [
@@ -15,7 +15,7 @@ export default {
       name: "403",
       component: () => import("@/views/error/403.vue"),
       meta: {
-        title: $t("menus.hsfourZeroOne")
+        title: $t("menus.hsfourZeroOne"),
       }
     },
     {

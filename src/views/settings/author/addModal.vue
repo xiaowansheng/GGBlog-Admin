@@ -1,31 +1,20 @@
 <script setup lang="ts">
 import { FormInstance, FormRules } from "element-plus";
 import { reactive, ref, toRefs, watch } from "vue";
-
-import Menu from "./menu";
-import SinglePictureUpload from "@/components/upload/SinglePicture/index.vue";
+import { Contact } from "./contact.vue";
 defineOptions({
   name: "MenuAddAndModifyModal"
 });
 const emits = defineEmits(["update:show", "updateData"]);
 const props = defineProps({
   show: Boolean,
-  isAdd: Boolean,
   item: null
 });
 
-const { show, isAdd, item } = toRefs(props);
+const { show, item } = toRefs(props);
 const visiable = ref(show.value);
 watch(show, () => {
-  // console.log(item?.value);
-
-  if (!isAdd.value && item?.value) {
-    form.name = item.value.name;
-    form.label = item.value.label;
-    form.cover = item.value.cover;
-  } else {
-    resetForm();
-  }
+  resetForm();
   visiable.value = show.value;
 });
 watch(visiable, () => {
@@ -33,10 +22,11 @@ watch(visiable, () => {
     emits("update:show", false);
   }
 });
-const form = reactive<Menu>({
+const form = reactive<Contact>({
   name: "",
-  cover: "",
-  label: ""
+  label: "",
+  value: "",
+  show: 1
 });
 const formRef = ref<FormInstance>();
 const rules = reactive<FormRules>({
@@ -46,7 +36,7 @@ const rules = reactive<FormRules>({
         if (value) {
           callback();
         } else {
-          callback(new Error("菜单名称不能为空!"));
+          callback(new Error("社交平台名称不能为空!"));
         }
       },
       trigger: "blur"
@@ -58,24 +48,12 @@ const rules = reactive<FormRules>({
         if (value) {
           callback();
         } else {
-          callback(new Error("菜单标签不能为空!"));
+          callback(new Error("平台标题不能为空!"));
         }
       },
       trigger: "blur"
     }
   ],
-  cover: [
-    {
-      validator: (rule: any, value: any, callback: any) => {
-        if (value) {
-          callback();
-        } else {
-          callback(new Error("菜单封面不能为空!"));
-        }
-      },
-      trigger: "blur"
-    }
-  ]
 });
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
@@ -90,14 +68,14 @@ const submitForm = (formEl: FormInstance | undefined) => {
 const resetForm = () => {
   form.label = "";
   form.name = "";
-  form.cover = "";
+  form.value = "http://";
 };
 </script>
 
 <template>
   <el-dialog
     v-model="visiable"
-    :title="isAdd ? '添加菜单配置' : '修改菜单配置'"
+    title="添加菜单配置"
     class="form"
     style=""
   >
@@ -109,15 +87,26 @@ const resetForm = () => {
       label-position="left"
       status-icon
     >
-      <el-form-item label="菜单名称" prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item label="菜单标签" prop="label">
+      <el-form-item label="社交标题" prop="label">
         <el-input v-model="form.label" />
       </el-form-item>
-      <el-form-item label="菜单封面" prop="cover">
-        <!-- <el-input v-model="form.cover" /> -->
-        <SinglePictureUpload v-model="form.cover" :dir="'cover'" />
+      <el-form-item label="社交名称" prop="name">
+        <el-input v-model="form.name" />
+      </el-form-item>
+      <el-form-item label="跳转链接" prop="value">
+        <el-input v-model="form.value" />
+      </el-form-item>
+      <el-form-item label="是否展示" prop="value">
+               <el-switch
+        class="swich"
+          v-model="form.show"
+          inline-prompt
+          active-text="show"
+          inactive-text="hidden"
+          :active-value="1"
+          :inactive-value="0"
+          size="large"
+        />
       </el-form-item>
     </el-form>
     <template #footer>

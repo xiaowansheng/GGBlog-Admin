@@ -16,7 +16,7 @@ const ossUrl = import.meta.env.VITE_GLOB_OSS_URL;
 // console.log(ossUrl);
 
 defineOptions({
-  name: "SinglePicture"
+  name: "SinglePictureUpload"
 });
 const props = defineProps({
   value: String,

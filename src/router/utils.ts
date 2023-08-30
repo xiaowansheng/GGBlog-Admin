@@ -245,13 +245,15 @@ function convertToRoute(data: any) {
     redirect: data.redirect,
     meta: {
       title: data.meta.title,
-      icon: data.meta.icon
+      icon: data.meta.icon,
+      showLink: data.meta.hideMenu?false:true
     }
   };
   if (data.parentId && data.parentId != 0) {
     route.component = data.component;
-    route.meta.showLink = true;
     route.meta.keepAlive = true;
+    // 是否显示父级菜单
+    route.showParent = true;;
   }
   return route;
 }

@@ -57,9 +57,6 @@ const menuAuthorizationShow = ref<boolean>(false);
 const resourceAuthorizationShow = ref<boolean>(false);
 const selectRoleId = ref<number>();
 const updateR = (item: RoleDto) => {
-  
-  // TODO BUG 页面初始加载时每一条都会执行一次
-  return
   const form = {
     id: item.id,
     status: item.disable
@@ -92,7 +89,7 @@ const deleteR = (item: RoleDto) => {
       <template #header>
         <div class="card-header">
           <span class="title">角色信息</span>
-          <el-button class="button" @click="getAllRoles()">刷新数据</el-button>
+          <el-button class="button" @click="getData()">刷新数据</el-button>
         </div>
       </template>
       <div class="content">
@@ -122,7 +119,7 @@ const deleteR = (item: RoleDto) => {
             <template #default="scope">
               <el-switch
                 v-model="scope.row.disable"
-                @change="updateR(scope.row)"
+                @click="updateR(scope.row)"
                 :active-value="1"
                 :inactive-value="0"
               /> </template

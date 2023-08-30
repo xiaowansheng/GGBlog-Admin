@@ -34,9 +34,6 @@ const params = {
 const queryParams = reactive({});
 const list = ref<ResourceDto[]>([]);
 const updateStatus = (item: ResourceDto) => {
-  
-  // TODO BUG 页面初始加载时每一条都会执行一次
-  return
   updateResourceStatus(null, {
     data: {
       id: item.id,
@@ -126,7 +123,7 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
           <el-table-column :align="'center'" label="是否开放" width="100">
             <template #default="scope">
               <el-switch
-              @change="updateStatus(scope.row)"
+              @click="updateStatus(scope.row)"
                 v-model="scope.row.open"
                 :active-value="1"
                 :inactive-value="0"

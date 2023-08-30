@@ -29,8 +29,6 @@ const params = {
 const list = ref<MenuDto[]>([]);
 
 const updateStatus = (item: MenuDto) => {
-  // TODO BUG 页面初始加载时每一条都会执行一次
-  return
   updateMenuStatus(null, {
     data: {
       id: item.id,
@@ -146,8 +144,8 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
           <el-table-column :align="'center'" label="是否隐藏" width="100">
             <template #default="scope">
               <el-switch
-                @change="updateStatus(scope.row)"
-                v-model="scope.row.disable"
+                @click="updateStatus(scope.row)"
+                v-model="scope.row.hidden"
                 :active-value="1"
                 :inactive-value="0"
               /> </template
