@@ -30,6 +30,15 @@ export const getAllRoles = (params?: any, config?: any) => {
 };
 
 /**
+ * 获取所有的角色简略信息
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getAllSimpleRoles = (params?: any, config?: any) => {
+  return http.get<any, Result<RoleDto[]>>("/role/simple/list", params, config);
+};
+/**
  * 添加角色信息
  * @param params
  * @param config
