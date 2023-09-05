@@ -18,7 +18,6 @@ const pathResolve = (dir: string): string => {
 const alias: Record<string, string> = {
   "@": pathResolve("src"),
   "@build": pathResolve("build"),
-  "api": pathResolve("src/api")
 };
 
 const { dependencies, devDependencies, name, version } = pkg;

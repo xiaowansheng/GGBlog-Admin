@@ -264,8 +264,3 @@ const show = (item: ErrorDto = null) => {
     <error-detail-modal v-model:show="showDialog" :item="selected" />
   </div>
 </template>
-
-<style lang="scss" scoped>
-.card-header {
-}
-</style>

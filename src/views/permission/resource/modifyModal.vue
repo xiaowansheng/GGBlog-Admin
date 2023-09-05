@@ -194,5 +194,3 @@ const resetForm = () => {
     </template>
   </el-dialog>
 </template>
-
-<style lang="scss" scoped></style>

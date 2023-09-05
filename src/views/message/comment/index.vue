@@ -320,7 +320,7 @@ const deleteR = (item: CommentDto) => {
           <el-table-column :align="'center'" label="审核情况" width="100">
             <template #default="scope">
               <el-tag v-if="scope.row.review == 1" type="success">通过</el-tag>
-              <el-tag v-if="scope.row.review == -1" type="error">未通过</el-tag>
+              <el-tag v-if="scope.row.review == -1" type="danger">未通过</el-tag>
               <el-tag v-if="scope.row.review == 0" type="warning"
                 >待审核</el-tag
               >

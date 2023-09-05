@@ -34,6 +34,8 @@ export const getServerConfig = async (app: App): Promise<undefined> => {
     url: `${VITE_PUBLIC_PATH}serverConfig.json`
   })
     .then(({ data: config }) => {
+      console.log("config:",config);
+      
       let $config = app.config.globalProperties.$config;
       // 自动注入项目配置
       if (app && $config && typeof config === "object") {

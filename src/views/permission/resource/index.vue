@@ -106,7 +106,7 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
           />
           <el-table-column :align="'center'" label="请求方法" width="100">
             <template #default="scope">
-              <el-tag type="default">{{ scope.row.requestMethod }}</el-tag>
+              <el-tag>{{ scope.row.requestMethod }}</el-tag>
             </template></el-table-column
           >
           <el-table-column
@@ -186,9 +186,6 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
 </template>
 
 <style lang="scss" scoped>
-.card-header {
-}
-
 // 表格中的图标居中
 .el-table {
   svg {

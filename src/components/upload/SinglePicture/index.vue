@@ -11,7 +11,7 @@ import {
   UploadRawFile
 } from "element-plus";
 import { reactive, ref, toRefs, watch } from "vue";
-import { genFileId } from 'element-plus'
+import { genFileId } from "element-plus";
 const ossUrl = import.meta.env.VITE_GLOB_OSS_URL;
 // console.log(ossUrl);
 
@@ -86,7 +86,9 @@ const remove = () => {
   url.value = "";
   console.log("移除图片~~");
 };
-const beforeUpload = (rawFile: UploadRawFile): Promise<boolean> => {
+const beforeUpload: UploadProps["beforeUpload"] = (
+  rawFile: UploadRawFile
+): Promise<boolean> => {
   // TODO 上传时form为空
   return new Promise((resolve, reject) => {
     getOss(dir.value)
@@ -110,22 +112,21 @@ const beforeUpload = (rawFile: UploadRawFile): Promise<boolean> => {
       });
   });
 };
-const upload = ref<UploadInstance>()
-const handleExceed: UploadProps['onExceed'] = (files) => {
-  upload.value!.clearFiles()
-  const file = files[0] as UploadRawFile
-  file.uid = genFileId()
-  upload.value!.handleStart(file)
-}
+const upload = ref<UploadInstance>();
+const handleExceed: UploadProps["onExceed"] = files => {
+  upload.value!.clearFiles();
+  const file = files[0] as UploadRawFile;
+  file.uid = genFileId();
+  upload.value!.handleStart(file);
+};
 const progress = () => {
   console.log("on-progress");
-  
-}
+};
 </script>
 
 <template>
   <el-upload
-  ref="upload"
+    ref="upload"
     class="single-upload"
     name="file"
     method="post"
@@ -156,4 +157,3 @@ const progress = () => {
   </el-upload>
 </template>
 
-<style lang="scss" scoped></style>

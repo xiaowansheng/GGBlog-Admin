@@ -20,6 +20,3 @@ const activeName = ref("info");
     </el-tabs>
   </div>
 </template>
-
-<style lang="scss" scoped>
-</style>

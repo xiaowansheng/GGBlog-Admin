@@ -517,7 +517,7 @@ onBeforeUnmount(() => {
       <IconifyIconOffline :icon="ArrowLeftSLine" @click="handleScroll(200)" />
     </span>
     <div ref="scrollbarDom" class="scroll-container">
-      <div class="tab select-none" ref="tabDom" :style="getTabStyle">
+      <div class="select-none tab" ref="tabDom" :style="getTabStyle">
         <div
           :ref="'dynamic' + index"
           v-for="(item, index) in multiTags"

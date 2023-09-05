@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {  getMenuConfig, updateConfig } from "@/api/config";
+import { getMenuConfig, updateConfig } from "@/api/config";
 import Menu from "./menu";
 import { onBeforeMount, ref } from "vue";
 import modifyModal from "./modifyModal.vue";
 import { ElMessage } from "element-plus";
-import {ConfigJson} from '../config'
+import { ConfigJson } from "../config";
 
 defineOptions({
   name: "MainPage"
@@ -14,7 +14,7 @@ onBeforeMount(() => {
 });
 const config = ref<ConfigJson<Menu[]> | any>({
   // 防止没有数据时报错
-  value:[]
+  value: []
 });
 const getData = () => {
   getMenuConfig().then((data: any) => {
@@ -104,11 +104,13 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
 
 <style lang="scss" scoped>
 .menu-config {
-  .operation{
+  .operation {
     margin-bottom: 15px;
   }
+
   .menus {
     display: grid;
+
     .item {
       border-radius: 15px;
       // width: 23.5%;
@@ -116,6 +118,7 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
         position: relative;
         width: 100%;
         padding-bottom: 60%;
+
         .img {
           // border-bottom-left-radius: 15px;
           // border-bottom-right-radius: 15px;
@@ -125,7 +128,8 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
     }
   }
 }
-@media screen and (min-width: 992px) {
+
+@media screen and (width >= 992px) {
   .menu-config {
     .menus {
       grid-template-columns: repeat(3, 1fr);
@@ -137,7 +141,8 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
     }
   }
 }
-@media screen and (min-width: 768px) and (max-width: 992px) {
+
+@media screen and (width >= 768px) and (width <= 992px) {
   .menu-config {
     .menus {
       grid-template-columns: repeat(2, 1fr);
@@ -149,15 +154,14 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
     }
   }
 }
-@media screen and (max-width: 768px) {
+
+@media screen and (width <= 768px) {
   .menu-config {
     .menu {
       grid-template-columns: repeat(1, 1fr);
 
       // grid-column-gap:20px;
       grid-row-gap: 15px;
-      .ant-card {
-      }
     }
   }
 }

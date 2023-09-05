@@ -160,6 +160,7 @@ const resetForm = () => {
   form.passsword = "";
   form.password2 = "";
   form.userInfoVo.nickname = "";
+  form.roleIds=[]
 };
 </script>
 
@@ -229,5 +230,3 @@ const resetForm = () => {
     </template>
   </el-dialog>
 </template>
-
-<style lang="scss" scoped></style>

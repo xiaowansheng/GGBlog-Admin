@@ -91,7 +91,7 @@ onBeforeUnmount(() => {
         router
         unique-opened
         mode="vertical"
-        class="outer-most select-none"
+        class="select-none outer-most"
         :collapse="isCollapse"
         :default-active="defaultActive"
         :collapse-transition="false"
@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
           :key="routes.path"
           :item="routes"
           :base-path="routes.path"
-          class="outer-most select-none"
+          class="select-none outer-most"
         />
       </el-menu>
     </el-scrollbar>

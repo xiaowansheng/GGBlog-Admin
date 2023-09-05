@@ -196,8 +196,3 @@ const deleteR = (item: RoleDto) => {
     />
   </div>
 </template>
-
-<style lang="scss" scoped>
-.card-header {
-}
-</style>

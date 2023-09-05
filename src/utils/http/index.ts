@@ -169,6 +169,7 @@ class PureHttp {
     axiosConfig?: PureHttpRequestConfig
   ): Promise<T> {
     console.log("params:", param);
+    console.log("data:", axiosConfig?.data);
     const config = {
       method,
       url,
@@ -178,7 +179,7 @@ class PureHttp {
       },
       ...axiosConfig
     } as PureHttpRequestConfig;
-    console.log("request:", config);
+    // console.log("request:", config);
 
     // 单独处理自定义请求/响应回调
     return new Promise((resolve, reject) => {

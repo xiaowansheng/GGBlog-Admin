@@ -257,6 +257,16 @@ const updateStatus = (item: UserAuthDto) => {
             width="150"
           />
           <el-table-column
+            :align="'center'"
+            label="头像"
+            width="80"
+          >
+        <template #default="{row}">
+              <el-avatar shape="square" :size="50" :fit="'cover'" :src="row.userInfoDto.avatar" />
+
+        </template>
+        </el-table-column>
+          <el-table-column
             prop="userInfoDto.email"
             :align="'center'"
             label="邮箱"
@@ -266,12 +276,6 @@ const updateStatus = (item: UserAuthDto) => {
             prop="userInfoDto.qq"
             :align="'center'"
             label="QQ"
-            width="150"
-          />
-          <el-table-column
-            prop="userInfoDto.avatar"
-            :align="'center'"
-            label="头像"
             width="150"
           />
           <el-table-column
@@ -303,7 +307,7 @@ const updateStatus = (item: UserAuthDto) => {
               >
             </template></el-table-column
           >
-          <el-table-column :align="'center'" label="是否禁用" width="80">
+          <el-table-column :align="'center'" label="是否禁用" width="90">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.disable"
@@ -322,7 +326,7 @@ const updateStatus = (item: UserAuthDto) => {
             prop="userInfoDto.createTime"
             :align="'center'"
             label="创建时间"
-            width="200"
+            width="160"
           />
 
           <el-table-column :align="'center'" label="操作" width="180">

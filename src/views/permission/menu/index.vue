@@ -207,8 +207,6 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
 </template>
 
 <style lang="scss" scoped>
-.card-header {
-}
 
 // 表格中的图标居中
 .el-table {

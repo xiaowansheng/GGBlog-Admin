@@ -46,9 +46,11 @@ export const useMultiTagsStore = defineStore({
     },
     handleTags<T>(
       mode: string,
-      value?: T | multiType,
+      value?: T | multiType | any,
       position?: positionType
     ): T {
+      console.log("this.multiTags", this.multiTags);
+
       switch (mode) {
         case "equal":
           this.multiTags = value;
@@ -110,6 +112,16 @@ export const useMultiTagsStore = defineStore({
           } else {
             this.multiTags.splice(position?.startIndex, position?.length);
           }
+          this.tagsCache(this.multiTags);
+          return this.multiTags;
+        case "spliceById":
+          // 根据组件名称和参数id删除标签页
+          const index = this.multiTags.findIndex(
+            v => v.name === value.name && v.params.id == value.id
+          );
+          if (index === -1) return;
+          this.multiTags.splice(index, 1);
+
           this.tagsCache(this.multiTags);
           return this.multiTags;
         case "slice":

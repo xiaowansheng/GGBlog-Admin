@@ -96,7 +96,7 @@ export const updateUser = (data?: object) => {
 };
 
 /**
- * 修改用户信息
+ * 添加用户信息
  * @param data
  * @returns
  */
