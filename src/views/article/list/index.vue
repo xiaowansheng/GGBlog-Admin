@@ -12,6 +12,9 @@ import { getAllTag } from "@/api/tag";
 import { getContentStatus } from "@/api/common";
 import EditModal from "./EditModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+
+import { useDetail } from "@/hooks/routerUtils";
+const { router } = useDetail();
 defineOptions({
   name: "ArticleList"
 });
@@ -142,6 +145,16 @@ const deleteR = (item: ArticleDto) => {
             />
           </div>
           <div class="op">
+            <label>标题:</label>
+            <el-input
+              style="min-width: 100px"
+              @change="getData()"
+              v-model="queryParams.title"
+              placeholder="输入文章标题"
+              size="default"
+            />
+          </div>
+          <div class="op">
             <label>分类:</label>
             <el-select
               @change="getData()"
@@ -178,16 +191,6 @@ const deleteR = (item: ArticleDto) => {
             </el-select>
           </div>
           <div class="op">
-            <label>标题:</label>
-            <el-input
-              style="min-width: 100px"
-              @change="getData()"
-              v-model="queryParams.title"
-              placeholder="输入文章标题"
-              size="default"
-            />
-          </div>
-          <div class="op">
             <label>文章类型:</label>
             <el-select
               @change="getData()"
@@ -209,7 +212,7 @@ const deleteR = (item: ArticleDto) => {
             <label>文章状态:</label>
             <el-select
               @change="getData()"
-              v-model="queryParams.type"
+              v-model="queryParams.status"
               placeholder="选择文章状态"
               size="default"
               style="min-width: 120px"
@@ -252,7 +255,7 @@ const deleteR = (item: ArticleDto) => {
             width="150"
           />
 
-          <el-table-column :align="'center'" label="封面" width="80">
+          <el-table-column :align="'center'" label="封面" width="180">
             <template #default="{ row }">
               <el-avatar
                 shape="square"
@@ -268,19 +271,19 @@ const deleteR = (item: ArticleDto) => {
               <el-tag>{{ row.categoryDto.name }}</el-tag>
             </template></el-table-column
           >
-          <el-table-column :align="'center'" label="标签" width="100">
+          <el-table-column :align="'center'" label="标签" width="180">
             <template #default="{ row }">
               <el-tag v-for="item in row.tagDtos" :key="item.id">{{
                 item.name
               }}</el-tag>
             </template></el-table-column
           >
-          <el-table-column :align="'center'" label="文章类型" width="150">
+          <el-table-column :align="'center'" label="文章类型" width="110">
             <template #default="{ row }">
               {{ findType(row.type) }}
             </template></el-table-column
           >
-          <el-table-column :align="'center'" label="文章状态" width="150">
+          <el-table-column :align="'center'" label="文章状态" width="110">
             <template #default="{ row }">
               {{ findStatus(row.status) }}
             </template></el-table-column
@@ -300,18 +303,18 @@ const deleteR = (item: ArticleDto) => {
             label="创建时间"
             width="160"
           />
-          <el-table-column :align="'center'" label="操作" width="180">
-            <template #default="scope">
-              <el-button size="default" type="primary" @click="show(scope.row)"
+          <el-table-column :align="'center'" label="操作" width="250">
+            <template #default="{row}">
+              <el-button size="default" type="primary" @click="show(row)"
                 >修改</el-button
               >
-              <el-button size="default" type="primary" @click="show(scope.row)"
+              <el-button size="default" type="primary" @click="router.push({name:'ArticleEdit',params:{id:row.id}})"
                 >编辑</el-button
               >
               <el-button
                 size="default"
                 type="danger"
-                @click="deleteR(scope.row)"
+                @click="deleteR(row)"
                 >删除</el-button
               >
             </template>
@@ -335,6 +338,8 @@ const deleteR = (item: ArticleDto) => {
       v-model:show="showDialog"
       :item="selected"
       @refresh="getData()"
+      :contentStatus="contentStatus"
+      :articleTypes="articleTypes"
     />
   </div>
 </template>

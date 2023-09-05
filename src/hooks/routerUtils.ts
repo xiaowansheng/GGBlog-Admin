@@ -21,7 +21,7 @@ export function useDetail() {
   const getParameter =  route.params;
 
   // 用于页面刷新，重新获取浏览器地址栏参数并保存到标签页
-  const initToDetail = () => {
+  const initToDetail = (title:string=null) => {
     if (getParameter) {
       const parameter = getParameter;
       // ⚠️ 这里要特别注意下，因为vue-router在解析路由参数的时候会自动转化成字符串类型，比如在使用useRoute().route.query或useRoute().route.params时，得到的参数都是字符串类型
@@ -36,7 +36,7 @@ export function useDetail() {
         name: route.name,
         params: parameter,
         meta: {
-          title: `${route.meta.title}-${parameter.id}`
+          title: title?title:`${route.meta.title}-${parameter.id}`
           // 如果使用的是非国际化精简版title可以像下面这么写
           // title: `No.${index} - 详情信息`,
         }

@@ -1,40 +1,35 @@
 <script setup lang="ts">
 import { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
-import { onBeforeMount, reactive, ref, toRefs, watch } from "vue";
-
-import { addUser, updateUser } from "@/api/user";
-import { getAllSimpleRoles } from "@/api/role";
+import { reactive, ref, toRefs, watch } from "vue";
+import { updateSimpleArticle } from "@/api/article";
 defineOptions({
   name: "ArticleEditModal"
 });
 const emits = defineEmits(["update:show", "refresh"]);
 const props = defineProps({
   show: Boolean,
+  contentStatus: null,
+  articleTypes: null,
+
   item: null
 });
 const roles = ref<any>([]);
-onBeforeMount(() => {
-  getAllSimpleRoles().then((data: any) => {
-    roles.value = data;
-  });
-});
-const { show, item } = toRefs(props);
+const { show, item, articleTypes, contentStatus } = toRefs(props);
 const visiable = ref(show.value);
 watch(show, () => {
   if (item?.value) {
     form.id = item.value.id;
-    form.username = item.value.username;
-    form.userInfoVo.id = item.value.userInfoDto.id;
-    form.userInfoVo.nickname = item.value.userInfoDto.nickname;
-    roles.value.forEach(element => {
-      if (item.value.roleNames[0] == element.name) {
-        form.roleIds = [element.id];
-      }
-    });
+    form.title = item.value.title;
+    form.type = item.value.type;
+    form.originalAuthor = item.value.originalAuthor;
+    form.originalTitle = item.value.originalTitle;
+    form.originalUrl = item.value.originalUrl;
+    form.status = item.value.status;
+    form.note = item.value.note;
+    form.top = item.value.top;
   } else {
     form.id = null;
-    form.userInfoVo.id = null;
     resetForm();
   }
   visiable.value = show.value;
@@ -46,79 +41,60 @@ watch(visiable, () => {
 });
 const form = reactive<any>({
   id: null,
-  username: "",
-  passsword: "",
-  password2: "",
-  disable: 0,
-  userInfoVo: {
-    id: null,
-    nickname: ""
-  },
-  roleIds: []
+  title: "",
+  type: "",
+  originalAuthor: "",
+  originalTitle: "",
+  originalUrl: "",
+  status: "",
+  note: "",
+  top: 0
 });
 const formRef = ref<FormInstance>();
 const rules = reactive<FormRules>({
-  username: [
-    {
-      validator: (rule: any, value: any, callback: any) => {
-        if (value || item?.value) {
-          callback();
-        } else {
-          callback(new Error("用户名不能为空!"));
-        }
-      },
-      trigger: "blur"
-    }
-  ],
-  password: [
-    {
-      validator: (rule: any, value: any, callback: any) => {
-        if (value || item?.value) {
-          callback();
-        } else {
-          callback(new Error("用户密码不能为空!"));
-        }
-      },
-      trigger: "blur"
-    }
-  ],
-  password2: [
+  id: [
     {
       validator: (rule: any, value: any, callback: any) => {
         if (value) {
-          if (form.password != form.password2 || item?.value) {
-            callback(new Error("两次密码不一致!"));
-          } else {
-            callback();
-          }
+          callback();
         } else {
-          callback(new Error("请再次输入密码!"));
+          callback(new Error("没有选中文章!"));
         }
       },
       trigger: "blur"
     }
   ],
-  nickname: [
+  title: [
     {
       validator: (rule: any, value: any, callback: any) => {
-        console.log(value);
-        
-        if (form.userInfoVo.nickname || item?.value) {
+        if (value) {
           callback();
         } else {
-          callback(new Error("用户昵称不能为空!"));
+          callback(new Error("标题不能为空!"));
         }
       },
       trigger: "blur"
     }
   ],
-  roles: [
+  type: [
     {
       validator: (rule: any, value: any, callback: any) => {
-        if (form.roleIds[0]) {
+        if (value) {
           callback();
         } else {
-          callback(new Error("用户角色不能为空!"));
+          callback(new Error("请选择文章类型!"));
+        }
+      },
+      trigger: "blur"
+    }
+  ],
+  status: [
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (value) {
+          callback();
+        } else {
+          callback(new Error("请选择文章状态!"));
         }
       },
       trigger: "blur"
@@ -129,25 +105,14 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
-      if (item?.value.id) {
-        updateUser(form).then(() => {
-          ElMessage({
-            message: "修改成功！",
-            type: "success"
-          });
-          emits("refresh");
-          visiable.value = false;
+      updateSimpleArticle(form).then(() => {
+        ElMessage({
+          message: "修改成功！",
+          type: "success"
         });
-      } else {
-        addUser(form).then(() => {
-          ElMessage({
-            message: "保存成功！",
-            type: "success"
-          });
-          emits("refresh");
-          visiable.value = false;
-        });
-      }
+        emits("refresh");
+        visiable.value = false;
+      });
     } else {
       console.log("error submit!");
       return false;
@@ -156,21 +121,15 @@ const submitForm = (formEl: FormInstance | undefined) => {
 };
 
 const resetForm = () => {
-  form.username = "";
-  form.passsword = "";
-  form.password2 = "";
-  form.userInfoVo.nickname = "";
-  form.roleIds=[]
+  form.title = "";
+  form.type = "";
+  form.status = "";
+  form.note = "";
 };
 </script>
 
 <template>
-  <el-dialog
-    v-model="visiable"
-    :title="form.id ? '授予角色信息' : '新增用户信息'"
-    class="form"
-    style=""
-  >
+  <el-dialog v-model="visiable" :title="'修改文章信息'" class="form" style="">
     <el-form
       ref="formRef"
       :model="form"
@@ -179,44 +138,78 @@ const resetForm = () => {
       label-position="left"
       status-icon
     >
-      <el-form-item v-if="form.id" label="用户名：">
-        <el-input :disabled="true" :value="item?.username" />
+      <el-form-item v-if="form.id" label="ID:">
+        <el-input :disabled="true" :value="item?.id" />
       </el-form-item>
-      <el-form-item v-if="form.id" label="用户昵称：">
-        <el-input :disabled="true" :value="item?.userInfoDto.nickname" />
+      <el-form-item label="标题:" prop="title">
+        <el-input v-model="form.title" placeholder="" />
       </el-form-item>
-      <el-form-item v-if="!form.id" label="用户名：" prop="username">
-        <el-input v-model="form.username" placeholder="请输入用户名" />
+      <!-- <el-form-item label="内容:" prop="title">
+        <el-input  v-model="form.content" placeholder="" />
+      </el-form-item> -->
+      <el-form-item label="类型:" prop="type">
+        <!-- <el-input v-model="form.type" placeholder="选择文章类型" /> -->
+        <el-select
+          v-model="form.type"
+          placeholder="选择文章类型"
+          size="default"
+          style="min-width: 120px"
+        >
+          <el-option
+            v-for="item in articleTypes"
+            :key="item.name"
+            :label="item.label + '（' + item.name + '）'"
+            :value="item.name"
+          />
+        </el-select>
       </el-form-item>
-      <el-form-item v-if="!form.id" label="用户昵称：" prop="nickname">
+      <el-form-item
+        v-if="form.type == 'reprint'"
+        label="原作者:"
+        prop="originalAuthor"
+      >
+        <el-input v-model="form.originalAuthor" placeholder="输入文章原作者" />
+      </el-form-item>
+      <el-form-item
+        v-if="form.type == 'reprint'"
+        label="原标题:"
+        prop="originalTitle"
+      >
+        <el-input v-model="form.originalTitle" placeholder="输入文章原标题" />
+      </el-form-item>
+      <el-form-item
+        v-if="form.type == 'reprint'"
+        label="原链接:"
+        prop="originalUrl"
+      >
+        <el-input v-model="form.originalUrl" placeholder="输入文章原链接" />
+      </el-form-item>
+      <el-form-item label="备注:" prop="note">
         <el-input
-          v-model="form.userInfoVo.nickname"
-          placeholder="请输入用户昵称"
+          type="textarea"
+          :rows="2"
+          v-model="form.note"
+          placeholder="输入备注信息"
         />
       </el-form-item>
-      <el-form-item v-if="!form.id" label="密码：" prop="password">
-        <el-input v-model="form.password" placeholder="请输入密码" />
+      <el-form-item label="文章状态:" prop="status">
+        <!-- <el-input v-model="form.status" placeholder="选择文章状态" /> -->
+        <el-select
+          v-model="form.status"
+          placeholder="选择文章状态"
+          size="default"
+          style="min-width: 120px"
+        >
+          <el-option
+            v-for="item in contentStatus"
+            :key="item.name"
+            :label="item.label + '（' + item.name + '）'"
+            :value="item.name"
+          />
+        </el-select>
       </el-form-item>
-      <el-form-item v-if="!form.id" label="密码：" prop="password2">
-        <el-input v-model="form.password2" placeholder="请再次输入密码" />
-      </el-form-item>
-      <el-form-item label="是否禁用：" prop="disable">
-        <el-switch
-          v-model="form.disable"
-          :active-value="1"
-          :inactive-value="0"
-        />
-      </el-form-item>
-      <el-form-item label="用户角色：" prop="roles">
-        <el-radio-group v-model="form.roleIds[0]">
-          <el-radio
-            v-for="item in roles"
-            :key="item.id"
-            :label="item.id"
-            size="large"
-            >{{ item.label }}</el-radio
-          >
-        </el-radio-group>
+      <el-form-item label="是否置顶:" prop="top">
+        <el-switch v-model="form.top" :active-value="1" :inactive-value="0" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -230,4 +223,3 @@ const resetForm = () => {
     </template>
   </el-dialog>
 </template>
-

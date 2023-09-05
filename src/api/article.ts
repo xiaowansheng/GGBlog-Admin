@@ -97,7 +97,7 @@ export const updateArticle = (data?: object) => {
  * @returns
  */
 export const addArticle = (data?: object) => {
-  return http.request<Result<any>>("post", "/aricle", null, { data });
+  return http.request<Result<any>>("post", "/article", null, { data });
 };
 
 /**
@@ -106,7 +106,7 @@ export const addArticle = (data?: object) => {
  * @returns
  */
 export const addArticleDraft = (data?: object) => {
-  return http.request<Result<any>>("post", "/aricle/draft", null, { data });
+  return http.request<Result<any>>("post", "/article/draft", null, { data });
 };
 
 /**
