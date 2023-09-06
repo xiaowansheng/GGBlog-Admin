@@ -2,6 +2,10 @@
 import "cherry-markdown/dist/cherry-markdown.css";
 import Cherry from "cherry-markdown";
 import { onMounted, ref, toRefs, watch } from "vue";
+import { onActivated } from "vue";
+import { onDeactivated } from "vue";
+import { onBeforeMount } from "vue";
+import { onBeforeUnmount } from "vue";
 // import mermaid from "mermaid";
 
 defineOptions({
@@ -10,6 +14,11 @@ defineOptions({
 
 const ossUrl = import.meta.env.VITE_GLOB_OSS_URL;
 const props = defineProps({
+  id: {
+    type: String,
+    default: "cherryMarkdown",
+    required: true
+  },
   value: {
     type: String,
     default: "",
@@ -22,26 +31,26 @@ const props = defineProps({
   }
 });
 const emits = defineEmits(["change", "get", "update:value"]);
-const { value, height, dir } = toRefs(props);
-let flag = true;
+const { id, value, height, dir } = toRefs(props);
 
-const valueWatch = watch(
-  value,
-  () => {
-    console.log("change value", value.value);
-    contentValue.value = value.value;
-    // TODO BUG  设置初始值时,光标错乱
-    // cherryInstance.value?.setValue(value.value,false);
-    // console.log("cherryInstance.value?.getStatus()",cherryInstance.value?.getStatus());
+const valueWatch = watch(value, () => {
+  // 获取并设置文章初始内容
+  // console.log("change value：\n", value.value);
+  // TODO BUG  设置初始值时,光标错乱
 
-    // 监听一次,为了获取编辑时的文章内容
-    valueWatch();
-  }
-);
+  contentValue.value = value.value;
+  cherryInstance.value?.insertValue(value.value, false);
+
+  // console.log("cherryInstance.value?.getStatus()",cherryInstance.value?.getStatus());
+  // 监听一次,为了获取编辑时的文章内容
+  valueWatch();
+});
 const contentValue = ref<string>(value.value);
 const cherryInstance = ref<Cherry>();
 const cherryDom = ref<HTMLDivElement>();
 const init = () => {
+  console.log("Cherry Markdown 初始化");
+
   // const registerPlugin = async () => {
   //   const [{ default: CherryMermaidPlugin } /*mermaid*/] = await Promise.all([
   //     import("cherry-markdown/src/addons/cherry-code-block-mermaid-plugin")
@@ -56,7 +65,7 @@ const init = () => {
   // registerPlugin().then(() => {
   // 插件注册必须在Cherry实例化之前完成
   cherryInstance.value = new Cherry({
-    id: "cherryDom",
+    id: id.value,
     // cherryDom: cherryDom.value,
     value: contentValue.value,
     // 第三方包
@@ -334,13 +343,17 @@ const init = () => {
   });
   // });
 };
+const destroy = () => {};
 // init()
 // onActivated(init)
 onMounted(init);
+// onActivated(init);
+onBeforeUnmount(destroy);
+// onDeactivated(destroy);
 </script>
 
 <template>
   <div>
-    <div id="cherryDom" ref="cherryDom"></div>
+    <div :id="id" ref="cherryDom"></div>
   </div>
 </template>

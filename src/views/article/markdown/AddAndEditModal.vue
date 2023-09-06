@@ -75,19 +75,17 @@ const rules = reactive<FormRules>({
           callback(new Error("文章封面不能为空!"));
         }
       },
-      trigger: "change"
     }
   ],
   category: [
     {
       validator: (rule: any, value: any, callback: any) => {
-        if (value) {
+        if (form.value.categoryVo.id||form.value.categoryVo.name) {
           callback();
         } else {
           callback(new Error("文章类型不能为空!"));
         }
       },
-      trigger: "change"
     }
   ],
   tag: [
@@ -111,7 +109,7 @@ const rules = reactive<FormRules>({
           callback(new Error("请选择文章类型!"));
         }
       },
-      trigger: "blur"
+      trigger: "change"
     }
   ],
   status: [
@@ -123,7 +121,7 @@ const rules = reactive<FormRules>({
           callback(new Error("请选择文章状态!"));
         }
       },
-      trigger: "blur"
+      trigger: "change"
     }
   ]
 });
@@ -320,7 +318,6 @@ const createTag = () => {
         <el-input  v-model="form.content" placeholder="" />
       </el-form-item> -->
         <el-form-item label="文章分类:" prop="category">
-          <!-- <el-input  v-model="form.categoryVo.id" placeholder="请选择文章分类" /> -->
           <!-- <el-select
             v-model="form.categoryVo.id"
             placeholder="选择文章类型"

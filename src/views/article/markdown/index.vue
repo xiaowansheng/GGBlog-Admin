@@ -7,6 +7,7 @@ import AddAndEditModal from "./AddAndEditModal.vue";
 // import Markdown from "@/components/editor/Markdown/index.vue";
 import CherryMarkdown from "@/components/editor/CherryMarkdown/index.vue";
 import { useDetail } from "@/hooks/routerUtils";
+import { buildUUID } from "@pureadmin/utils";
 const { initToDetail, getParameter, closeToPage } = useDetail();
 /**
  * 时间格式化
@@ -31,12 +32,6 @@ onBeforeMount(() => {
     console.log("talk-id：", articleForm.id);
     getData(articleForm.id);
   }
-  getContentStatus().then((data: any) => {
-    contentStatus.value = data;
-    if (data && data.length && !getParameter.id) {
-      articleForm.status = data[0].name;
-    }
-  });
 });
 const getData = (id: number | string) => {
   if (id) {
@@ -61,14 +56,18 @@ const getData = (id: number | string) => {
         articleForm.note = data.note;
         articleForm.top = data.top;
         articleForm.status = data.status;
-        articleForm.categoryVo.id = data.categoryVo?.id;
-        articleForm.categoryVo.name = data.categoryVo?.name;
-        data.tagDtos?.foreach(tag => {
+        articleForm.categoryVo.id = data.categoryDto?.id;
+        articleForm.categoryVo.name = data.categoryDto?.name;
+        console.log("data.tagDtos", data.tagDtos);
+        const tagArr: [] = data.tagDtos ?? [];
+        for (let i = 0; i < tagArr.length; i++) {
+          const tag: any = tagArr[i];
           articleForm.tagVos.push({
             id: tag.id,
             name: tag.name
           });
-        });
+          console.log("tagDtos", tag);
+        }
       })
       .catch(() => {
         initToDetail();
@@ -124,7 +123,7 @@ const showModal = () => {
 };
 
 const close = () => {
-  closeToPage("ArticleList");
+  closeToPage("ArticleList")
 };
 </script>
 
@@ -157,7 +156,7 @@ const close = () => {
         </div>
         <div class="text">
           <!-- <Markdown v-model:value="articleForm.content" /> -->
-          <cherry-markdown v-model:value="articleForm.content" :height="576" />
+          <cherry-markdown :id="`markdown`" v-model:value="articleForm.content" :height="576" />
         </div>
       </div>
     </el-card>
@@ -177,7 +176,7 @@ const close = () => {
   .submit {
     display: flex;
     flex-wrap: nowrap;
-    $height:40px;
+    $height: 40px;
     .el-input {
       font-size: 16px;
       height: $height;

@@ -14,6 +14,7 @@ import EditModal from "./EditModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 import { useDetail } from "@/hooks/routerUtils";
+import { onActivated } from "vue";
 const { router } = useDetail();
 defineOptions({
   name: "ArticleList"
@@ -33,7 +34,6 @@ onBeforeMount(() => {
   });
   getData();
 });
-
 const getData = () => {
   const tempParams = {
     ...params,
@@ -276,13 +276,13 @@ const deleteR = (item: ArticleDto) => {
 
           <el-table-column :align="'center'" label="分类" width="100">
             <template #default="{ row }">
-              <el-tag>{{ row.categoryDto?.name }}</el-tag>
+              <el-tag class="cate-tag">{{ row.categoryDto?.name }}</el-tag>
             </template></el-table-column
           >
           <el-table-column :align="'center'" label="标签" width="180">
             <template #default="{ row }">
               <span v-if="row.tagDtos">
-                <el-tag v-for="item in row.tagDtos" :key="item.id">{{
+                <el-tag class="tag-tag" type="success" v-for="item in row.tagDtos" :key="item.id">{{
                   item.name
                 }}</el-tag>
               </span>
@@ -359,5 +359,13 @@ const deleteR = (item: ArticleDto) => {
 <style lang="scss" scoped>
 .btn {
   margin: 15px 0;
+}
+.tag-tag,.cate-tag{
+  margin: 2px 0 ;
+  font-size: 15px;
+  padding: 5px 8px;
+}
+.tag-tag:not(:last-of-type){
+  margin-right: 5px;
 }
 </style>
