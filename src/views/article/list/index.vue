@@ -59,7 +59,7 @@ const queryParams = reactive({
   type: null,
   note: "",
   top: null,
-  status: null,
+  status: null
   // beginDate: null,
   // endDate: null
 });
@@ -257,25 +257,35 @@ const deleteR = (item: ArticleDto) => {
 
           <el-table-column :align="'center'" label="封面" width="180">
             <template #default="{ row }">
-              <el-avatar
+              <!-- <el-avatar
                 shape="square"
                 :size="50"
                 :fit="'cover'"
                 :src="row.cover"
+              /> -->
+              <el-image
+                style="width: 160px; height: 90px"
+                :src="row.cover"
+                :fit="'cover'"
+                :hide-on-click-modal="true"
+                :preview-teleported="true"
+                :preview-src-list="[row.cover]"
               />
             </template>
           </el-table-column>
 
           <el-table-column :align="'center'" label="分类" width="100">
             <template #default="{ row }">
-              <el-tag>{{ row.categoryDto.name }}</el-tag>
+              <el-tag>{{ row.categoryDto?.name }}</el-tag>
             </template></el-table-column
           >
           <el-table-column :align="'center'" label="标签" width="180">
             <template #default="{ row }">
-              <el-tag v-for="item in row.tagDtos" :key="item.id">{{
-                item.name
-              }}</el-tag>
+              <span v-if="row.tagDtos">
+                <el-tag v-for="item in row.tagDtos" :key="item.id">{{
+                  item.name
+                }}</el-tag>
+              </span>
             </template></el-table-column
           >
           <el-table-column :align="'center'" label="文章类型" width="110">
@@ -304,17 +314,19 @@ const deleteR = (item: ArticleDto) => {
             width="160"
           />
           <el-table-column :align="'center'" label="操作" width="250">
-            <template #default="{row}">
+            <template #default="{ row }">
               <el-button size="default" type="primary" @click="show(row)"
                 >修改</el-button
               >
-              <el-button size="default" type="primary" @click="router.push({name:'ArticleEdit',params:{id:row.id}})"
-                >编辑</el-button
-              >
               <el-button
                 size="default"
-                type="danger"
-                @click="deleteR(row)"
+                type="primary"
+                @click="
+                  router.push({ name: 'ArticleEdit', params: { id: row.id } })
+                "
+                >编辑</el-button
+              >
+              <el-button size="default" type="danger" @click="deleteR(row)"
                 >删除</el-button
               >
             </template>

@@ -104,20 +104,22 @@ const resetForm = () => {
       ref="formRef"
       :model="form"
       :rules="rules"
-      label-width="100px"
+      label-width="80px"
       label-position="left"
       status-icon
+      
+        onsubmit="return false"
     >
       <el-form-item v-if="form.id" label="ID:">
         <el-input :disabled="true" :value="item?.id" />
       </el-form-item>
-      <el-form-item label="分类名" prop="name">
+      <el-form-item label="分类名称:" prop="name">
         <el-input v-model="form.name" placeholder="输入分类名称" />
       </el-form-item>
-      <el-form-item label="描述信息" prop="description">
+      <el-form-item label="描述信息:" prop="description">
         <el-input type="textarea" :rows="2" v-model="form.description" placeholder="输入描述信息" />
       </el-form-item>
-      <el-form-item label="是否隐藏：" prop="hidden">
+      <el-form-item label="是否隐藏:" prop="hidden">
         <el-switch
           v-model="form.hidden"
           :active-value="1"

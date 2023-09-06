@@ -40,7 +40,7 @@ onBeforeMount(() => {
 });
 const getData = (id: number | string) => {
   if (id) {
-     getArticleById(id.toString())
+    getArticleById(id.toString())
       .then((data: any) => {
         let tagTitle = data?.title;
         if (data?.title?.length > 8) {
@@ -144,15 +144,16 @@ const close = () => {
           <div class="btn">
             <el-button type="primary" @click="saveDraft()">保存草稿</el-button>
           </div>
-          <el-input v-model="articleForm.title" placeholder="请输入文章标题~">
-            <template #append>
-              <el-button type="primary" class="submit" @click="showModal()"
-                >发布</el-button
-              >
-            </template>
-          </el-input>
-          <!-- <el-input v-model="" placeholder="" />
+          <div class="submit">
+            <el-input v-model="articleForm.title" placeholder="请输入文章标题~">
+              <template> </template>
+            </el-input>
+            <el-button type="primary" class="submitBtn" @click="showModal()"
+              >发布</el-button
+            >
+            <!-- <el-input v-model="" placeholder="" />
  -->
+          </div>
         </div>
         <div class="text">
           <!-- <Markdown v-model:value="articleForm.content" /> -->
@@ -173,13 +174,19 @@ const close = () => {
   .btn {
     margin-bottom: 15px;
   }
-  .el-input {
-    font-size: 16px;
-    height: 40px;
-  }
   .submit {
-    font-size: 18px;
-    padding: 0 15px;
+    display: flex;
+    flex-wrap: nowrap;
+    $height:40px;
+    .el-input {
+      font-size: 16px;
+      height: $height;
+    }
+    .submitBtn {
+      height: $height;
+      width: 80px;
+      font-size: 18px;
+    }
   }
 }
 </style>
