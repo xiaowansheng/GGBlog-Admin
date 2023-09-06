@@ -1,14 +1,11 @@
 <script setup lang='ts'>
 defineOptions({
-  name: 'AboutWebsite'
+  name: 'Account'
 })
 </script>
 
 <template>
-  <div class="system-about">
-
-
-  </div>
+  <div>test</div>
 </template>
 
 <style lang='scss' scoped>

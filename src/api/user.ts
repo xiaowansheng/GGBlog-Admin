@@ -52,6 +52,16 @@ export type UserInfoDto = {
   createTime: string;
   updateTime: string;
 };
+export type UserInfoVo = {
+  id: number|null;
+  email: string;
+  qq: string;
+  nickname: string;
+  avatar: string;
+  signature: string;
+  website: string;
+  introduction: string;
+};
 
 /** 登录 */
 export const getLogin = (data?: object) => {
@@ -111,4 +121,42 @@ export const addUser = (data?: object) => {
  */
 export const updateUserStatus = (data?: object) => {
   return http.request<Result<any>>("put", "/user/auth/status", null, { data });
+};
+
+
+/**
+ * 获取当前登录用户的账号信息
+ * @param data
+ * @returns
+ */
+export const getAccountInformation = () => {
+  return http.get<any, Result<UserAuthDto>>("/user/auth");
+};
+
+/**
+ * 获取当前登录用户的个人信息
+ * @param data
+ * @returns
+ */
+export const getPersonInformation = () => {
+  return http.get<any, Result<UserInfoDto>>("/user/info");
+};
+
+/**
+ * 修改当前登录用户的个人信息
+ * @param data
+ * @returns
+ */
+export const updateInformation = (data) => {
+  return http.put<any, Result<UserInfoDto>>("/user/info/person",null,{data});
+};
+
+
+/**
+ * 修改当前登录用户的密码
+ * @param data
+ * @returns
+ */
+export const updatePassword = (data) => {
+  return http.put<any, Result<any>>("/user/auth/password",null,{data});
 };

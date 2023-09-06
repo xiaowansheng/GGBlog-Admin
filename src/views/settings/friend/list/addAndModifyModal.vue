@@ -167,7 +167,7 @@ const resetForm = () => {
       </el-form-item>
       <el-form-item v-if="form.id"  label="是否隐藏：">
         <el-switch
-          v-model="form.disable"
+          v-model="form.hidden"
           inline-prompt
           :active-value="1"
           :inactive-value="0"
