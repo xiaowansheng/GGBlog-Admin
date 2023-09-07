@@ -5,8 +5,8 @@ import { AlbumDto, getAlbumPage, updateAlbum, deleteAlbum } from "@/api/album";
 import { NameLabelDto, getContentStatus } from "@/api/common";
 import AddAndEditModal from "./AddAndEditModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useRouter } from "vue-router";
-import { useDetail } from '@/hooks/routerUtils';
+import { useDetail } from "@/hooks/routerUtils";
+const { router } = useDetail();
 defineOptions({
   name: "AlbumList"
 });
@@ -128,10 +128,10 @@ const deleteR = (item: AlbumDto) => {
             <div
               class="cover img"
               :style="'background-image: url(' + item.cover + ')'"
+              @click="router.push({name:'Pictures',params:{id:item.id},query:{name:item.name}})"
             >
               <!-- @click="router2.push('/pictures')" -->
               <!-- @click="router2.push('/menu/4')" -->
-              <!-- @click="router2.push({name:'Pictures',params:{id:item.id}})" -->
               <!-- <el-image class="img" style="width: 100px; height: 100px" :src="item.cover" :fit="'cover'" /> -->
             </div>
           </el-card>

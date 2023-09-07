@@ -19,6 +19,7 @@ export function useDetail() {
   const route = useRoute();
   const router = useRouter();
   const getParameter =  route.params;
+  const getQuery =  route.query;
 
   // 用于页面刷新，重新获取浏览器地址栏参数并保存到标签页
   const initToDetail = (title:string=null) => {
@@ -60,5 +61,5 @@ export function useDetail() {
     router.push({ name: toName });
   };
 
-  return { initToDetail, getParameter, router, route, closeToPage };
+  return { initToDetail, getParameter, getQuery, router, route, closeToPage };
 }

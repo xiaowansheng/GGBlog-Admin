@@ -1,7 +1,7 @@
 import { http } from "@/utils/http";
 import Result, { PageData } from "./constant/result";
 
-export interface CommentDto {
+export interface GuestbookDto {
   id: number;
   userAuthId: number;
   topicType: string;
@@ -14,8 +14,6 @@ export interface CommentDto {
   browser: string;
   point: string;
   location: string;
-  rootId: number;
-  parentId: number;
   type: string;
   nickname: string;
   email: string;
@@ -26,34 +24,34 @@ export interface CommentDto {
   updateTime: string;
 }
 
-export interface Comment {
+export interface Guestbook {
   id: number;
   hidden: number;
   review: number;
 }
 
 /**
- * 分页获取评论信息
+ * 分页获取留言信息
  * @param params
  * @param config
  * @returns
  */
-export const getCommentPage = (params?: any, config?: any) => {
-  return http.get<any, Result<PageData<CommentDto[]>>>(
-    "/comment/page",
+export const getLeaveWordPage = (params: any, config?: any) => {
+  return http.get<any, Result<PageData<GuestbookDto[]>>>(
+    "/guestbook/page",
     params,
     config
   );
 };
 
 /**
- * 修改评论状态信息
+ * 修改留言状态信息
  * @param params
  * @param config
  * @returns
  */
-export const updateComment = (params?: any, config?: any) => {
-  return http.put<any, Result<any>>("/comment", params, config);
+export const updateLeaveWord = (data) => {
+  return http.put<any, Result<any>>("/guestbook", null, {data});
 };
 
 // /**
@@ -67,34 +65,22 @@ export const updateComment = (params?: any, config?: any) => {
 // };
 
 /**
- * 删除指定的评论信息
+ * 删除指定的留言信息
  * @param params
  * @param config
  * @returns
  */
-export const deleteComment = (
+export const deleteLeaveWord = (
   pathVariable: number,
   params?: any,
   config?: any
 ) => {
   return http.delete<any, Result<any>>(
-    "/comment/" + pathVariable,
+    "/guestbook/" + pathVariable,
     params,
     config
   );
 };
-
-/**
- * 获取所有话题类型
- * @param params
- * @param config
- * @returns
- */
-export const getAllTopicType = (params?: any, config?: any) => {
-  return http.get<any, Result<any>>("/comment/topic/type", params, config);
-};
-
-
 
 
 /**
@@ -103,11 +89,7 @@ export const getAllTopicType = (params?: any, config?: any) => {
  * @param config
  * @returns
  */
-export const deleteBatchComment = (data:number[]|string[]
+export const deleteBatchLeaveWord = (data:number[]|string[]
 ) => {
-  return http.delete<any, Result<any>>(
-    "/comment/batch",
-    null,
-    {data}
-  );
+  return http.delete<any, Result<any>>("/guestbook/batch", null, { data });
 };

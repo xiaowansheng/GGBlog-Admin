@@ -169,3 +169,18 @@ export const getRewardConfig = (params?: any, config?: any) => {
     config
   );
 };
+
+
+/**
+ * 获取关于作者信息
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getAboutAuthor = (params?: any, config?: any) => {
+  return http.get<any, Result<ConfigDto>>(
+    "/website/config/about",
+    params,
+    config
+  );
+};

@@ -2,7 +2,6 @@
 import { onBeforeMount, reactive, ref } from "vue";
 import {
   getUserPage,
-  updateUser,
   UserAuthDto,
   geAlltLoginType,
   updateUserStatus
@@ -18,9 +17,9 @@ onBeforeMount(() => {
   geAlltLoginType().then((data: any) => {
     loginTypes.value = data;
   });
-  getAllSimpleRoles().then((data:any) => {
-    roles.value=data
-  })
+  getAllSimpleRoles().then((data: any) => {
+    roles.value = data;
+  });
   getData();
 });
 
@@ -42,9 +41,9 @@ const params = {
 };
 const queryParams = reactive({
   id: null,
-  userAuthId:"",
+  userAuthId: "",
   username: "",
-  nickname:"",
+  nickname: "",
   ipSourceSignup: "",
   disable: null,
   loginType: "",
@@ -52,9 +51,9 @@ const queryParams = reactive({
   browser: "",
   roleId: "",
   email: "",
-  qq:""
+  qq: ""
 });
-const roles=ref<any>([])
+const roles = ref<any>([]);
 const loginTypes = ref<any[]>([]);
 const list = ref<UserAuthDto[]>([]);
 const findType = (name: string) => {
@@ -190,7 +189,7 @@ const updateStatus = (item: UserAuthDto) => {
             <el-input
               style="min-width: 100px"
               @change="getData()"
-              v-model="queryParams.ipSource"
+              v-model="queryParams.ipSourceSignup"
               placeholder="输入注册地"
               size="default"
             />
@@ -250,22 +249,28 @@ const updateStatus = (item: UserAuthDto) => {
               {{ findType(row.loginType) }}
             </template></el-table-column
           >
-          <el-table-column
-            prop="userInfoDto.nickname"
-            :align="'center'"
-            label="昵称"
-            width="150"
-          />
-          <el-table-column
-            :align="'center'"
-            label="头像"
-            width="80"
+          <el-table-column :align="'center'" label="昵称" width="150">
+            <template #default="{ row }">
+              <el-tooltip
+                class="tooltip"
+                effect="light"
+                :content="row.userInfoDto.nickname"
+                placement="top-start"
+              >
+                <span class="ellipsis">{{ row.userInfoDto.nickname }}</span>
+              </el-tooltip>
+            </template></el-table-column
           >
-        <template #default="{row}">
-              <el-avatar shape="square" :size="50" :fit="'cover'" :src="row.userInfoDto.avatar" />
-
-        </template>
-        </el-table-column>
+          <el-table-column :align="'center'" label="头像" width="80">
+            <template #default="{ row }">
+              <el-avatar
+                shape="square"
+                :size="50"
+                :fit="'cover'"
+                :src="row.userInfoDto.avatar"
+              />
+            </template>
+          </el-table-column>
           <el-table-column
             prop="userInfoDto.email"
             :align="'center'"
@@ -278,18 +283,35 @@ const updateStatus = (item: UserAuthDto) => {
             label="QQ"
             width="150"
           />
-          <el-table-column
-            prop="userInfoDto.signature"
-            :align="'center'"
-            label="签名"
-            width="150"
-          />
+          <el-table-column :header-align="'center'" label="签名" width="150">
+            <template #default="{ row }">
+              <el-tooltip
+                class="tooltip"
+                effect="light"
+                :content="row.userInfoDto.signature"
+                placement="top-start"
+              >
+                <span class="ellipsis">{{ row.userInfoDto.signature }}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="userInfoDto.introduction"
-            :align="'center'"
+            :header-align="'center'"
             label="个人介绍"
             width="150"
-          />
+          >
+            <template #default="{ row }">
+              <el-tooltip
+                class="tooltip"
+                effect="light"
+                :content="row.userInfoDto.introduction"
+                placement="top-start"
+              >
+                <span class="ellipsis">{{ row.userInfoDto.introduction }}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
           <el-table-column :align="'center'" label="角色信息" width="100">
             <template #default="{ row }">
               <el-tag v-for="item in row.roleNames" :key="item">{{
@@ -329,7 +351,12 @@ const updateStatus = (item: UserAuthDto) => {
             width="160"
           />
 
-          <el-table-column :align="'center'" label="操作" width="180">
+          <el-table-column
+            fixed="right"
+            :align="'center'"
+            label="操作"
+            width="90"
+          >
             <template #default="scope">
               <el-button size="default" type="primary" @click="show(scope.row)"
                 >编辑</el-button

@@ -21,3 +21,13 @@ export const getContentStatus = (params?: any, config?: any) => {
   );
 };
 
+
+/**
+ * 获取所有用户类型
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getUserType = (params?: any, config?: any) => {
+  return http.get<any, Result<any>>("/common/user/type", params, config);
+};

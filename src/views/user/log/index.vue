@@ -112,12 +112,6 @@ const selected = ref<LoginLogDto>();
             width="80"
           />
 
-          <el-table-column
-            prop="ipSource"
-            :align="'center'"
-            label="IP来源"
-            width="150"
-          />
 
           <el-table-column
             prop="ipAddress"
@@ -125,6 +119,23 @@ const selected = ref<LoginLogDto>();
             label="IP地址"
             width="130"
           />
+          <el-table-column
+            prop="ipSource"
+            :align="'center'"
+            label="IP来源"
+            width="220"
+          >
+                   <template #default="{ row }">
+              <el-tooltip
+                class="tooltip"
+                effect="light"
+                :content="row.ipSource"
+                placement="top-start"
+              >
+                <span class="ellipsis">{{ row.ipSource }}</span>
+              </el-tooltip>
+            </template>
+        </el-table-column>
           <el-table-column
             prop="device"
             :align="'center'"
@@ -141,6 +152,7 @@ const selected = ref<LoginLogDto>();
             prop="location"
             :align="'center'"
             label="位置"
+            width="220"
           />
           <el-table-column
             prop="createTime"

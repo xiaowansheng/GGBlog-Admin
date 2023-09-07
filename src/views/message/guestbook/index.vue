@@ -1,27 +1,23 @@
 <script setup lang="ts">
 import { onBeforeMount, reactive, ref } from "vue";
 import {
-  getCommentPage,
-  updateComment,
-  CommentDto,
-  deleteComment,
-  getAllTopicType,
-  getUserType
-} from "@/api/comment";
+  getLeaveWordPage,
+  updateLeaveWord,
+  GuestbookDto,
+  deleteBatchLeaveWord,
+  deleteLeaveWord
+} from "@/api/guestbook";
+import { getUserType } from "@/api/common";
 import ModifyModal from "./ModifyModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 defineOptions({
-  name: "Comment"
+  name: "Guestbook"
 });
 onBeforeMount(() => {
-  // 获取话题类型
-  getAllTopicType().then((data: any) => {
-    topicTypes.value=data
-  })
   // 获取所有用户类型
   getUserType().then((data: any) => {
-    userTypes.value=data
-  })
+    userTypes.value = data;
+  });
   getData();
 });
 
@@ -30,7 +26,7 @@ const getData = () => {
     ...params,
     ...queryParams
   };
-  getCommentPage(tempParams).then((data: any) => {
+  getLeaveWordPage(tempParams).then((data: any) => {
     list.value = data.list;
     total.value = data.total;
   });
@@ -44,29 +40,34 @@ const params = {
 const queryParams = reactive({
   id: null,
   userAuthId: null,
-  topicType: "",
-  topicId: null,
-  comment: "",
+  content: "",
   ipSource: "",
   device: "",
   browser: "",
   location: "",
-  parentId: null,
   type: null,
   nickname: "",
   email: "",
   qq: "",
   hidden: null,
-  review: ""
+  review: null
 });
-const topicTypes=ref<any>([])
-const userTypes=ref<any>([])
-const list = ref<CommentDto[]>([]);
-
+const topicTypes = ref<any>([]);
+const userTypes = ref<any>([]);
+const list = ref<GuestbookDto[]>([]);
+const findCommontType = (name: string): string => {
+  for (let i = 0; i < userTypes.value.length; i++) {
+    const type = userTypes.value[i];
+    if (type.name == name) {
+      return type.label;
+    }
+  }
+  return name;
+};
 const modifyRef = ref();
 const showDialog = ref(false);
-const selected = ref<CommentDto>();
-const show = (item: CommentDto = null) => {
+const selected = ref<GuestbookDto>();
+const show = (item: GuestbookDto = null) => {
   if (item != null) {
     selected.value = item;
   } else {
@@ -74,12 +75,12 @@ const show = (item: CommentDto = null) => {
   }
   showDialog.value = true;
 };
-const updateStatus = (item: CommentDto) => {
+const updateStatus = (item: GuestbookDto) => {
   const form = {
     id: item.id,
     status: item.hidden
   };
-  updateComment(null, { data: form })
+  updateLeaveWord(null, { data: form })
     .then(() => {
       ElMessage.success("修改成功！");
     })
@@ -87,13 +88,43 @@ const updateStatus = (item: CommentDto) => {
       item.hidden = item.hidden == 1 ? 0 : 1;
     });
 };
-const deleteR = (item: CommentDto) => {
+const deleteR = (item: GuestbookDto) => {
   ElMessageBox.confirm(`是否确认删除评论【${item.content}】？`, "Warning", {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
     type: "warning"
   }).then(() => {
-    deleteComment(item.id).then(() => {
+    deleteBatchLeaveWord(item.id).then(() => {
+      getData();
+      ElMessage.success("删除成功");
+    });
+  });
+};
+
+const selectBatch = ref<GuestbookDto[]>([]);
+const selectChange = (selection: GuestbookDto[]) => {
+  console.log(selection);
+  selectBatch.value = selection;
+};
+
+const deleteBatch = () => {
+  if (!selectBatch.value.length) {
+    return;
+  }
+  const ids = selectBatch.value.map(item => item.id);
+  const commonts = selectBatch.value.map(
+    item => "【" + item.content.slice(0, 6) + "...】"
+  );
+  ElMessageBox.confirm(
+    `是否确认批量删除评论${commonts.join(",")}？`,
+    "Warning",
+    {
+      confirmButtonText: "确认",
+      cancelButtonText: "取消",
+      type: "warning"
+    }
+  ).then(() => {
+    deleteBatchLeaveWord(ids).then(() => {
       getData();
       ElMessage.success("删除成功");
     });
@@ -102,7 +133,7 @@ const deleteR = (item: CommentDto) => {
 </script>
 
 <template>
-  <div class="friend">
+  <div class="comment content">
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
@@ -133,36 +164,12 @@ const deleteR = (item: CommentDto) => {
             />
           </div>
           <div class="op">
-            <label>话题类型:</label>
-            <el-select
-              @change="getData()"
-              v-model="queryParams.hidden"
-              placeholder="选择话题类型"
-              size="default"
-              style="min-width: 150px"
-            >
-              <el-option label="全部（all）" value="" />
-              <el-option v-for="item in topicTypes" :key="item.name" :label="item.label+'（'+item.name+'）'" :value="item.name" />
-            </el-select>
-            
-          </div>
-          <div class="op">
-            <label>话题ID:</label>
+            <label>留言内容:</label>
             <el-input
               style="min-width: 100px"
               @change="getData()"
-              v-model="queryParams.topicId"
-              placeholder="输入话题ID"
-              size="default"
-            />
-          </div>
-          <div class="op">
-            <label>评论内容:</label>
-            <el-input
-              style="min-width: 100px"
-              @change="getData()"
-              v-model="queryParams.topicId"
-              placeholder="输入评论内容"
+              v-model="queryParams.content"
+              placeholder="输入留言内容"
               size="default"
             />
           </div>
@@ -207,7 +214,12 @@ const deleteR = (item: CommentDto) => {
               style="min-width: 150px"
             >
               <el-option label="全部（all）" value="" />
-              <el-option v-for="item in userTypes" :key="item.name" :label="item.label+'（'+item.name+'）'" :value="item.name" />
+              <el-option
+                v-for="item in userTypes"
+                :key="item.name"
+                :label="item.label + '（' + item.name + '）'"
+                :value="item.name"
+              />
             </el-select>
           </div>
           <div class="op">
@@ -271,44 +283,104 @@ const deleteR = (item: CommentDto) => {
           </div>
         </div>
         <div class="btn">
-          <el-button size="default" type="primary" @click="show()"
-            >添加</el-button
+          <el-button
+            size="default"
+            :disabled="!selectBatch.length"
+            type="danger"
+            @click="deleteBatch()"
+            >批量删除</el-button
           >
         </div>
-        <el-table border :data="list" style="width: 100%">
-          <el-table-column prop="id" :align="'center'" label="ID" width="50" />
+        <el-table
+          border
+          :data="list"
+          style="width: 100%"
+          @selection-change="selectChange"
+        >
+          <el-table-column type="selection" width="55" />
+
+          <el-table-column
+            prop="id"
+            :align="'center'"
+            label="评论ID"
+            width="80"
+          />
           <el-table-column
             prop="userAuthId"
             :align="'center'"
             label="用户ID"
-            width="150"
+            width="100"
           />
           <el-table-column
-            prop="topicType"
-            :align="'center'"
-            label="话题类型"
-            width="150"
-          />
+            :header-align="'center'"
+            label="留言内容"
+            width="280"
+          >
+            <template #default="{ row }">
+              <el-tooltip
+                class="tooltip"
+                effect="light"
+                :content="row.content"
+                placement="top-start"
+              >
+                <span class="ellipsis">{{ row.content }}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
           <el-table-column
-            prop="topicId"
+            prop="parentId"
             :align="'center'"
-            label="话题ID"
-            width="150"
+            label="回复的ID"
+            width="100"
           />
-          <el-table-column :align="'center'" label="评论内容" width="150">
-            <template #default="scope">
-              {{ scope.row.content }}
+          <el-table-column :align="'center'" label="评论来源" width="100">
+            <template #default="{ row }">
+              {{ findCommontType(row.type) }}
             </template></el-table-column
           >
-          <el-table-column prop="ipSource" :align="'center'" label="IP来源" />
-          <el-table-column prop="device" :align="'center'" label="设备" />
-          <el-table-column prop="browser" :align="'center'" label="浏览器" />
-          <el-table-column prop="parentId" :align="'center'" label="回复的ID" />
-          <el-table-column prop="type" :align="'center'" label="评论类型" />
-          <el-table-column prop="nickname" :align="'center'" label="昵称" />
-          <el-table-column prop="email" :align="'center'" label="邮箱" />
-          <el-table-column prop="qq" :align="'center'" label="QQ" />
-          <el-table-column :align="'center'" label="是否隐藏" width="100">
+          <el-table-column
+            prop="nickname"
+            :align="'center'"
+            label="昵称"
+            width="150"
+          />
+          <el-table-column
+            prop="email"
+            :align="'center'"
+            label="邮箱"
+            width="180"
+          />
+          <el-table-column prop="qq" :align="'center'" label="QQ" width="100" />
+          <el-table-column
+            prop="ipSource"
+            :align="'center'"
+            label="IP来源"
+            width="180"
+          >
+            <template #default="{ row }">
+              <el-tooltip
+                class="tooltip"
+                effect="light"
+                :content="row.ipSource"
+                placement="top-start"
+              >
+                <span class="ellipsis">{{ row.ipSource }}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="device"
+            :align="'center'"
+            label="设备"
+            width="130"
+          />
+          <el-table-column
+            prop="browser"
+            :align="'center'"
+            label="浏览器"
+            width="120"
+          />
+          <el-table-column :align="'center'" label="是否隐藏" width="90">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.hidden"
@@ -320,7 +392,9 @@ const deleteR = (item: CommentDto) => {
           <el-table-column :align="'center'" label="审核情况" width="100">
             <template #default="scope">
               <el-tag v-if="scope.row.review == 1" type="success">通过</el-tag>
-              <el-tag v-if="scope.row.review == -1" type="error">未通过</el-tag>
+              <el-tag v-if="scope.row.review == -1" type="danger"
+                >未通过</el-tag
+              >
               <el-tag v-if="scope.row.review == 0" type="warning"
                 >待审核</el-tag
               >
@@ -330,7 +404,7 @@ const deleteR = (item: CommentDto) => {
             prop="createTime"
             :align="'center'"
             label="创建时间"
-            width="200"
+            width="160"
           />
           <!-- <el-table-column
             prop="updateTime"
@@ -339,7 +413,12 @@ const deleteR = (item: CommentDto) => {
             width="200"
           /> -->
 
-          <el-table-column :align="'center'" label="操作" width="180">
+          <el-table-column
+            :align="'center'"
+            fixed="right"
+            label="操作"
+            width="160"
+          >
             <template #default="scope">
               <el-button size="default" type="primary" @click="show(scope.row)"
                 >编辑</el-button

@@ -50,7 +50,6 @@ const parentId = ref<number>();
 const parentName = ref<string>("");
 const isChildren = ref(false);
 const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
-  console.log("11");
   if (isAdd) {
     if (isChild) {
       // 添加子菜单
@@ -124,16 +123,15 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
             width="140"
           /> -->
           <el-table-column
-            prop="component"
-            :align="'center'"
-            label="组件路径"
-            width="180"
-          />
-          <el-table-column
             prop="path"
             :align="'center'"
             label="访问地址"
             width="180"
+          />
+          <el-table-column
+            prop="component"
+            :align="'center'"
+            label="组件路径"
           />
           <!-- <el-table-column
             prop="description"
@@ -141,7 +139,7 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
             label="描述信息"
             width="160"
           /> -->
-          <el-table-column :align="'center'" label="是否隐藏" width="100">
+          <el-table-column :align="'center'" label="是否隐藏" width="90">
             <template #default="scope">
               <el-switch
                 @click="updateStatus(scope.row)"
@@ -150,7 +148,7 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
                 :inactive-value="0"
               /> </template
           ></el-table-column>
-          <el-table-column prop="sort" :align="'center'" label="排序" />
+          <el-table-column prop="sort" :align="'center'" label="排序"  width="60"/>
           <!-- <el-table-column
             prop="createTime"
             :align="'center'"

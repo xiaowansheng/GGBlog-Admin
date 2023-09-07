@@ -246,7 +246,7 @@ function convertToRoute(data: any) {
     meta: {
       title: data.meta.title,
       icon: data.meta.icon,
-      showLink: data.meta.hideMenu?false:true
+      showLink: data.meta.hideMenu ? false : true,
     }
   };
   if (data.parentId && data.parentId != 0) {

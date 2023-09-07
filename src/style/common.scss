@@ -112,3 +112,16 @@
     text-align: center;
   }
 }
+
+.ellipsis {
+  overflow: hidden;
+  // white-space: nowrap;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 显示的行数 */
+  -webkit-box-orient: vertical;
+}
+
+// .tooltip{
+//   font-size: 15px;
+// }

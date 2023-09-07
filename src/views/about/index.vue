@@ -6,7 +6,7 @@ defineOptions({
 
 <template>
   <div class="system-about">
-
+About
 
   </div>
 </template>

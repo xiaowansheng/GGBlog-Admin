@@ -3,7 +3,7 @@ import { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
 import { reactive, ref, toRefs, watch } from "vue";
 
-import { Comment, updateComment } from "@/api/comment";
+import { Guestbook, updateLeaveWord } from "@/api/guestbook";
 defineOptions({
   name: "CommentEditModal"
 });
@@ -29,7 +29,7 @@ watch(visiable, () => {
     emits("update:show", false);
   }
 });
-const form = reactive<Comment>({
+const form = reactive<Guestbook>({
   id: null,
   review: null,
   hidden: null
@@ -40,7 +40,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
-      updateComment(null, { data: form }).then(() => {
+      updateLeaveWord(form).then(() => {
         ElMessage({
           message: "修改成功！",
           type: "success"
@@ -64,7 +64,7 @@ const resetForm = () => {
 <template>
   <div>
     
-  <el-dialog v-model="visiable" :title="'修改评论信息'" class="form" style="">
+  <el-dialog v-model="visiable" :title="'修改留言信息'" class="form" style="">
     <el-form
       ref="formRef"
       :model="form"
@@ -73,7 +73,7 @@ const resetForm = () => {
       label-position="left"
       status-icon
     >
-      <el-form-item label="评论ID:">
+      <el-form-item label="留言ID:">
         <el-input v-model="form.id" disabled />
       </el-form-item>
       <el-form-item label="审核情况:">

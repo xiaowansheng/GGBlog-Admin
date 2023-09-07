@@ -3,16 +3,19 @@ import { onBeforeMount, reactive, ref } from "vue";
 import { PictureDto, getPicturePage, updatePicture, deletePicture } from "@/api/picture";
 
 import { NameLabelDto, getContentStatus } from "@/api/common";
-import { getAllSimpleRoles } from "@/api/role";
 import EditModal from "./EditModal.vue";
 import AddModal from './AddModal.vue'
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRouter } from "vue-router";
-const router = useRouter();
+import { useDetail } from "@/hooks/routerUtils";
+const { initToDetail, getParameter,getQuery, closeToPage } = useDetail();
 defineOptions({
   name: "Pictures"
 });
 onBeforeMount(() => {
+  let title = getQuery?.name as string
+  title=title?.length>8?title?.slice(0,8)+"...":title
+  initToDetail(title)
   getContentStatus().then((data: any) => {
     contentStatus.value = data;
   });
@@ -36,7 +39,7 @@ const params = {
   limit: 30
 };
 const queryParams = reactive({
-  id: null,
+  id: getParameter?.id,
 });
 const contentStatus = ref<NameLabelDto[]>([]);
 const list = ref<PictureDto[]>([]);
@@ -105,7 +108,9 @@ const deleteR = (item: PictureDto) => {
             >添加</el-button
           >
         </div>
+            <el-empty v-show="total==0" description="Empty" />
         <div class="pictures">
+
           <el-card class="box-card item" v-for="item in list" :key="item.name">
             <template #header>
               <div class="card-header">

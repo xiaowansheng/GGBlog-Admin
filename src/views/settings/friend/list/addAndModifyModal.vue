@@ -128,6 +128,8 @@ const resetForm = () => {
 </script>
 
 <template>
+  <div>
+    
   <el-dialog
     v-model="visiable"
     :title="form.id ? '修改友链信息' : '新增友链信息'"
@@ -191,5 +193,6 @@ const resetForm = () => {
       </span>
     </template>
   </el-dialog>
+  </div>
 </template>
 

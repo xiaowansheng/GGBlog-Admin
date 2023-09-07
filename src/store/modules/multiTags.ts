@@ -49,7 +49,7 @@ export const useMultiTagsStore = defineStore({
       value?: T | multiType | any,
       position?: positionType
     ): T {
-      console.log("this.multiTags", this.multiTags);
+      // console.log("this.multiTags", this.multiTags);
 
       switch (mode) {
         case "equal":
