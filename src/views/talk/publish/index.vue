@@ -4,8 +4,6 @@ import { Talk, addTalk, updateTalk, getTalkById } from "@/api/talk";
 import { NameLabelDto, getContentStatus } from "@/api/common";
 import PicturesUpload from "@/components/upload/Pictures/index.vue";
 import { ElMessage } from "element-plus";
-import { useTags } from "@/layout/hooks/useTag";
-// import { useDetail } from "../hooks";
 import { useDetail } from "@/hooks/routerUtils";
 const { initToDetail, getParameter, closeToPage } = useDetail();
 defineOptions({
@@ -15,7 +13,7 @@ onBeforeMount(() => {
   if (getParameter?.id) {
     initToDetail();
     talkForm.id = Number.parseInt(getParameter.id.toString());
-    console.log("talk-id：", talkForm.id);
+    // console.log("talk-id：", talkForm.id);
     getData(talkForm.id);
   }
   getContentStatus().then((data: any) => {
