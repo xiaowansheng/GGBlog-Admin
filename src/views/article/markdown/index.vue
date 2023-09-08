@@ -4,8 +4,10 @@ import { Article, addArticleDraft, getArticleById } from "@/api/article";
 import { NameLabelDto, getContentStatus } from "@/api/common";
 import { ElMessage } from "element-plus";
 import AddAndEditModal from "./AddAndEditModal.vue";
-// import Markdown from "@/components/editor/Markdown/index.vue";
+import Vditor from "@/components/editor/Markdown/index.vue";
 import CherryMarkdown from "@/components/editor/CherryMarkdown/index.vue";
+import WangEditor from "@/components/editor/WangEditor/index.vue";
+// import TuiEditor from "@/components/editor/TuiEditor/index.vue";
 import { useDetail } from "@/hooks/routerUtils";
 import { buildUUID } from "@pureadmin/utils";
 const { initToDetail, getParameter, closeToPage } = useDetail();
@@ -13,11 +15,14 @@ import { formatDate } from "@/utils/myUtils";
 defineOptions({
   name: "ArticlePublish"
 });
+const editorId = ref<number>(0);
 onBeforeMount(() => {
   if (getParameter?.id) {
     articleForm.id = Number.parseInt(getParameter.id.toString());
     console.log("talk-id：", articleForm.id);
     getData(articleForm.id);
+  } else {
+    editorId.value = 1;
   }
 });
 const getData = (id: number | string) => {
@@ -55,13 +60,16 @@ const getData = (id: number | string) => {
           });
           console.log("tagDtos", tag);
         }
+
+        editorId.value = 1;
       })
       .catch(() => {
         initToDetail();
+
+        editorId.value = 1;
       });
   }
 };
-const contentStatus = ref<NameLabelDto[]>([]);
 const articleForm = reactive<Article>({
   id: null,
   title: formatDate(new Date()),
@@ -110,7 +118,7 @@ const showModal = () => {
 };
 
 const close = () => {
-  closeToPage("ArticleList")
+  closeToPage("ArticleList");
 };
 </script>
 
@@ -128,7 +136,23 @@ const close = () => {
       <div class="content">
         <div class="operation">
           <div class="btn">
-            <el-button type="primary" @click="saveDraft()">保存草稿</el-button>
+            <div class="left">
+              <el-button type="primary" @click="saveDraft()"
+                >保存草稿</el-button
+              >
+            </div>
+            <div class="right">
+              <el-select
+                :width="100"
+                v-model="editorId"
+                placeholder="选择编辑器"
+              >
+                <el-option label="CherryMarkdown" :value="1" />
+                <el-option label="VditorMarkdown" :value="2" />
+                <el-option label="WangEditor" :value="3" />
+                <!-- <el-option label="TuiEditor" :value="4" /> -->
+              </el-select>
+            </div>
           </div>
           <div class="submit">
             <el-input v-model="articleForm.title" placeholder="请输入文章标题~">
@@ -142,8 +166,15 @@ const close = () => {
           </div>
         </div>
         <div class="text">
-          <!-- <Markdown v-model:value="articleForm.content" /> -->
-          <cherry-markdown :id="`markdown`" v-model:value="articleForm.content" :height="576" />
+          <cherry-markdown
+            v-if="editorId == 1"
+            :id="`markdown${getParameter?.id}`"
+            v-model:value="articleForm.content"
+            :height="520"
+          />
+          <vditor v-if="editorId == 2" v-model:value="articleForm.content" />
+          <wang-editor v-if="editorId == 3" v-model:value="articleForm.content" />
+          <!-- <tui-editor v-if="editorId == 4" v-model:value="articleForm.content" /> -->
         </div>
       </div>
     </el-card>
@@ -159,6 +190,10 @@ const close = () => {
 .operation {
   .btn {
     margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: center;
   }
   .submit {
     display: flex;
