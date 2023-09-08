@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, reactive, ref } from "vue";
-import { LoginLogDto,getLoginLogPage } from "@/api/loginlog";
+import { LoginLogDto, getLoginLogPage } from "@/api/loginlog";
 defineOptions({
   name: "LoginLog"
 });
@@ -29,8 +29,7 @@ const queryParams = reactive({
   userAuthId: null,
   device: "",
   browser: "",
-  location: "",
-  
+  location: ""
 });
 const loginTypes = ref<any[]>([]);
 const list = ref<LoginLogDto[]>([]);
@@ -112,7 +111,6 @@ const selected = ref<LoginLogDto>();
             width="80"
           />
 
-
           <el-table-column
             prop="ipAddress"
             :align="'center'"
@@ -125,7 +123,7 @@ const selected = ref<LoginLogDto>();
             label="IP来源"
             width="220"
           >
-                   <template #default="{ row }">
+            <template #default="{ row }">
               <el-tooltip
                 class="tooltip"
                 effect="light"
@@ -135,7 +133,7 @@ const selected = ref<LoginLogDto>();
                 <span class="ellipsis">{{ row.ipSource }}</span>
               </el-tooltip>
             </template>
-        </el-table-column>
+          </el-table-column>
           <el-table-column
             prop="device"
             :align="'center'"
@@ -148,12 +146,18 @@ const selected = ref<LoginLogDto>();
             label="浏览器"
             width="150"
           />
-          <el-table-column
-            prop="location"
-            :align="'center'"
-            label="位置"
-            width="220"
-          />
+          <el-table-column :align="'center'" label="位置">
+            <template #default="{ row }">
+              <el-tooltip
+                class="tooltip"
+                effect="light"
+                :content="row.location"
+                placement="top-start"
+              >
+                <span class="ellipsis">{{ row.location }}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="createTime"
             :align="'center'"

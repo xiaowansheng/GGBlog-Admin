@@ -33,35 +33,12 @@ const queryParams = reactive({
   module: "",
   type: ""
 });
-const list = ref<OperationDto[]>([
-  {
-    id: 1,
-    userAuthId: 1,
-    userName: "string",
-    version: "string",
-    requestUrl: "string",
-    module: "string",
-    callingMethod: "string",
-    type: "string",
-    description: "string",
-    requestMethod: "string",
-    requestParam: "string",
-    responseData: "string",
-    elapsedTime: 781,
-    ipAddress: "string",
-    ipSource: "string",
-    device: "string",
-    browser: "string",
-    createTime: "string",
-    updateTime: "string"
-  }
-]);
+const list = ref<OperationDto[]>([]);
 
 // const detailRef = ref();
 const showDialog = ref(false);
 const selected = ref<OperationDto>();
 const show = (item: OperationDto = null) => {
-  console.log("11");
   selected.value = item;
   showDialog.value = true;
 };
@@ -160,8 +137,18 @@ const show = (item: OperationDto = null) => {
             width="150"
           /> -->
           <el-table-column prop="userName" :align="'center'" label="用户名称" 
-            width="180"/>
-          <el-table-column :align="'center'" label="请求方法" width="80">
+            width="180">
+                  <template #default="{ row }">
+              <el-tooltip
+                class="tooltip"
+                effect="light"
+                :content="row.userName"
+                placement="top-start"
+              >
+                <span class="ellipsis">{{ row.userName }}</span>
+              </el-tooltip>
+            </template></el-table-column>
+          <el-table-column :align="'center'" label="请求方法" width="100">
             <template #default="scope">
               <el-tag>{{ scope.row.requestMethod }}</el-tag>
             </template>
@@ -182,7 +169,7 @@ const show = (item: OperationDto = null) => {
             prop="type"
             :align="'center'"
             label="操作类型"
-            width="80"
+            width="100"
           >
             <!-- <template #default="scope">
               <el-tag type="success">{{ scope.row.type }}</el-tag>
@@ -191,7 +178,7 @@ const show = (item: OperationDto = null) => {
           <el-table-column
             prop="description"
             :align="'center'"
-            label="操作类信息"
+            label="操作描述"
             width="160"
           />
           <!-- <el-table-column

@@ -27,13 +27,40 @@
     overflow-y: auto;
   }
 }
+
+@media screen and (min-width : 992px) {
+  .el-dialog.detail {
+    width: 768px;
+  }
+}
+@media screen and (min-width : 768px) and (max-width : 992px) {
+  .el-dialog.detail {
+    width: 576px;
+  }
+}
+@media screen and (max-width :768px) {
+  .el-dialog.detail {
+    width: 90%;
+  }
+}
 .el-dialog.detail {
-  max-width: 768px;
-  min-width: 360px;
   .el-dialog__body {
     // 表单内容过长出现滚动条
     max-height: 55vh;
     overflow-y: auto;
+    .el-descriptions {
+      tr {
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: row;
+      }
+      .el-descriptions__label {
+        width: 110px;
+      }
+      .el-descriptions__content {
+        width: 100%;
+      }
+    }
   }
 }
 
@@ -108,7 +135,7 @@
     .el-button {
       margin: 0 25px;
     }
-    margin-top: 18px;
+    margin: 18px 0 25px 0;
     text-align: center;
   }
 }

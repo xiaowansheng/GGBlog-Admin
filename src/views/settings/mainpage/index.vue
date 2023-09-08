@@ -129,7 +129,7 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
   }
 }
 
-@media screen and (width >= 992px) {
+@media screen and (min-width : 992px) {
   .menu-config {
     .menus {
       grid-template-columns: repeat(3, 1fr);
@@ -142,7 +142,7 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
   }
 }
 
-@media screen and (width >= 768px) and (width <= 992px) {
+@media screen and (min-width: 768px) and (max-width :992px) {
   .menu-config {
     .menus {
       grid-template-columns: repeat(2, 1fr);
@@ -155,12 +155,10 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
   }
 }
 
-@media screen and (width <= 768px) {
+@media screen and (max-width :768px) {
   .menu-config {
     .menu {
       grid-template-columns: repeat(1, 1fr);
-
-      // grid-column-gap:20px;
       grid-row-gap: 15px;
     }
   }
