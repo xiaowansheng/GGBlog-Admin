@@ -9,7 +9,7 @@ defineOptions({
 onBeforeMount(() => {
   getData();
 });
-
+const editId=ref<number>(0)
 const getData = () => {
   getAboutAuthor().then((data: any) => {
     about.id = data.id;
@@ -17,7 +17,10 @@ const getData = () => {
     about.label = data.label;
     about.value = data.value;
     about.description = data.description;
-  });
+    editId.value=1
+  }).catch(() => {
+    editId.value=1
+  })
 };
 
 const about = reactive<Config>({
@@ -53,7 +56,7 @@ const update = () => {
           >
         </div>
         <div class="text">
-          <CherryMarkdown id="about-author" v-model:value="about.value"/>
+          <CherryMarkdown v-if="editId==1" id="about-author" v-model:value="about.value"/>
         </div>
       </div>
     </el-card>

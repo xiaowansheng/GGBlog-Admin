@@ -90,7 +90,7 @@ const beforeUpload: UploadProps["beforeUpload"] = (
   rawFile: UploadRawFile
 ): Promise<boolean> => {
   // TODO 上传时form为空
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject)=>{
     getOss(dir.value)
       .then((data: any) => {
         console.log("oss:", data);
@@ -156,4 +156,3 @@ const progress = () => {
     </template>
   </el-upload>
 </template>
-

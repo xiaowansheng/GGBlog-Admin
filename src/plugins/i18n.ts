@@ -5,8 +5,8 @@ import { type I18n, createI18n } from "vue-i18n";
 import { responsiveStorageNameSpace } from "@/config";
 
 // element-plus国际化
-import enLocale from "element-plus/lib/locale/lang/en";
-import zhLocale from "element-plus/lib/locale/lang/zh-cn";
+import enLocale from "element-plus/es/locale/lang/en";
+import zhLocale from "element-plus/es/locale/lang/zh-cn";
 
 function siphonI18n(prefix = "zh-CN") {
   return Object.fromEntries(

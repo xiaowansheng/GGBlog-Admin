@@ -41,7 +41,7 @@
     "cherry-markdown": "^0.8.25",
     "dayjs": "^1.11.8",
     "echarts": "^4.6.0",
-    "element-plus": "2.3.6",
+    "element-plus": "2.3.12",
     "js-cookie": "^3.0.5",
     "katex": "^0.16.8",
     "mathjax": "3",
