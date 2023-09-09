@@ -15,7 +15,7 @@ import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
 import { baseURL } from "../utils";
 // 消息提示
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
@@ -78,23 +78,28 @@ class PureHttp {
           return config;
         }
         /** 请求白名单，放置一些不需要token的接口（通过设置请求白名单，防止token过期后再请求造成的死循环问题） */
-        const whiteList = ["/auth/user/refreshToken", "/user/auth/login"];
+        const whiteList = [
+          "/user/auth/refresh/token",
+          "/user/auth/login",
+        ];
         return whiteList.some(v => config.url.indexOf(v) > -1)
           ? config
           : new Promise(resolve => {
-            const data = getToken();
-            console.log("tokendata",data);
-            
+              const data = getToken();
               if (data) {
                 const now = new Date().getTime();
                 const expired = parseInt(data.expires) - now <= 0;
                 if (expired) {
                   if (!PureHttp.isRefreshing) {
                     PureHttp.isRefreshing = true;
+                    console.log("token过期，暂存待执行的请求，刷新token");
+
                     // token过期刷新
                     useUserStoreHook()
                       .handRefreshToken({ refreshToken: data.refreshToken })
                       .then(res => {
+                        console.log("获取了新token");
+
                         const token = res.accessToken;
                         config.headers["Authorization"] = formatToken(token);
                         PureHttp.requests.forEach(cb => cb(token));
@@ -145,6 +150,18 @@ class PureHttp {
           return data;
         } else if (code && message) {
           ElMessage.error(message);
+          if (code == 40011) {
+            console.log(1);
+            ElMessageBox.confirm("是否跳转到登录页重新登录？", "Warning", {
+              confirmButtonText: "跳转",
+              cancelButtonText: "取消",
+              type: "warning"
+            }).then(() => {
+              // 重新登录
+              useUserStoreHook().loginAgain();
+            });
+            return;
+          }
           throw new Error("Error");
         } else {
           return response.data;
@@ -168,8 +185,16 @@ class PureHttp {
     param?: AxiosRequestConfig,
     axiosConfig?: PureHttpRequestConfig
   ): Promise<T> {
-    console.log("params:", param);
-    console.log("data:", axiosConfig?.data);
+    console.log(
+      "method:",
+      method,
+      ",url:",
+      url,
+      ",params:",
+      param,
+      ",data:",
+      axiosConfig?.data
+    );
     const config = {
       method,
       url,

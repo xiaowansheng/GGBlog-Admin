@@ -24,9 +24,9 @@ import Check from "@iconify-icons/ep/check";
 import User from "@iconify-icons/ri/user-3-fill";
 
 // TODO 静态路由
-import { setToken } from "@/utils/auth";
-import { addPathMatch } from "@/router/utils";
-import { usePermissionStoreHook } from "@/store/modules/permission";
+// import { setToken } from "@/utils/auth";
+// import { addPathMatch } from "@/router/utils";
+// import { usePermissionStoreHook } from "@/store/modules/permission";
 
 defineOptions({
   name: "Login"

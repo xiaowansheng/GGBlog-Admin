@@ -3,7 +3,7 @@
 import { onBeforeMount, ref } from "vue";
 import ModifyModal from "./modifyModal.vue";
 import { MenuDto, getAllMenus, deleteMenu, updateMenuStatus } from "@/api/menu";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 defineOptions({
   name: "Menu"
 });
@@ -70,6 +70,19 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
   }
   isChildren.value = isChild;
   showDialog.value = true;
+};
+
+const deleteR = (item: MenuDto) => {
+  ElMessageBox.confirm(`是否确认删除菜单【${item.title}】？`, "Warning", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    deleteMenu(item.id).then(() => {
+      getData();
+      ElMessage.success("删除成功");
+    });
+  });
 };
 </script>
 
@@ -162,24 +175,25 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
             width="200"
           /> -->
           <el-table-column :align="'center'" label="操作" width="250">
-            <template #default="scope">
+            <template #default="{row}">
               <el-button
-                v-if="!scope.row.parentId"
+                v-if="!row.parentId"
                 size="default"
                 type="primary"
-                @click="show(true, true, scope.row)"
+                @click="show(true, true, row)"
                 >添加</el-button
               >
               <el-button
                 size="default"
                 type="primary"
-                @click="show(false, false, scope.row)"
+                @click="show(false, false, row)"
                 >编辑</el-button
               >
               <el-button
-                v-if="!scope.row.children || scope.row.children.length == 0"
+                v-if="!row.children || row.children.length == 0"
                 size="default"
                 type="danger"
+                @click="deleteR(row)"
                 >删除</el-button
               >
             </template>

@@ -2,12 +2,8 @@
 <script setup lang="ts">
 import { onBeforeMount, reactive, ref } from "vue";
 import ModifyModal from "./modifyModal.vue";
-import {
-  ResourceDto,
-  updateResourceStatus,
-  getTree
-} from "@/api/resource";
-import { ElMessage } from "element-plus";
+import { ResourceDto, updateResourceStatus, getTree, deleteResource } from "@/api/resource";
+import { ElMessage, ElMessageBox } from "element-plus";
 defineOptions({
   name: "Resource"
 });
@@ -37,14 +33,16 @@ const updateStatus = (item: ResourceDto) => {
   updateResourceStatus(null, {
     data: {
       id: item.id,
-    status:item.open
+      status: item.open
     }
-  }).then(() => {
-    ElMessage.success("修改成功！")
-  }).catch(() => {
-    item.open=item.open==1?0:1
   })
-}
+    .then(() => {
+      ElMessage.success("修改成功！");
+    })
+    .catch(() => {
+      item.open = item.open == 1 ? 0 : 1;
+    });
+};
 
 const modifyRef = ref();
 const showDialog = ref(false);
@@ -75,6 +73,17 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
   isChildren.value = isChild;
   showDialog.value = true;
 };
+
+const deleteR = (item: ResourceDto) => {
+  ElMessageBox.confirm(`是否确认删除资源【${item.name}】？`, "Warning", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    deleteResource();
+      ElMessage.success("删除成功");
+    });
+};
 </script>
 
 <template>
@@ -87,9 +96,11 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
         </div>
       </template>
       <div class="content">
-        <el-button size="default" type="primary" @click="show(true, false)"
-          >添加</el-button
-        >
+        <div class="operation">
+          <el-button size="default" type="primary" @click="show(true, false)"
+            >添加</el-button
+          >
+        </div>
         <el-table
           border
           :data="list"
@@ -121,10 +132,11 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
             label="资源描述"
           />
           <el-table-column :align="'center'" label="是否开放" width="100">
-            <template #default="scope">
+            <template #default="{ row }">
               <el-switch
-              @click="updateStatus(scope.row)"
-                v-model="scope.row.open"
+                v-if="row.parentId"
+                @click="updateStatus(row)"
+                v-model="row.open"
                 :active-value="1"
                 :inactive-value="0"
               /> </template
@@ -142,24 +154,25 @@ const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
             width="200"
           /> -->
           <el-table-column :align="'center'" label="操作" width="250">
-            <template #default="scope">
+            <template #default="{row}">
               <el-button
-                v-if="!scope.row.parentId"
+                v-if="!row.parentId"
                 size="default"
                 type="primary"
-                @click="show(true, true, scope.row)"
+                @click="show(true, true, row)"
                 >添加</el-button
               >
               <el-button
                 size="default"
                 type="primary"
-                @click="show(false, false, scope.row)"
+                @click="show(false, false, row)"
                 >编辑</el-button
               >
               <el-button
-                v-if="!scope.row.children || scope.row.children.length == 0"
+                v-if="!row.children || row.children.length == 0"
                 size="default"
                 type="danger"
+                @click="deleteR(row)"
                 >删除</el-button
               >
             </template>

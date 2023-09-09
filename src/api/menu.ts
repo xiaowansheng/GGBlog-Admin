@@ -73,8 +73,8 @@ export const updateMenu = (params?: any, config?: any) => {
  * @param config
  * @returns
  */
-export const deleteMenu = (params?: any, config?: any) => {
-  return http.delete<any, Result<MenuDto[]>>("/system/menu", params, config);
+export const deleteMenu = (pathVariable:number|string) => {
+  return http.delete<any, Result<MenuDto[]>>("/system/menu/"+pathVariable);
 };
 
 /**

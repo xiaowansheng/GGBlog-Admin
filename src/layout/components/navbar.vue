@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Search from "./search/index.vue";
-import Notice from "./notice/index.vue";
+// import Notice from "./notice/index.vue";
 import mixNav from "./sidebar/mixNav.vue";
 import { useNav } from "@/layout/hooks/useNav";
 import Breadcrumb from "./sidebar/breadCrumb.vue";
@@ -18,6 +18,8 @@ const {
   onPanel,
   pureApp,
   username,
+  nickname,
+  avatar,
   userAvatar,
   avatarsStyle,
   toggleSideBar,
@@ -49,8 +51,9 @@ const { t, locale, translationCh, translationEn } = useTranslationLang();
     <div v-if="layout === 'vertical'" class="vertical-header-right">
       <!-- 菜单搜索 -->
       <Search />
+      <!-- TODO 关闭通知信息，以后再完善 -->
       <!-- 通知 -->
-      <Notice id="header-notice" />
+      <!-- <Notice id="header-notice" /> -->
       <!-- 国际化 -->
       <el-dropdown id="header-translation" trigger="click">
         <globalization
@@ -85,9 +88,15 @@ const { t, locale, translationCh, translationEn } = useTranslationLang();
       </el-dropdown>
       <!-- 退出登录 -->
       <el-dropdown trigger="click">
-        <span class="el-dropdown-link navbar-bg-hover select-none">
-          <img :src="userAvatar" :style="avatarsStyle" />
-          <p v-if="username" class="dark:text-white">{{ username }}</p>
+        <span class="select-none el-dropdown-link navbar-bg-hover">
+          <!-- 头像存在则使用自定义的头像，不存在则使用默认 -->
+          <img
+            :src="avatar && avatar != '' ? avatar : userAvatar"
+            :style="avatarsStyle"
+          />
+          <!-- 昵称不空，则显示昵称，为空则显示用户名 -->
+          <p v-if="nickname" class="dark:text-white">{{ nickname }}</p>
+          <p v-else="username" class="dark:text-white">{{ username }}</p>
         </span>
         <template #dropdown>
           <el-dropdown-menu class="logout">

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref, toRefs, watch } from "vue";
 import { ElTree, ElMessage } from "element-plus";
-import { getTree } from "@/api/resource";
+import { getSimpleTree } from "@/api/resource";
 import { getRoleResource, updateRoleResources } from "@/api/role";
 interface Tree {
   id: number;
   name: string;
-  title: string;
   children?: Tree[];
 }
 defineOptions({
@@ -26,13 +25,13 @@ watch(show, () => {
   if (visiable.value) {
     loading.value = true;
     // 获取菜单树
-    getTree()
+    getSimpleTree()
       .then((data: any) => {
         tree.value = data;
         getRoleResource(roleId!.value).then((list: any) => {
           const arr: any = [];
           list.forEach(m => {
-            arr.push(m.menuId);
+            arr.push(m.resourceId);
           });
           defaultSelected.value = arr;
           loading.value = false;
@@ -45,7 +44,7 @@ watch(show, () => {
     tree.value = [];
     defaultSelected.value = [];
   }
-  console.log(roleId?.value);
+  // console.log(roleId?.value);
 });
 
 // watch(roleId, () => {
@@ -62,7 +61,7 @@ watch(visiable, () => {
 const treeRef = ref<InstanceType<typeof ElTree>>();
 const defaultProps = {
   children: "children",
-  label: "title"
+  label: "name"
 };
 const defaultSelected = ref<number[]>([]);
 // const setCheckedKeys = (arr: number[] = []) => {
@@ -77,11 +76,11 @@ const submitForm = () => {
   }
   btnLoading.value = true;
   const data: any = [];
-  selected.value.forEach(menuId => {
+  selected.value.forEach(resourceId => {
     console.log("submit!", data);
     data.push({
       roleId: roleId!.value,
-      menuId
+      resourceId
     });
   });
   updateRoleResources(null, { data })

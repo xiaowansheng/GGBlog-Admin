@@ -71,7 +71,7 @@ const rules = reactive<FormRules>({
           callback(new Error("请求方式不能为空!"));
         }
       },
-      trigger: "blur"
+      trigger: "change"
     }
   ],
   path: [
@@ -155,7 +155,7 @@ const resetForm = () => {
       <el-form-item :label="isChildren ? '接口名称' : '模块名称'" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item v-if="isChildren" label="请求方法" prop="requestMethod">
+      <el-form-item  v-if="isChildren||item?.parentId"  label="请求方法" prop="requestMethod">
         <el-select
           v-model="form.requestMethod"
           placeholder="选择请求方法"
@@ -172,9 +172,9 @@ const resetForm = () => {
         <el-input v-model="form.path" />
       </el-form-item>
       <el-form-item label="描述信息">
-        <el-input v-model="form.description" />
+        <el-input type="textarea" resize="none" :rows="2" v-model="form.description" />
       </el-form-item>
-      <el-form-item label="是否开放">
+      <el-form-item v-if="isChildren||item?.parentId" label="是否开放">
         <el-switch
           v-model="form.open"
           inline-prompt

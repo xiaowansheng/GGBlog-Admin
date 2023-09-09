@@ -11,6 +11,10 @@ export interface DataInfo<T> {
   refreshToken: string;
   /** 用户名 */
   username?: string;
+  /** 用户昵称 */
+  nickname?: string;
+  /** 头像 */
+  avatar?: string;
   /** 当前登陆用户的角色 */
   roles?: Array<string>;
 }
@@ -32,10 +36,10 @@ export function getToken(): DataInfo<number> {
  * 将`accessToken`、`expires`这两条信息放在key值为authorized-token的cookie里（过期自动销毁）
  * 将`username`、`roles`、`refreshToken`、`expires`这四条信息放在key值为`user-info`的sessionStorage里（浏览器关闭自动销毁）
  */
-export function setToken(data: DataInfo<Date>) {
+export function setToken(data: DataInfo<number>) {
   let expires = 0;
   const { accessToken, refreshToken } = data;
-  expires = new Date(data.expires).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
+  expires = data.expires; // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
   const cookieString = JSON.stringify({ accessToken, expires });
 
   expires > 0
@@ -44,26 +48,39 @@ export function setToken(data: DataInfo<Date>) {
       })
     : Cookies.set(TokenKey, cookieString);
 
-  function setSessionKey(username: string, roles: Array<string>) {
+  function setSessionKey(
+    username: string,
+    nickname: string,
+    avatar,
+    roles: Array<string>
+  ) {
     useUserStoreHook().SET_USERNAME(username);
+    useUserStoreHook().SET_NICKNAME(nickname);
+    useUserStoreHook().SET_AVATAR(avatar);
     useUserStoreHook().SET_ROLES(roles);
     storageSession().setItem(sessionKey, {
       refreshToken,
       expires,
       username,
+      nickname,
+      avatar,
       roles
     });
   }
 
   if (data.username && data.roles) {
-    const { username, roles } = data;
-    setSessionKey(username, roles);
+    const { username, nickname, roles ,avatar} = data;
+    setSessionKey(username, nickname,avatar, roles);
   } else {
     const username =
       storageSession().getItem<DataInfo<number>>(sessionKey)?.username ?? "";
+    const nickname =
+      storageSession().getItem<DataInfo<number>>(sessionKey)?.nickname ?? "";
+    const avatar =
+      storageSession().getItem<DataInfo<number>>(sessionKey)?.avatar ?? "";
     const roles =
       storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
-    setSessionKey(username, roles);
+    setSessionKey(username, nickname,avatar, roles);
   }
 }
 

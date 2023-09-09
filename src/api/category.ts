@@ -72,6 +72,6 @@ export const updateCategoryStatus = (data?: object) => {
  * @returns
  */
 export const getAllCategory = (params?: any) => {
-  return http.get<any, Result<categoryDto[]>>("/category/simple/list", params);
+  return http.get<any, Result<CategoryDto[]>>("/category/simple/list", params);
 };
 

@@ -101,7 +101,7 @@ export const getLoginConfig = (params?: any, config?: any) => {
 };
 
 /**
- * 获取登录配置
+ * 获取额外组件配置
  * @param params
  * @param config
  * @returns
@@ -143,7 +143,7 @@ export const getNoticeConfig = (params?: any, config?: any) => {
 };
 
 /**
- * 获取系统通知配置
+ * 获取默认头像图片等配置
  * @param params
  * @param config
  * @returns

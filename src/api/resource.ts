@@ -24,6 +24,19 @@ export interface Resource {
   description: string;
 }
 
+/**
+ * 获取资源树结构
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getTree = (params?: any, config?: any) => {
+  return http.get<any, Result<ResourceDto[]>>(
+    "/system/resource/tree",
+    params,
+    config
+  );
+};
 
 /**
  * 添加资源信息
@@ -84,14 +97,14 @@ export const updateResourceStatus = (params?: any, config?: any) => {
 };
 
 /**
- * 获取菜单树结构
+ * 获取资源树结构
  * @param params
  * @param config
  * @returns
  */
-export const getTree = (params?: any, config?: any) => {
+export const getSimpleTree = (params?: any, config?: any) => {
   return http.get<any, Result<ResourceDto[]>>(
-    "/system/resource/tree",
+    "/system/resource/simple/tree",
     params,
     config
   );

@@ -37,6 +37,9 @@ export type setType = {
 
 export type userType = {
   username?: string;
+  nickname?: string;
+  /** 头像 */
+  avatar?: string;
   roles?: Array<string>;
   verifyCode?: string;
   currentPage?: number;

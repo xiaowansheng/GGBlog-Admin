@@ -38,6 +38,15 @@ export function useNav() {
     return useUserStoreHook()?.username;
   });
 
+  /** 用户昵称 */
+  const nickname = computed(() => {
+    return useUserStoreHook()?.nickname;
+  });
+  /** 用户头像 */
+  const avatar = computed(() => {
+    return useUserStoreHook()?.avatar;
+  });
+
   /** 设置国际化选中后的样式 */
   const getDropdownItemStyle = computed(() => {
     return (locale, t) => {
@@ -142,6 +151,8 @@ export function useNav() {
     isCollapse,
     pureApp,
     username,
+    nickname,
+    avatar,
     userAvatar,
     avatarsStyle,
     tooltipEffect,

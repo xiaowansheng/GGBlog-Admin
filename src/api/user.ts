@@ -4,6 +4,10 @@ import { PageData } from "./constant/result";
 export type LoginData = {
   /** 用户名 */
   username: string;
+  /** 用户昵称 */
+  nickname: string;
+  /** 头像 */
+  avatar: string;
   /** 当前登陆用户的角色 */
   roles: Array<string>;
   /** `token` */
@@ -20,7 +24,7 @@ export type RefreshTokenResult = {
   /** 用于调用刷新`accessToken`的接口时所需的`token` */
   refreshToken: string;
   /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
-  expires: Date;
+  expires: number;
 };
 
 export type UserAuthDto = {
@@ -53,7 +57,7 @@ export type UserInfoDto = {
   updateTime: string;
 };
 export type UserInfoVo = {
-  id: number|null;
+  id: number | null;
   email: string;
   qq: string;
   nickname: string;
@@ -68,11 +72,22 @@ export const getLogin = (data?: object) => {
   return http.request<LoginData>("post", "/user/auth/login", null, { data });
 };
 
+/** 注销 */
+export const getLogout = () => {
+  return http.request<any>("get", "/user/auth/logout");
+};
 /** 刷新token */
-export const refreshTokenApi = (data?: object) => {
-  return http.request<RefreshTokenResult>("post", "/user/auth/refreshToken", {
-    data
-  });
+export const refreshTokenApi = (data?: object | any) => {
+  return http.request<RefreshTokenResult>(
+    "get",
+    "/user/auth/refresh/token",
+    null,
+    {
+      headers: {
+        Authorization: data.refreshToken
+      }
+    }
+  );
 };
 
 /**
@@ -123,7 +138,6 @@ export const updateUserStatus = (data?: object) => {
   return http.request<Result<any>>("put", "/user/auth/status", null, { data });
 };
 
-
 /**
  * 获取当前登录用户的账号信息
  * @param data
@@ -131,6 +145,15 @@ export const updateUserStatus = (data?: object) => {
  */
 export const getAccountInformation = () => {
   return http.get<any, Result<UserAuthDto>>("/user/auth");
+};
+
+/**
+ * 修改当前登录用户的密码
+ * @param data
+ * @returns
+ */
+export const updatePassword = data => {
+  return http.put<any, Result<any>>("/user/auth/password", null, { data });
 };
 
 /**
@@ -147,16 +170,8 @@ export const getPersonInformation = () => {
  * @param data
  * @returns
  */
-export const updateInformation = (data) => {
-  return http.put<any, Result<UserInfoDto>>("/user/info/person",null,{data});
-};
-
-
-/**
- * 修改当前登录用户的密码
- * @param data
- * @returns
- */
-export const updatePassword = (data) => {
-  return http.put<any, Result<any>>("/user/auth/password",null,{data});
+export const updateInformation = data => {
+  return http.put<any, Result<UserInfoDto>>("/user/info/person", null, {
+    data
+  });
 };
