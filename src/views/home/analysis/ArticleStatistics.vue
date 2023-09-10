@@ -4,20 +4,29 @@ import {
   getStatisticOfTalkCount
 } from "@/api/analysis";
 import { NameValueDto } from "@/api/constant/result";
-import { onBeforeMount } from "vue";
-import { ref } from "vue";
+import {} from "vue";
+import { ref, onBeforeUnmount, onMounted, shallowRef } from "vue";
 import * as echarts from "echarts";
-import { onMounted } from "vue";
 import { formatDate } from "@/utils/myUtils";
-import { shallowRef } from "vue";
 
 defineOptions({
   name: "Overview"
 });
-onBeforeMount(() => {});
 onMounted(() => {
   numberChart.value = echarts.init(chartRef.value);
   getData();
+  window.addEventListener(
+    "resize",
+    () => {
+      // 重新设置图表尺寸
+      numberChart.value?.resize();
+    },
+    false
+  );
+});
+onBeforeUnmount(() => {
+  // 取消resize监听
+  window.removeEventListener("resize", () => {});
 });
 const dateArr = ref<string[]>([]);
 const initDateInterval = () => {
@@ -184,7 +193,7 @@ const setNumberChart = () => {
         name: "说说数量",
         type: "bar",
         xAxisIndex: 0,
-        
+
         itemStyle: {
           normal: {
             color: "rgb(108, 234, 171)"

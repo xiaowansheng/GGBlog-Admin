@@ -17,11 +17,29 @@ defineOptions({
 onBeforeMount(() => {});
 onMounted(() => {
   numberChart.value = echarts.init(categoryChartRef.value);
+  computeConfig();
   getData();
+  window.addEventListener(
+    "resize",
+    () => {
+      console.log("CategoryAndTagStatistics");
+      // 重新设置图表尺寸
+      numberChart.value?.resize();
+      // 重新计算tag div块宽高
+      computeConfig();
+    },
+    false
+  );
 });
 onBeforeUnmount(() => {
   stopInterval();
+  window.removeEventListener("resize", () => {});
 });
+const computeConfig = () => {
+  // 获取tag的div长和宽
+  config.height = tagChartRef.value?.clientHeight;
+  config.width = tagChartRef.value?.clientWidth;
+};
 const getData = () => {
   getStatisticOfCategory().then((data: any) => {
     categoryData.value = data;
@@ -30,22 +48,39 @@ const getData = () => {
   getAllTag().then((data: any) => {
     tagData.value = data;
     const arr: any = [];
-    const tagsNum = data.length;
+    // const tagsNum = data.length;
+    // for (let i = 0; i < tagsNum; i++) {
+    //   let tag: any = {};
+    //   let k = -1 + (2 * (i + 1) - 1) / tagsNum;
+    //   let a = Math.acos(k);
+    //   let b = a * Math.sqrt(tagsNum * Math.PI);
+    //   tag.text = data[i].name;
+    //   // console.log("cx:", CX.value, "CY:", CY.value);
+
+    //   tag.x = CX.value + config.RADIUS * Math.sin(a) * Math.cos(b);
+    //   tag.y = CY.value + config.RADIUS * Math.sin(a) * Math.sin(b);
+    //   tag.z = config.RADIUS * Math.cos(a);
+    //   // tag.href = 'https://imgss.github.io';
+    //   arr.push(tag);
+    // }
+
+    // TODO 测试
+    const tagsNum = 50;
     for (let i = 0; i < tagsNum; i++) {
       let tag: any = {};
       let k = -1 + (2 * (i + 1) - 1) / tagsNum;
       let a = Math.acos(k);
       let b = a * Math.sqrt(tagsNum * Math.PI);
-      tag.text = data[i].name;
-      console.log("cx:",CX.value,"CY:",CY.value);
-      
+      // console.log("cx:", CX.value, "CY:", CY.value);
+
+      tag.text = i + "tag" + i;
       tag.x = CX.value + config.RADIUS * Math.sin(a) * Math.cos(b);
       tag.y = CY.value + config.RADIUS * Math.sin(a) * Math.sin(b);
       tag.z = config.RADIUS * Math.cos(a);
       // tag.href = 'https://imgss.github.io';
       arr.push(tag);
     }
-    console.log("tags:", arr);
+    // console.log("tags:", arr);
     tags.value = arr;
 
     startInterval();
@@ -54,6 +89,7 @@ const getData = () => {
 const categoryData: any = ref<NameValueDto[]>([]);
 const tagData: any = ref<IdNameDto[]>([]);
 const categoryChartRef = ref<HTMLDivElement>();
+const tagChartRef = ref<HTMLDivElement>();
 // 使用shallowRef，防止eachrt报type错误
 const numberChart: any = shallowRef();
 
@@ -164,9 +200,11 @@ const CY: any = computed(() => {
   return config.height / 2;
 });
 const listener = event => {
+  console.log("mousemove");
+
   //响应鼠标移动
   const x = event.clientX - CX.value;
-  var y = event.clientY - CY.value;
+  const y = event.clientY - CY.value;
   config.speedX =
     x * 0.0001 > 0
       ? Math.min(config.RADIUS * 0.00002, x * 0.0001)
@@ -204,9 +242,14 @@ const rotateY = angleY => {
       <el-col :xs="24" :sm="15" :lg="16">
         <div class="chart panel-bkcolor" ref="categoryChartRef"></div>
       </el-col>
-      <el-col :xs="24" :sm="9" :lg="8">
-        <div class="chart panel-bkcolor" ref="tagChartRef">
-          <svg width="300px" height="300px" @mousemove="listener($event)">
+      <el-col :xs="24" :sm="9" :lg="8" class="">
+        <div class="tags panel-bkcolor" ref="tagChartRef">
+          <!-- @touchmove="listener($event)" -->
+          <svg
+            :width="config.width"
+            :height="config.height"
+            @mousemove="listener($event)"
+          >
             <a href="javascript:;" v-for="tag in tags">
               <text
                 :x="tag.x"
@@ -228,8 +271,12 @@ const rotateY = angleY => {
 .cate-tag-statistics {
   margin-bottom: 15px;
 }
-.chart {
-  padding: 10px 0px;
+.chart,.tags{
   height: 330px;
+  overflow: hidden;
 }
+.chart {
+  padding: 10px 10px;
+}
+
 </style>
