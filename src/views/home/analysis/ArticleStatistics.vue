@@ -80,7 +80,7 @@ const setNumberChart = () => {
     //动画持续时间
     // animationDuration: 10000,
     title: {
-      text: "发布的内容数量",
+      text: "发布的内容数量统计",
       left: "center",
       // subtext: 'Condition Statistic',
       subtext: `最近30天数据（文章数量：${articleTotal}，说说数量：${talkTotal}）`,

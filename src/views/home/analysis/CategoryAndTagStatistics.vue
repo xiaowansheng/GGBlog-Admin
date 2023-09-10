@@ -102,7 +102,7 @@ const setNumberChart = () => {
     //动画持续时间
     // animationDuration: 10000,
     title: {
-      text: "分类的文章数量",
+      text: "分类的文章数量统计",
       left: "center",
       // subtext: 'Condition Statistic',
       subtext: `文章分类总数：${categoryTotal}`,

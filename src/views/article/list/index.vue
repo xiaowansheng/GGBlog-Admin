@@ -274,23 +274,30 @@ const deleteR = (item: ArticleDto) => {
             </template>
           </el-table-column>
 
-          <el-table-column :align="'center'" label="分类" width="100">
+          <el-table-column :align="'center'" label="分类" width="140">
             <template #default="{ row }">
               <el-tag class="cate-tag">{{ row.categoryDto?.name }}</el-tag>
             </template></el-table-column
           >
-          <el-table-column :align="'center'" label="标签" width="180">
+          <el-table-column :align="'center'" label="标签" width="120">
             <template #default="{ row }">
               <span v-if="row.tagDtos">
-                <el-tag class="tag-tag" type="success" v-for="item in row.tagDtos" :key="item.id">{{
-                  item.name
-                }}</el-tag>
+                <el-tag
+                  class="tag-tag"
+                  type="success"
+                  v-for="item in row.tagDtos"
+                  :key="item.id"
+                  >{{ item.name }}</el-tag
+                >
               </span>
             </template></el-table-column
           >
-          <el-table-column :align="'center'" label="文章类型" width="110">
+          <el-table-column :align="'center'" label="文章类型" width="90">
             <template #default="{ row }">
-              {{ findType(row.type) }}
+              <span v-if="row.type == 'draft'"
+                ><el-tag type="warning">{{ findType(row.type) }}</el-tag></span
+              >
+              <span v-else>{{ findType(row.type) }}</span>
             </template></el-table-column
           >
           <el-table-column :align="'center'" label="文章状态" width="110">
@@ -311,9 +318,9 @@ const deleteR = (item: ArticleDto) => {
             prop="createTime"
             :align="'center'"
             label="创建时间"
-            width="160"
+            width="100"
           />
-          <el-table-column :align="'center'" label="操作" width="250">
+          <el-table-column :align="'center'" label="操作" width="230">
             <template #default="{ row }">
               <el-button size="default" type="primary" @click="show(row)"
                 >修改</el-button
@@ -360,12 +367,16 @@ const deleteR = (item: ArticleDto) => {
 .btn {
   margin: 15px 0;
 }
-.tag-tag,.cate-tag{
-  margin: 2px 0 ;
-  font-size: 15px;
+.tag-tag,
+.cate-tag {
+  margin: 2px 0;
   padding: 5px 8px;
 }
-.tag-tag:not(:last-of-type){
-  margin-right: 5px;
+.cate-tag {
+  font-size: 15px;
+}
+.tag-tag:not(:last-of-type) {
+  font-size: 12px;
+  margin: 3px;
 }
 </style>
