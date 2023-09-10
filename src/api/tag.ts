@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-import Result from "./constant/result";
+import Result,{IdNameDto} from "./constant/result";
 import { PageData } from "./constant/result";
 
 export interface TagDto {
@@ -73,5 +73,5 @@ export const updateTagStatus = (data?: object) => {
  * @returns
  */
 export const getAllTag = (params?: any) => {
-  return http.get<any, Result<TagDto[]>>("/tag/simple/list", params);
+  return http.get<any, Result<IdNameDto[]>>("/tag/simple/list", params);
 };

@@ -45,13 +45,8 @@ export const getTree = (params?: any, config?: any) => {
  * @returns
  */
 export const addResource = (params?: any, config?: any) => {
-  return http.post<any, Result<any>>(
-    "/system/resource",
-    params,
-    config
-  );
+  return http.post<any, Result<any>>("/system/resource", params, config);
 };
-
 
 /**
  * 修改资源信息
@@ -60,11 +55,7 @@ export const addResource = (params?: any, config?: any) => {
  * @returns
  */
 export const updateResource = (params?: any, config?: any) => {
-  return http.put<any, Result<any>>(
-    "/system/resource",
-    params,
-    config
-  );
+  return http.put<any, Result<any>>("/system/resource", params, config);
 };
 
 /**
@@ -73,14 +64,9 @@ export const updateResource = (params?: any, config?: any) => {
  * @param config
  * @returns
  */
-export const deleteResource = (params?: any, config?: any) => {
-  return http.post<any, Result<any>>(
-    "/system/resource",
-    params,
-    config
-  );
+export const deleteResource = (pathVariable: number | string) => {
+  return http.delete<any, Result<any>>("/system/resource/" + pathVariable);
 };
-
 
 /**
  * 修改资源开放状态
@@ -89,11 +75,7 @@ export const deleteResource = (params?: any, config?: any) => {
  * @returns
  */
 export const updateResourceStatus = (params?: any, config?: any) => {
-  return http.put<any, Result<any>>(
-    "/system/resource/status",
-    params,
-    config
-  );
+  return http.put<any, Result<any>>("/system/resource/status", params, config);
 };
 
 /**

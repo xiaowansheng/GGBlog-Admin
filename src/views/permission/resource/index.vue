@@ -2,7 +2,12 @@
 <script setup lang="ts">
 import { onBeforeMount, reactive, ref } from "vue";
 import ModifyModal from "./modifyModal.vue";
-import { ResourceDto, updateResourceStatus, getTree, deleteResource } from "@/api/resource";
+import {
+  ResourceDto,
+  updateResourceStatus,
+  getTree,
+  deleteResource
+} from "@/api/resource";
 import { ElMessage, ElMessageBox } from "element-plus";
 defineOptions({
   name: "Resource"
@@ -80,9 +85,10 @@ const deleteR = (item: ResourceDto) => {
     cancelButtonText: "取消",
     type: "warning"
   }).then(() => {
-    deleteResource();
-      ElMessage.success("删除成功");
-    });
+    deleteResource(item.id);
+    ElMessage.success("删除成功");
+    getData();
+  });
 };
 </script>
 
@@ -154,7 +160,7 @@ const deleteR = (item: ResourceDto) => {
             width="200"
           /> -->
           <el-table-column :align="'center'" label="操作" width="250">
-            <template #default="{row}">
+            <template #default="{ row }">
               <el-button
                 v-if="!row.parentId"
                 size="default"

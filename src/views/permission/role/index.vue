@@ -114,6 +114,7 @@ const deleteR = (item: RoleDto) => {
             prop="description"
             :align="'center'"
             label="描述信息"
+            width="180"
           />
           <el-table-column :align="'center'" label="禁用" width="100">
             <template #default="scope">
