@@ -9,8 +9,8 @@ const activeName = ref("info");
 </script>
 
 <template>
-  <div class="author">
-    <el-tabs v-model="activeName" type="card" class="tabs">
+  <div class="author bkcolor">
+    <el-tabs v-model="activeName" type="border-card" class="tabs">
       <el-tab-pane label="作者信息" name="info">
         <Information />
       </el-tab-pane>

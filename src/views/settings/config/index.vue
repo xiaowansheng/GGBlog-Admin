@@ -13,8 +13,8 @@ const activeName = ref("third");
 </script>
 
 <template>
-  <div class="author">
-    <el-tabs v-model="activeName" type="card" class="tabs">
+  <div class="config bkcolor">
+    <el-tabs v-model="activeName" type="border-card" class="tabs">
       <el-tab-pane label="第三方登录" name="third">
         <third-part-login/>
       </el-tab-pane>

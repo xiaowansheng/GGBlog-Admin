@@ -4,13 +4,13 @@ import Information from "./Information.vue";
 import UpdatePassword from "./UpdatePassword.vue";
 
 defineOptions({
-  name: ""
+  name: "PersonCenter"
 });
 </script>
 
 <template>
-  <div class="person-center">
-    <el-tabs :tab-position="'top'" style="height: 200px" class="demo-tabs">
+  <div class="person-center bkcolor">
+    <el-tabs :tab-position="'top'" type="border-card">
       <el-tab-pane label="个人信息">
         <Information />
       </el-tab-pane>

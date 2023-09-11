@@ -1,5 +1,5 @@
-export default interface Menu{
+export default interface Menu {
   name: string;
   label: string;
-  cover: string;
+  url: string;
 }

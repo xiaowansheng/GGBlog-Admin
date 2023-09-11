@@ -22,7 +22,7 @@ watch(show, () => {
   if (!isAdd.value && item?.value) {
     form.name = item.value.name;
     form.label = item.value.label;
-    form.cover = item.value.cover;
+    form.url = item.value.url;
   } else {
     resetForm();
   }
@@ -35,8 +35,8 @@ watch(visiable, () => {
 });
 const form = reactive<Menu>({
   name: "",
-  cover: "",
-  label: ""
+  label: "",
+  url: "",
 });
 const formRef = ref<FormInstance>();
 const rules = reactive<FormRules>({
@@ -82,7 +82,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
   // emit 交给父类修改提交
   formEl.validate(valid => {
     if (valid) {
-      emits("updateData", form);
+      emits("updateData", true,form);
     }
   });
 };
@@ -109,11 +109,11 @@ const resetForm = () => {
       label-position="left"
       status-icon
     >
-      <el-form-item label="菜单名称" prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
       <el-form-item label="菜单标签" prop="label">
         <el-input v-model="form.label" />
+      </el-form-item>
+      <el-form-item label="菜单名称" prop="name">
+        <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="菜单封面" prop="cover">
         <!-- <el-input v-model="form.cover" /> -->

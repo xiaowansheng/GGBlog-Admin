@@ -3,23 +3,15 @@ import { getWebsiteConfig, updateConfig } from "@/api/config";
 import { ElMessage } from "element-plus";
 import { onBeforeMount, ref } from "vue";
 import { ConfigJson } from "../config";
+import { WebInfo } from "./WebInfo";
 defineOptions({
   name: "WebsiteInformation"
 });
-export interface Info {
-  title: string;
-  icon: string;
-  homeTitle: string;
-  website: string;
-  introduction: string;
-  createTime: string;
-  recordNumber: string;
-  notice: string;
-}
+
 onBeforeMount(() => {
   getData();
 });
-const config = ref<ConfigJson<Info> | any>({
+const config = ref<ConfigJson<WebInfo> | any>({
   // 防止没有数据时报错
   value: {}
 });
@@ -67,6 +59,15 @@ const updateData = () => {
               :disabled="!open"
               v-model="config.value.icon"
               placeholder="输入网站图标地址~"
+              size="large"
+            />
+          </div>
+          <div class="config">
+            <label> Github : </label>
+            <el-input
+              :disabled="!open"
+              v-model="config.value.github"
+              placeholder="输入Github地址~"
               size="large"
             />
           </div>
