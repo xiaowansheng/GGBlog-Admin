@@ -10,7 +10,7 @@ import { $t, transformI18n } from "@/plugins/i18n";
 import { useLayout } from "@/layout/hooks/useLayout";
 import { useUserStoreHook } from "@/store/modules/user";
 import { initRouter, getTopMenu } from "@/router/utils";
-import { bg, avatar, illustration } from "./utils/static";
+import { bg, /*avatar,*/ illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref, reactive, toRaw, onMounted, onBeforeUnmount } from "vue";
 import { useTranslationLang } from "@/layout/hooks/useTranslationLang";
@@ -160,7 +160,10 @@ onBeforeUnmount(() => {
       </div>
       <div class="login-box">
         <div class="login-form">
-          <avatar class="avatar" />
+          <!-- <avatar class="avatar" /> -->
+          <div class="logo">
+            <img src="@/assets/login/avatar.png" alt="logo" width="90" height="90" />
+          </div>
           <Motion>
             <h2 class="outline-none">{{ title }}</h2>
           </Motion>
@@ -244,5 +247,11 @@ onBeforeUnmount(() => {
     position: absolute;
     left: 20px;
   }
+}
+
+.logo{
+  display:flex;
+   justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
 }
 </style>
