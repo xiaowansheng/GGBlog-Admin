@@ -80,11 +80,10 @@ onMounted(getData);
         <div class="hero-section__wrap">
           <div class="hero-section__option">
             <!-- 使用v-if指令根据条件切换图片 -->
-            <img v-if="cover" :src="cover" alt="Hero section image" />
+            <img v-if="cover" :src="cover" alt="欢迎页封面" />
             <img
-              v-else
-              src="@/assets/welcome/images/lanyangyang.jpg"
-              alt="Hero section image"
+              v-else 
+              src="@/assets/welcome/images/lanyangyang.jpg" alt="欢迎页封面" 
             />
           </div>
           <!-- .hero-section__option -->
@@ -135,16 +134,14 @@ onMounted(getData);
   </div> -->
   </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .title__action {
   a {
     margin: 8px 5px;
   }
 }
+// img{
+//    object-fit:cover;
+//    object-position: center center;
+// }
 </style>
-<!-- <head>
-        <title>AweSplash - Free HTML Splash Page</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    </head> -->
