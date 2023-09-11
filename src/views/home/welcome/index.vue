@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import "@/assets/welcome/css/main.css";
 import { http } from "@/utils/http";
 import { onMounted } from "vue";
 import { ref } from "vue";
@@ -135,6 +134,7 @@ onMounted(getData);
   </div>
 </template>
 <style lang="scss" scoped>
+@import url("@/assets/welcome/css/main.css");
 .title__action {
   a {
     margin: 8px 5px;

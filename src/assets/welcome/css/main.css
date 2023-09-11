@@ -1648,21 +1648,21 @@ input[type="button"] {
 
 .btn-success {
   color: #fff;
-  background-color: #57d03b;
-  border-color: #57d03b;
+  background-color: rgba(87, 208, 59, 0.5);
+  border-color: rgba(87,208,59,0.8);
 }
 
 .btn-success:hover {
   color: #fff;
-  background-color: #389123;
-  border-color: #2b711b;
+  background-color: rgba(56,145,35,0.5);
+  border-color:rgba(43,113,27,0.8);
 }
 
 .btn-success:focus,
 .btn-success.focus {
   color: #fff;
-  background-color: #389123;
-  border-color: #2b711b;
+  background-color: rgba(56,145,35,0.5);
+  border-color:rgba(43,113,27,0.8);
 }
 
 .btn-success:active,
