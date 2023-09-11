@@ -6,17 +6,30 @@ import { useTags } from "@/layout/hooks/useTag";
 import { ElMessageBox, ElMessage } from "element-plus";
 
 import { NameLabelDto, getContentStatus } from "@/api/common";
-
 import { formatDate } from "@/utils/myUtils";
+
+import { getAuthorConfig } from "@/api/config";
+import { Author } from "@/views/settings/author/Author";
 const { router } = useTags();
 defineOptions({
   name: "TalkList"
 });
 onBeforeMount(() => {
+  getAuthorConfig().then((data: any) => {
+    if (data) {
+      // console.log("author:", data);
+      author.value = JSON.parse(data.value);
+    }
+  });
   getContentStatus().then((data: any) => {
     contentStatus.value = data;
   });
   getData();
+});
+const author = ref<Author>({
+  nickname: "小汍笙",
+  avatar: "",
+  introduction: ""
 });
 const getData = () => {
   const params = {
@@ -163,14 +176,28 @@ const deleteR = (item: TalkDto) => {
         <el-card class="item" v-for="item in list" :key="item.id">
           <template #header>
             <div class="item-header">
-              <!-- TODO 从本地存储的用户名取 -->
+              <!-- 查询作者信息，取出头像和昵称 -->
               <div class="left">
                 <div class="avatar">
-                  <el-avatar :size="50" :src="''" />
+                  <el-avatar
+                    v-if="author.avatar"
+                    :size="50"
+                    :src="author.avatar"
+                  />
+                  <!-- 无效 -->
+                  <!-- <el-avatar v-else :size="50" :src="'@/assets/login/avatar.png'" /> -->
+
+                  <img
+                    v-else
+                    src="@/assets/login/avatar.png"
+                    alt="logo"
+                    width="50"
+                    height="50"
+                  />
                 </div>
                 <div class="info">
                   <div class="name">
-                    {{ "小汍笙" }}
+                    {{ author.nickname }}
                   </div>
                   <div class="datetime">
                     {{ item.createTime }}

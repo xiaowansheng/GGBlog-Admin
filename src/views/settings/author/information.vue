@@ -4,14 +4,11 @@ import { ConfigJson } from "../config";
 import { onBeforeMount, ref } from "vue";
 import SinglePictureUpload from "@/components/upload/SinglePicture/index.vue";
 import { ElMessage } from "element-plus";
+import { Author } from "./Author";
 defineOptions({
   name: "AuthorInformation"
 });
-export interface Author {
-  nickname: string;
-  avatar: string;
-  introduction: string;
-}
+
 onBeforeMount(() => {
   getData();
 });

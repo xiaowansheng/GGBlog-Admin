@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import Information from "./information.vue";
 import Contact from "./contact.vue";
+
 defineOptions({
   name: "Author"
 });
