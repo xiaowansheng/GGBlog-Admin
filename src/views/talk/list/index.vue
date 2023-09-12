@@ -53,6 +53,12 @@ const dateChange = (value: [Date, Date]) => {
     queryParams.endDate = formatDate(value[1]);
     getData();
   }
+  // 无效
+  // else if (!value[0] && !value[1]) {
+  //   queryParams.beginDate = null
+  //   queryParams.endDate = null
+  //   getData()
+  // }
 };
 const queryParams = reactive<any>({
   id: null,

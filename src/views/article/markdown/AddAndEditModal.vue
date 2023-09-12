@@ -443,6 +443,7 @@ const createTag = () => {
 
         <el-form-item label="文章封面:" prop="cover">
           <el-input v-model="form.cover" placeholder="文章封面" />
+          
         </el-form-item>
         <el-form-item label="文章类型:" prop="type">
           <!-- <el-input v-model="form.type" placeholder="选择文章类型" /> -->
