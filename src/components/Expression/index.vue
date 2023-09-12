@@ -1,18 +1,12 @@
 <script setup lang="ts">
+import { watch } from "vue";
 import { toRefs, ref } from "vue";
 // import * as fs from "fs";
 defineOptions({
   name: "Expression"
 });
-const props = defineProps({
-  value: {
-    type: String,
-    default: ""
-  }
-});
-const emits = defineEmits(["select", "update:value"]);
-const { value } = toRefs(props);
-const emojiPath = "@/assets/emoji";
+
+const emits = defineEmits(["select","update:visiable"]);
 const emojis = [
   [
     "/emoji/one/daxiao.svg",
@@ -59,14 +53,29 @@ const emojis = [
     "/emoji/one/caihongma.svg",
     "/emoji/one/zhadan.svg",
     "/emoji/one/anzhongguancha.svg"
-  ]
+  ],
 ];
+/**
+ * 获取图片名称
+ * @param url 
+ */
+const getName = (url: string) => {
+  if (!url) {
+    return ""
+  }
+  const path = url.split("/")
+  const name = path[path.length - 1]
+  return name
+}
+
+const show =ref<boolean>()
 </script>
 
 <template>
+    <!-- title="表情" -->
   <el-popover
+  v-model:visible="show"
     placement="bottom"
-    title="表情"
     trigger="click"
     :width="360"
     popper-class="emoji-popover"
@@ -74,12 +83,12 @@ const emojis = [
     <div class="emoji-content">
       <!-- <h1>表情包</h1> -->
       <el-tabs value="one" type="border-card" class="emoji-tabs">
-        <el-tab-pane>
+        <el-tab-pane v-for="(item) in emojis">
           <template #label>
-            <img class="tag-name" :src="emojis[0][0]" alt="" />
+            <img class="tag-name" :src="item[0]" alt="" />
           </template>
           <div class="images">
-            <img v-for="url in emojis[0]" :src="url" alt="" />
+            <img @click="emits('select',url);show=false" v-for="url in item" :src="url" alt="" />
           </div>
         </el-tab-pane>
 
@@ -112,8 +121,11 @@ const emojis = [
         gap: 5px;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 
-        img {
-          // width: 100%;
+        img:hover {
+          background-color: rgb(218, 228, 230);
+        }
+        img:active {
+          background-color: rgb(171, 222, 229);
         }
       }
         .images::-webkit-scrollbar {

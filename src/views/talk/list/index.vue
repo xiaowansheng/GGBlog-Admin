@@ -237,9 +237,8 @@ const deleteR = (item: TalkDto) => {
             </div>
           </template>
           <div class="content">
-            <div class="text">
-              {{ item.content }}
-            </div>
+            <!-- {{ item.content }} -->
+            <div class="text" v-html="item.content"></div>
             <div class="primacy">
               <div class="left">
                 <el-tag v-if="item.status == 'public'" type="success">{{
@@ -275,7 +274,21 @@ const deleteR = (item: TalkDto) => {
     </el-card>
   </div>
 </template>
-
+<style lang="scss">
+.talk-list {
+  .content {
+    .text {
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+      img {
+        display: inline-block;
+        width: 30px;
+      }
+    }
+  }
+}
+</style>
 <style lang="scss" scoped>
 .item {
   border-radius: 15px;

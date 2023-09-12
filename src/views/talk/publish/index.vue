@@ -36,6 +36,7 @@ const getData = (id: number) => {
     });
   }
 };
+const inputRef = ref<HTMLDivElement>();
 const contentStatus = ref<NameLabelDto[]>([]);
 const talkForm = reactive<Talk>({
   id: null,
@@ -45,6 +46,7 @@ const talkForm = reactive<Talk>({
   top: 0
 });
 const submit = () => {
+  talkForm.content=inputRef.value.innerHTML
   const newTalkStr = JSON.stringify(talkForm);
   const newTalk = JSON.parse(newTalkStr);
   newTalk.images = JSON.stringify(newTalk.images);
@@ -65,6 +67,58 @@ const submit = () => {
     });
   }
 };
+
+/**
+ * 保存最后一次的编辑框光标信息副本
+ */
+let lastRange = null;
+/**
+ * 获取输入框光标
+ */
+const setlastRange = () => {
+  const selection = window.getSelection();
+  const range = selection.getRangeAt(0);
+  if (range) {
+    console.log(range);
+    const preSelectionRange = range.cloneRange();
+    lastRange= preSelectionRange;
+  } else {
+    lastRange= null;
+  }
+};
+const selectEmoji = (url: string) => {
+  const img = document.createElement("img");
+  img.src = url;
+
+  const selection = window.getSelection();
+  const editableDiv = inputRef.value;
+
+  // 检查 editableDiv 是否为空
+  if (editableDiv.childNodes.length === 0) {
+    const textNode = document.createTextNode("");
+    editableDiv.appendChild(textNode);
+  }
+  if (!lastRange) {
+    lastRange = document.createRange();
+    lastRange.setStartAfter(editableDiv.childNodes[0]);
+    lastRange.setEndAfter(editableDiv.childNodes[0]);
+    lastRange = lastRange;
+  }
+
+  console.log(editableDiv.childNodes);
+
+  lastRange.insertNode(img); // 在光标位置前插入图片
+
+  // 将光标位置调整到图片之后
+  lastRange.setStartAfter(img);
+
+  lastRange.setEndAfter(img);
+
+  selection.removeAllRanges();
+  selection.addRange(lastRange);
+  // 打印插入图片后的 HTML 结构
+  // console.log(inputRef.value.innerHTML);
+};
 </script>
 
 <template>
@@ -84,12 +138,19 @@ const submit = () => {
             type="textarea"
             placeholder="记录下今天的状态和心情~~~"
           /> -->
-          <div style="" class="input" contenteditable="true"></div>
+          <div
+            ref="inputRef"
+            @keyup="setlastRange"
+            @click="setlastRange"
+            class="input"
+            contenteditable="true"
+            v-html="talkForm.content"
+          ></div>
         </div>
         <div class="operation">
           <div class="left">
             <div class="op">
-              <Expression>
+              <Expression @select="selectEmoji">
                 <template #default>
                   <svg
                     t="1694501355830"
@@ -191,7 +252,18 @@ const submit = () => {
     </el-card>
   </div>
 </template>
-
+<style lang="scss">
+.text {
+  .input {
+    // line-height: 30px;
+    // font-size: 20px;
+    img {
+      display: inline-block;
+      width: 30px;
+    }
+  }
+}
+</style>
 <style lang="scss" scoped>
 .text {
   .input {
@@ -220,20 +292,9 @@ const submit = () => {
   .left {
     display: flex;
     flex-wrap: nowrap;
-    // width: 90px;
-    // .icon {
-    //   width: 40px;
-    //   height: 40px;
-    // }
-    // .icon:not(:last-of-type) {
-    //   margin-right: 10px;
-    // }
   }
   .form {
     text-align: right;
-    // .op:not(:first-of-type) {
-    //   margin-left: 15px;
-    // }
   }
 }
 .upload {
