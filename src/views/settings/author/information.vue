@@ -60,6 +60,8 @@ const updateData = () => {
         <single-picture-upload
           v-model="config.value.avatar"
           dir="avatar"
+          :width="'150px'"
+          :height="'150px'"
           :disable="!open"
         />
       </div>

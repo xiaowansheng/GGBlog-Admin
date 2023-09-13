@@ -9,7 +9,6 @@ import CherryMarkdown from "@/components/editor/CherryMarkdown/index.vue";
 import WangEditor from "@/components/editor/WangEditor/index.vue";
 // import TuiEditor from "@/components/editor/TuiEditor/index.vue";
 import { useDetail } from "@/hooks/routerUtils";
-import { buildUUID } from "@pureadmin/utils";
 const { initToDetail, getParameter, closeToPage } = useDetail();
 import { formatDate } from "@/utils/myUtils";
 defineOptions({

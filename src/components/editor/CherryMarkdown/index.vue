@@ -6,6 +6,15 @@ import { onActivated } from "vue";
 import { onDeactivated } from "vue";
 import { onBeforeMount } from "vue";
 import { onBeforeUnmount } from "vue";
+import { getOss } from "@/api/upload";
+import { reactive } from "vue";
+import { buildUUID } from "@pureadmin/utils";
+
+import { ElMessage } from "element-plus";
+// 使用下面这个会有跨域的问题
+// import { http } from "@/utils/http";
+// 而这个不会
+import axios from "axios";
 // import mermaid from "mermaid";
 // import * as echarts from "echarts";
 // import katex from "katex";
@@ -122,6 +131,26 @@ const customMenuA = Cherry.createMenuHook("加粗斜体", {
 const customMenuB = Cherry.createMenuHook("实验室", {
   iconName: ""
 });
+
+const uploadForm: any = reactive({
+  policy: "",
+  signature: "",
+  ossaccessKeyId: ""
+});
+const info: any = reactive({
+  dir: "",
+  host: "",
+  expire: 0,
+  url: ""
+});
+/**
+ * 手动上传图片等文件
+ * @param formData 
+ */
+function upload(formData: FormData): Promise<any> {
+  return axios.post(ossUrl, formData);
+  // return http.post(ossUrl, null, { data: formData });
+}
 const callbacks = {
   /**
    * 全局的URL处理器
@@ -141,10 +170,47 @@ const callbacks = {
     callback: (path: string, arg: { [key: string]: any }) => void
   ) {
     console.log(file);
-    const fileUrl = URL.createObjectURL(file);
-    console.log("url", fileUrl);
+    // const fileUrl = URL.createObjectURL(file);
+    // console.log("url", fileUrl);
+    getOss(dir.value).then((data: any) => {
+      // 去除默认开头斜杠/
+      data.dir = data.dir.replace(/^\//, "");
+      console.log("oss:", data);
+
+      // uploadForm.value = data;
+      uploadForm.policy = data.policy;
+      uploadForm.signature = data.signature;
+      uploadForm.ossaccessKeyId = data.accessid;
+      uploadForm.key = data.dir + "/" + buildUUID() + `_${file.name}`;
+      //
+      info.dir = data.dir;
+      info.host = data.host;
+      info.expire = data.expire;
+
+      console.log("uploadForm", uploadForm);
+      console.log("info", info);
+      info.url = data.host + "/" + uploadForm.key;
+
+      let formData = new FormData();
+      for (let key in uploadForm) {
+        formData.append(key, uploadForm[key]);
+      }
+      formData.append("file", file);
+      upload(formData)
+        .then((data: any) => {
+          ElMessage.success(`图片[${info.url}]上传成功。`);
+          callback(info.url, {
+            name: `${file.name.replace(/\.[^.]+$/, "")}`,
+            isShadow: true
+          });
+        })
+        .catch(e => {
+          ElMessage.error("图片上传失败！");
+          return;
+        });
+    });
     if (/video/i.test(file.type)) {
-      callback(fileUrl, {
+      callback(info.url, {
         name: `${file.name.replace(/\.[^.]+$/, "")}`,
         poster: "/favicon.ico",
         isBorder: true,
@@ -154,7 +220,7 @@ const callbacks = {
         height: "auto"
       });
     } else {
-      callback(fileUrl, {
+      callback(info.url, {
         name: `${file.name.replace(/\.[^.]+$/, "")}`,
         isShadow: true
       });
@@ -457,7 +523,7 @@ const config = {
       customMenuBName: customMenuB
     }
   },
-  drawioIframeUrl: window.location.origin +"/cherry/drawio_demo.html",
+  drawioIframeUrl: window.location.origin + "/cherry/drawio_demo.html",
 
   autoScrollByCursor: true,
   forceAppend: false,
@@ -501,31 +567,32 @@ onBeforeUnmount(destroy);
 </script>
 
 <template>
-    <div class="markdown" :id="id" ref="cherryDom"></div>
+  <div class="markdown" :id="id" ref="cherryDom"></div>
 </template>
 
 <style lang="scss">
-.markdown{
+.markdown {
   // 不加这个会穿模
   overflow-y: auto;
   width: 100%;
   overflow-x: hidden;
-      img {
-      max-width: 100%;
-    }
+  img {
+    max-width: 100%;
+  }
 }
 </style>
-<style lang="scss" >
-  // draw.io样式修改，不能加scoped否则不生效
-      iframe.cherry-dialog-iframe {
-      width: 100%;
-      height: 100%;
-    }
-  // .cherry-dialog {
-  //   z-index: 9999 !important;
-  //   .cherry-dialog-iframe {
-  //     width: 100%;
-  //     height: 100%;
-  //   }
-  // }
-</style>​
+<style lang="scss">
+// draw.io样式修改，不能加scoped否则不生效
+iframe.cherry-dialog-iframe {
+  width: 100%;
+  height: 100%;
+}
+// .cherry-dialog {
+//   z-index: 9999 !important;
+//   .cherry-dialog-iframe {
+//     width: 100%;
+//     height: 100%;
+//   }
+// }
+</style>
+​

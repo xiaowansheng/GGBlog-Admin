@@ -15,6 +15,7 @@ import { getAllCategory } from "@/api/category";
 import { getAllTag } from "@/api/tag";
 import { computed } from "vue";
 
+import SinglePictureUpload from "@/components/upload/SinglePicture/index.vue";
 defineOptions({
   name: "ArticleAddAndEditModal"
 });
@@ -69,23 +70,25 @@ const rules = reactive<FormRules>({
   cover: [
     {
       validator: (rule: any, value: any, callback: any) => {
-        if (value) {
+        console.log(form.value);
+        
+        if (form.value.cover) {
           callback();
         } else {
           callback(new Error("文章封面不能为空!"));
         }
-      },
+      }
     }
   ],
   category: [
     {
       validator: (rule: any, value: any, callback: any) => {
-        if (form.value.categoryVo.id||form.value.categoryVo.name) {
+        if (form.value.categoryVo.id || form.value.categoryVo.name) {
           callback();
         } else {
           callback(new Error("文章类型不能为空!"));
         }
-      },
+      }
     }
   ],
   tag: [
@@ -318,19 +321,6 @@ const createTag = () => {
         <el-input  v-model="form.content" placeholder="" />
       </el-form-item> -->
         <el-form-item label="文章分类:" prop="category">
-          <!-- <el-select
-            v-model="form.categoryVo.id"
-            placeholder="选择文章类型"
-            size="default"
-            style="min-width: 120px"
-          >
-            <el-option
-              v-for="item in categorys"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select> -->
           <el-tag
             class="selected-cate"
             closable
@@ -384,19 +374,6 @@ const createTag = () => {
           </el-popover>
         </el-form-item>
         <el-form-item label="文章标签:" prop="tag">
-          <!-- <el-input   placeholder="请选择文章标签" /> -->
-          <!-- <el-select
-            placeholder="选择标签类型"
-            size="default"
-            style="min-width: 120px"
-          >
-            <el-option
-              v-for="item in tags"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select> -->
           <span v-if="form.tagVos.length != 0">
             <el-tag
               class="selected-tag"
@@ -442,8 +419,14 @@ const createTag = () => {
         </el-form-item>
 
         <el-form-item label="文章封面:" prop="cover">
-          <el-input v-model="form.cover" placeholder="文章封面" />
-          
+          <!-- <el-input v-model="form.cover" placeholder="文章封面" /> -->
+          <single-picture-upload
+            v-model="form.cover"
+            dir="article"
+            :width="'320px'"
+            :height="'180px'"
+            @update:value="(url)=>form.cover=url"
+          />
         </el-form-item>
         <el-form-item label="文章类型:" prop="type">
           <!-- <el-input v-model="form.type" placeholder="选择文章类型" /> -->
