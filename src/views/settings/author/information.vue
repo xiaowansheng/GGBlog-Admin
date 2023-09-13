@@ -20,6 +20,8 @@ const getData = () => {
   getAuthorConfig().then((data: any) => {
     data.value = JSON.parse(data.value);
     config.value = data;
+    
+    // uploadRef.value.setUrl(data.value.avatar)
   });
 };
 const open = ref<boolean>(false);
@@ -32,6 +34,7 @@ const updateData = () => {
     ElMessage.success("修改成功！");
   });
 };
+const uploadRef=ref()
 </script>
 
 <template>
@@ -58,11 +61,13 @@ const updateData = () => {
               size="large"
             /> -->
         <single-picture-upload
+        ref="uploadRef"
           v-model="config.value.avatar"
           dir="avatar"
           :width="'150px'"
           :height="'150px'"
           :disable="!open"
+          @update:value="(url)=>config.value.avatar=url"
         />
       </div>
       <div class="config">

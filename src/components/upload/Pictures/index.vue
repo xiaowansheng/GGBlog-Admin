@@ -13,16 +13,14 @@ import {
 } from "element-plus";
 import { genFileId } from "element-plus";
 import type { UploadProps, UploadUserFile } from "element-plus";
-import { string } from "vue-types";
-
 const ossUrl = import.meta.env.VITE_GLOB_OSS_URL;
 defineOptions({
   name: "PicturesUpload"
 });
 const props = defineProps({
   value: {
-    type: Array,
-    default:[]
+    type: Array<String>,
+    default: []
   },
   disable: {
     type: Boolean,
@@ -34,57 +32,38 @@ const props = defineProps({
   }
 });
 const emits = defineEmits(["update:value"]);
-const { value, dir, disable }: any = toRefs(props);
-const fileList = ref<UploadUserFile[]>([
-  {
-    name: "food.jpeg",
-    url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
-  },
-  {
-    name: "plant-1.png",
-    url: "/images/plant-1.png"
-  },
-  {
-    name: "food.jpeg",
-    url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
-  },
-  {
-    name: "plant-2.png",
-    url: "/images/plant-2.png"
-  },
-  {
-    name: "food.jpeg",
-    url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
-  },
-  {
-    name: "figure-1.png",
-    url: "/images/figure-1.png"
-  },
-  {
-    name: "food.jpeg",
-    url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
-  },
-  {
-    name: "figure-2.png",
-    url: "/images/figure-2.png"
+const { value, dir, disable } = toRefs(props);
+const fileList = ref<UploadUserFile[]>([]);
+const getName = (url: string) => {
+  if (url) {
+    const arr = url.split("/");
+    return arr[arr.length - 1];
+  } else {
+    return url;
   }
-]);
-watch(
-  fileList,
-  () => {
-    console.log("图片列表变化：",fileList.value);
-    
-    emits("update:value", fileList.value);
-  },
-  {
-    deep: true
-  }
-);
+};
+watch(value, () => {
+  const arr: UploadUserFile[] = [];
+  value.value.forEach((url: string) => {
+    arr.push({
+      name: getName(url),
+      url
+    });
+  });
+  fileList.value = arr
+  console.log("value 改变");
+  
+});
+// watch(fileList, () => {
+//   console.log("图片列表变化：", fileList.value);
+
+//   emits("update:value", fileList.value);
+// });
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 
 const handleRemove: UploadProps["onRemove"] = (uploadFile, uploadFiles) => {
-  console.log(uploadFile, uploadFiles);
+  console.log("文件移除", uploadFile, uploadFiles);
 };
 
 const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
@@ -94,54 +73,125 @@ const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
 const uploadForm: any = reactive({
   policy: "",
   signature: "",
-  ossaccessKeyId: "",
-  key: "",
+  ossaccessKeyId: ""
+});
+const info: any = reactive({
   dir: "",
   host: "",
   expire: 0
+  // urls: []
 });
-const beforeUpload:UploadProps["beforeUpload"] = (rawFile: UploadRawFile): Promise<boolean> => {
-  // TODO 上传时form为空
-  return new Promise((resolve, reject) => {
-    getOss(dir.value)
-      .then((data: any) => {
-        console.log("oss:", data);
-        // uploadForm.value = data;
-        uploadForm.policy = data.policy;
-        uploadForm.signature = data.signature;
-        uploadForm.ossaccessKeyId = data.accessid;
-        //
-        uploadForm.key = data.dir + "/" + buildUUID() + `_${rawFile.name}`;
-        uploadForm.dir = data.dir;
-        uploadForm.host = data.host;
-        uploadForm.expire = data.expire;
-        console.log("uploadForm", uploadForm);
-        resolve(true);
-      })
-      .catch(() => {
-        console.error("获取oss上传凭证失败。");
-        reject(false);
-      });
+watch(fileList, (newList, oldList) => {
+  console.log("newList", newList);
+  console.log("oldList", oldList);
+  // return
+  // console.log("文件列表改变：");
+  if (fileList.value.length && newList.length > oldList.length) {
+    const file = fileList.value[fileList.value.length - 1];
+    getOss(dir.value).then((data: any) => {
+      // 去除默认开头斜杠/
+      data.dir = data.dir.replace(/^\//, "");
+      console.log("oss:", data);
+
+      // uploadForm.value = data;
+      uploadForm.policy = data.policy;
+      uploadForm.signature = data.signature;
+      uploadForm.ossaccessKeyId = data.accessid;
+      uploadForm.key = data.dir + "/" + buildUUID() + `_${file.name}`;
+      //
+      info.dir = data.dir;
+      info.host = data.host;
+      info.expire = data.expire;
+
+      console.log("uploadForm", uploadForm);
+      console.log("info", info);
+      file.url = data.host + "/" + uploadForm.key;
+      console.log("当前上传的图片地址：", file.url);
+
+      uploadRef.value?.submit();
+    });
+  }
+});
+const success = (
+  response: any,
+  uploadFile: UploadFile,
+  uploadFiles: UploadFiles
+): void => {
+  // console.log("图片上传成功", response);
+  ElMessage.success("图片上传成功！");
+  const arr: string[] = [];
+  fileList.value.forEach(imgInfo => {
+    arr.push(imgInfo.url);
   });
+  emits("update:value", arr);
+  console.log("图片list", arr);
 };
+const error = (
+  error: Error,
+  uploadFile: UploadFile,
+  uploadFiles: UploadFiles
+): void => {
+  // console.error("图片上传失败",error);
+  ElMessage.error("图片上传失败！");
+};
+const uploadRef = ref();
+// const beforeUpload:UploadProps["beforeUpload"] = (rawFile: UploadRawFile): Promise<boolean> => {
+//   // TODO 上传时form为空
+//   return new Promise((resolve, reject) => {
+
+//     if (fileList.value.length) {
+//       const file = fileList.value[0];
+//       getOss(dir.value)
+//       .then((data: any) => {
+//       data.dir = data.dir.replace(/^\//, "");
+//       console.log("oss:", data);
+
+//       // uploadForm.value = data;
+//       uploadForm.policy = data.policy;
+//       uploadForm.signature = data.signature;
+//       uploadForm.ossaccessKeyId = data.accessid;
+//       uploadForm.key = data.dir + "/" + buildUUID() + `_${file.name}`;
+//       //
+//       info.dir = data.dir;
+//       info.host = data.host;
+//       info.expire = data.expire;
+
+//       console.log("uploadForm", uploadForm);
+//       console.log("info", info);
+//       info.url = data.host + "/" + uploadForm.key;
+//         resolve(true);
+//       })
+//       .catch(() => {
+//         console.error("获取oss上传凭证失败。");
+//         reject(false);
+//       });
+//     }
+
+//   });
+// };
 </script>
 
 <template>
   <div>
+    <!-- :before-upload="beforeUpload" -->
     <el-upload
-    v-model:file-list="fileList"
-    :action="ossUrl"
-    :data="uploadForm"
-    list-type="picture-card"
-    :on-preview="handlePictureCardPreview"
-    :before-upload="beforeUpload"
-    :on-remove="handleRemove"
-  >
-    <el-icon><Plus /></el-icon>
-  </el-upload>
+      ref="uploadRef"
+      v-model:file-list="fileList"
+      :action="ossUrl"
+      :data="uploadForm"
+      :auto-upload="false"
+      :drag="true"
+      list-type="picture-card"
+      :on-preview="handlePictureCardPreview"
+      :on-remove="handleRemove"
+      :on-success="success"
+      :on-error="error"
+    >
+      <el-icon><Plus /></el-icon>
+    </el-upload>
 
-  <el-dialog v-model="dialogVisible">
-    <img w-full :src="dialogImageUrl" alt="Preview Image" />
-  </el-dialog>
+    <el-dialog v-model="dialogVisible">
+      <img w-full :src="dialogImageUrl" alt="Preview Image" />
+    </el-dialog>
   </div>
 </template>

@@ -30,7 +30,14 @@ const getData = (id: number) => {
       talkForm.content = data.content;
       try {
         talkForm.images = JSON.parse(data.images);
-      } catch (e) {}
+        //         const arr = JSON.parse(data.images);
+        // arr.forEach(img => {
+
+        // talkForm.images.push(img)
+      } catch (e) {
+        console.error("images不是数组");
+        talkForm.images = [];
+      }
       talkForm.status = data.status;
       talkForm.top = data.top;
     });
@@ -46,7 +53,7 @@ const talkForm = reactive<Talk>({
   top: 0
 });
 const submit = () => {
-  talkForm.content=inputRef.value.innerHTML
+  talkForm.content = inputRef.value.innerHTML;
   const newTalkStr = JSON.stringify(talkForm);
   const newTalk = JSON.parse(newTalkStr);
   newTalk.images = JSON.stringify(newTalk.images);
@@ -81,14 +88,14 @@ const setlastRange = () => {
   if (range) {
     // console.log(range);
     const preSelectionRange = range.cloneRange();
-    lastRange= preSelectionRange;
+    lastRange = preSelectionRange;
   } else {
-    lastRange= null;
+    lastRange = null;
   }
 };
 const selectEmoji = (url: string) => {
   if (!inputRef.value) {
-    return
+    return;
   }
   const img = document.createElement("img");
   img.src = url;
@@ -249,7 +256,7 @@ const selectEmoji = (url: string) => {
           </div>
         </div>
         <div class="upload">
-          <pictures-upload v-model="talkForm.images" dir="talk" />
+          <pictures-upload v-model="talkForm.images" dir="talk" @update:value="(imgs)=>talkForm.images=imgs"/>
         </div>
       </div>
     </el-card>

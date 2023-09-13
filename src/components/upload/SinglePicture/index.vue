@@ -14,7 +14,10 @@ defineOptions({
   name: "SinglePictureUpload"
 });
 const props = defineProps({
-  value: String,
+  value: {
+    type: String,
+    default:""
+  },
   disable: {
     type: Boolean,
     default: false
@@ -33,11 +36,20 @@ const props = defineProps({
   },
 });
 const emits = defineEmits(["update:value"]);
+
+
 const { value, dir, disable }: any = toRefs(props);
-const url = ref<string>("");
+const url = ref<string>(value.value);
 watch(value, () => {
+  console.log(("image-value更新"));
+  
   url.value = value!.value;
+}, {
+  deep:true
 });
+const setUrl=(val:string)=>{
+url.value=val
+}
 // watch(url, () => {
 //   emits("update:value", url.value);
 // });
@@ -98,25 +110,25 @@ const error = (
   // console.error("图片上传失败",error);
   ElMessage.error("图片上传失败！");
 };
-const handleFileChange = (uploadFile: UploadFile, uploadFiles: UploadFiles) => {
-  console.log("UploadChangeParam123", uploadFile, uploadFiles);
-  // const status = info.status;
-  // if (status !== "uploading") {
-  //   console.log("info:",info, ",fileList:", uploadFiles);
-  // }
-  // if (status === "done") {
-  //   info.file.thumbUrl =
-  //     uploadForm.host +
-  //     "/" +
-  //     uploadForm.key.replace("${filename}", info.file.name);
-  //   // value.value = info.file.thumbUrl;
-  //   // value.value=info.file.thumbUrl;
-  //   emits("update:value", info.file.thumbUrl);
-  //   ElMessage.success(`${info.file.name} 文件上传成功！`);
-  // } else if (status === "error") {
-  //   ElMessage.error(`${info.file.name} 文件上传失败！！`);
-  // }
-};
+// const handleFileChange = (uploadFile: UploadFile, uploadFiles: UploadFiles) => {
+//   console.log("UploadChangeParam123", uploadFile, uploadFiles);
+//   // const status = info.status;
+//   // if (status !== "uploading") {
+//   //   console.log("info:",info, ",fileList:", uploadFiles);
+//   // }
+//   // if (status === "done") {
+//   //   info.file.thumbUrl =
+//   //     uploadForm.host +
+//   //     "/" +
+//   //     uploadForm.key.replace("${filename}", info.file.name);
+//   //   // value.value = info.file.thumbUrl;
+//   //   // value.value=info.file.thumbUrl;
+//   //   emits("update:value", info.file.thumbUrl);
+//   //   ElMessage.success(`${info.file.name} 文件上传成功！`);
+//   // } else if (status === "error") {
+//   //   ElMessage.error(`${info.file.name} 文件上传失败！！`);
+//   // }
+// };
 const remove = () => {
   url.value = "";
   console.log("移除图片~~");
@@ -169,6 +181,7 @@ const uploadRef = ref<UploadInstance>();
 
 <template>
   <!-- :before-upload="beforeUpload" -->
+    <!-- :on-change="handleFileChange" -->
   <el-upload
     ref="uploadRef"
     class="single-upload"
@@ -182,7 +195,6 @@ const uploadRef = ref<UploadInstance>();
     :on-error="error"
     :on-success="success"
     :multiple="false"
-    :on-change="handleFileChange"
     list-type="picture"
     :disabled="disable"
     :limit="1"
