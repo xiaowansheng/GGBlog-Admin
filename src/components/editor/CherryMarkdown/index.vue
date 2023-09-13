@@ -170,6 +170,11 @@ const callbacks = {
     callback: (path: string, arg: { [key: string]: any }) => void
   ) {
     console.log(file);
+    
+    if (!/^image\/(jpeg|png|gif)$/i.test(file.type)) {
+      ElMessage.warning("暂时只支持图片上传！")
+      return
+     }
     // const fileUrl = URL.createObjectURL(file);
     // console.log("url", fileUrl);
     getOss(dir.value).then((data: any) => {
