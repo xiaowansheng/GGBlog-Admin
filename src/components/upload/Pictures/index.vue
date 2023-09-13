@@ -41,15 +41,13 @@ const getName = (url: string) => {
     return url;
   }
 };
-watch(value, () => {
-  const arr: UploadUserFile[] = [];
-  
+const valueOneChange=watch(value, () => {
   value.value.forEach((url: string) => {
     console.log("开始：");
     console.log(url);
     
     
-    arr.push({
+    fileList.value.push({
       name: getName(url),
       status: 'success',
       url,
@@ -57,8 +55,9 @@ watch(value, () => {
     console.log("结束：");
     console.log(url);
   });
-  fileList.value = arr;
-  console.log("value 改变",fileList.value);
+  console.log("value 改变", fileList.value);
+  // 回显照片
+  valueOneChange()
 });
 // watch(fileList, () => {
 //   console.log("图片列表变化：", fileList.value);
