@@ -421,12 +421,12 @@ const createTag = () => {
         <el-form-item label="文章封面:" prop="cover">
           <!-- <el-input v-model="form.cover" placeholder="文章封面" /> -->
           <single-picture-upload
-            v-model="form.cover"
+            v-model:value="form.cover"
             dir="article"
             :width="'320px'"
             :height="'180px'"
-            @update:value="(url)=>form.cover=url"
           />
+            <!-- @update:value="(url)=>form.cover=url" -->
         </el-form-item>
         <el-form-item label="文章类型:" prop="type">
           <!-- <el-input v-model="form.type" placeholder="选择文章类型" /> -->

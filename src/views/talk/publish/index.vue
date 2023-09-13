@@ -63,6 +63,7 @@ const submit = () => {
     return;
   }
   if (talkForm.id) {
+  
     updateTalk(null, { data: newTalk }).then(() => {
       ElMessage.success("修改成功！");
       closeToPage("TalkList");
@@ -256,7 +257,7 @@ const selectEmoji = (url: string) => {
           </div>
         </div>
         <div class="upload">
-          <pictures-upload v-model="talkForm.images" dir="talk" @update:value="(imgs)=>talkForm.images=imgs"/>
+          <pictures-upload v-model:value="talkForm.images" dir="talk" />
         </div>
       </div>
     </el-card>

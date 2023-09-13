@@ -37,19 +37,17 @@ const props = defineProps({
 });
 const emits = defineEmits(["update:value"]);
 
-
 const { value, dir, disable }: any = toRefs(props);
 const url = ref<string>(value.value);
 watch(value, () => {
   console.log(("image-value更新"));
-  
+
   url.value = value!.value;
-}, {
-  deep:true
-});
-const setUrl=(val:string)=>{
-url.value=val
-}
+})
+
+// const setUrl=(val:string)=>{
+// url.value=val
+// }
 // watch(url, () => {
 //   emits("update:value", url.value);
 // });

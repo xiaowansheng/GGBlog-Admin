@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, toRefs, watch } from "vue";
 import { Plus } from "@element-plus/icons-vue";
-import { UploadFilled } from "@element-plus/icons-vue";
+// import { UploadFilled } from "@element-plus/icons-vue";
 import { getOss } from "@/api/upload";
 import { buildUUID } from "@pureadmin/utils";
 import {
@@ -11,7 +11,6 @@ import {
   UploadInstance,
   UploadRawFile
 } from "element-plus";
-import { genFileId } from "element-plus";
 import type { UploadProps, UploadUserFile } from "element-plus";
 const ossUrl = import.meta.env.VITE_GLOB_OSS_URL;
 defineOptions({
@@ -44,15 +43,22 @@ const getName = (url: string) => {
 };
 watch(value, () => {
   const arr: UploadUserFile[] = [];
+  
   value.value.forEach((url: string) => {
+    console.log("开始：");
+    console.log(url);
+    
+    
     arr.push({
       name: getName(url),
-      url
+      status: 'success',
+      url,
     });
+    console.log("结束：");
+    console.log(url);
   });
-  fileList.value = arr
-  console.log("value 改变");
-  
+  fileList.value = arr;
+  console.log("value 改变",fileList.value);
 });
 // watch(fileList, () => {
 //   console.log("图片列表变化：", fileList.value);
@@ -108,7 +114,7 @@ watch(fileList, (newList, oldList) => {
       file.url = data.host + "/" + uploadForm.key;
       console.log("当前上传的图片地址：", file.url);
 
-      uploadRef.value?.submit();
+      uploadRef.value!.submit();
     });
   }
 });
@@ -186,6 +192,7 @@ const uploadRef = ref();
       :on-remove="handleRemove"
       :on-success="success"
       :on-error="error"
+      :disabled="disable"
     >
       <el-icon><Plus /></el-icon>
     </el-upload>
