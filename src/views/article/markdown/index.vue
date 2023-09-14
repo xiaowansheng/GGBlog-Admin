@@ -14,7 +14,7 @@ import { formatDate } from "@/utils/myUtils";
 defineOptions({
   name: "ArticlePublish"
 });
-const editorId = ref<number>(0);
+const editorId = ref<number>(1);
 onBeforeMount(() => {
   if (getParameter?.id) {
     articleForm.id = Number.parseInt(getParameter.id.toString());

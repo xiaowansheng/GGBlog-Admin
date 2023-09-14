@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import "cherry-markdown/dist/cherry-markdown.css";
 import Cherry from "cherry-markdown";
-import { onMounted, ref, toRefs, watch } from "vue";
+import { onMounted, ref, toRefs, watch ,shallowRef} from "vue";
 import { onActivated } from "vue";
 import { onDeactivated } from "vue";
 import { onBeforeMount } from "vue";
@@ -47,20 +47,21 @@ const emits = defineEmits(["change", "get", "update:value"]);
 const { id, value, height, dir } = toRefs(props);
 
 // TODO 同步进行，获取数据后才开始加载页面
-// const valueWatch = watch(value, () => {
-//   // 获取并设置文章初始内容
-//   // console.log("change value：\n", value.value);
-//   // TODO BUG  设置初始值时,光标错乱
+const valueWatch = watch(value, () => {
+  // 获取并设置文章初始内容
+  // console.log("change value：\n", value.value);
+  // TODO BUG  设置初始值时,光标错乱
 
-//   contentValue.value = value.value;
-//   cherryInstance.value?.insertValue(value.value, false);
+  contentValue.value = value.value;
+  cherryInstance.value?.insertValue(value.value, false);
 
-//   // console.log("cherryInstance.value?.getStatus()",cherryInstance.value?.getStatus());
-//   // 监听一次,为了获取编辑时的文章内容
-//   valueWatch();
-// });
+  // console.log("cherryInstance.value?.getStatus()",cherryInstance.value?.getStatus());
+  // 监听一次,为了获取编辑时的文章内容
+  valueWatch();
+});
 const contentValue = ref<string>(value.value);
-const cherryInstance = ref<Cherry>();
+// 注意！！！！ 只能用 shallowRef 来引用实例，用ref会出错
+const cherryInstance = shallowRef<Cherry>();
 const cherryDom = ref<HTMLDivElement>();
 
 /**
