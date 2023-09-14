@@ -139,7 +139,7 @@ const resetForm = () => {
         <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="相册封面:" prop="cover">
-        <single-picture-upload v-model:value="form.cover" />
+        <single-picture-upload v-model:value="form.cover" :height="'160px'" :width="'320px'"/>
         <el-input v-model="form.cover" />
       </el-form-item>
       <el-form-item label="相册描述:">

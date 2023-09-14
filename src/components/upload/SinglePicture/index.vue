@@ -40,11 +40,13 @@ const emits = defineEmits(["update:value"]);
 const { value, dir, disable }: any = toRefs(props);
 const url = ref<string>(value.value);
 const valueOneChange=watch(value, () => {
-  console.log(("image-value更新"));
-
-  url.value = value!.value;
   // 解决照片回显问题
-  valueOneChange()
+  console.log(("image-value更新"));
+  if (value.value != url.value) {
+    
+  url.value = value!.value;
+  }
+  // valueOneChange()
 })
 
 // const setUrl=(val:string)=>{
