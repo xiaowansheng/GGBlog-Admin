@@ -1,24 +1,34 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref } from "vue";
-import { PictureDto, getPicturePage, updatePicture, deletePicture } from "@/api/picture";
+import { onBeforeMount, reactive, ref, watch } from "vue";
+import {
+  PictureDto,
+  getPicturePage,
+  updatePicture,
+  deletePicture
+} from "@/api/picture";
 
-import { NameLabelDto, getContentStatus } from "@/api/common";
+import { NameLabelDto, getContentStatus,getPictureType } from "@/api/common";
 import EditModal from "./EditModal.vue";
-import AddModal from './AddModal.vue'
+import AddModal from "./AddModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useRouter } from "vue-router";
 import { useDetail } from "@/hooks/routerUtils";
-const { initToDetail, getParameter,getQuery, closeToPage } = useDetail();
+const { initToDetail, getParameter, getQuery, closeToPage } = useDetail();
 defineOptions({
   name: "Pictures"
 });
 onBeforeMount(() => {
-  let title = getQuery?.name as string
-  title=title?.length>8?title?.slice(0,8)+"...":title
-  initToDetail(title)
+  let title = getQuery?.name as string;
+  // console.log(name);
+  console.log(title);
+  
+  title = title?.length > 8 ? title?.slice(0, 8) + "..." : title;
+  initToDetail(title);
   getContentStatus().then((data: any) => {
     contentStatus.value = data;
   });
+  getPictureType().then((data: any) => {
+    pictureType.value=data
+  })
   getData();
 });
 
@@ -39,10 +49,15 @@ const params = {
   limit: 30
 };
 const queryParams = reactive({
-  id: getParameter?.id,
+  albumId: getParameter!.id
 });
 const contentStatus = ref<NameLabelDto[]>([]);
+const pictureType = ref<NameLabelDto[]>([]);
 const list = ref<PictureDto[]>([]);
+
+watch(list, () => {
+  photos.value = list.value.map(picture => picture.url);
+});
 const findStatus = (name: string) => {
   for (let i = 0; i < contentStatus.value.length; i++) {
     if (contentStatus.value[i].name == name) {
@@ -52,7 +67,7 @@ const findStatus = (name: string) => {
   return name;
 };
 // 添加
-const showAdd=ref<boolean>(false)
+const showAdd = ref<boolean>(false);
 
 // 编辑
 const modifyRef = ref();
@@ -91,6 +106,7 @@ const deleteR = (item: PictureDto) => {
     });
   });
 };
+const photos = ref<string[]>([]);
 </script>
 
 <template>
@@ -104,17 +120,26 @@ const deleteR = (item: PictureDto) => {
       </template>
       <div class="content">
         <div class="operation">
-          <el-button size="default" type="primary" @click="showAdd=true"
+          <el-button size="default" type="primary" @click="showAdd = true"
             >添加</el-button
           >
         </div>
-            <el-empty v-show="total==0" description="Empty" />
+        <el-empty v-show="total == 0" description="Empty" />
         <div class="pictures">
-
-          <el-card class="box-card item" v-for="item in list" :key="item.name">
+          <!-- <el-card class="box-card item" v-for="item in list" :key="item.name">
             <template #header>
               <div class="card-header">
-                <span>{{ item.name }}</span>
+                <el-popover
+                  placement="top-start"
+                  title="图片名称"
+                  :width="200"
+                  trigger="hover"
+                  :content="item.name"
+                >
+                  <template #reference>
+                    <span>{{ item.name.slice(0, 20) + "..." }}</span>
+                  </template>
+                </el-popover>
                 <el-dropdown>
                   <span class="el-dropdown-link">
                     <el-link type="primary">● ● ●</el-link>
@@ -136,18 +161,62 @@ const deleteR = (item: PictureDto) => {
             </template>
             <div
               class="cover img"
-              :style="'background-image: url(' + item.url + ')'"
             >
+                <el-image style="width: 100%;height: 100%;" :src="item.url" :fit="'cover'" />
+
+          </div>
+          </el-card> -->
+          <div class="item" v-for="(item, index) in list" :key="item.name">
+            <el-popover
+              placement="top-start"
+              title="图片名称"
+              :width="200"
+              trigger="hover"
+              :content="item.name"
+            >
+              <template #reference>
+                <el-image
+                  style="width: 100%; height: 100%"
+                  :src="item.url"
+                  :fit="'cover'"
+                  :initial-index="index"
+                  :preview-src-list="photos"
+                />
+              </template>
+            </el-popover>
+            <div class="menu">
+              <el-dropdown>
+                <span class="el-dropdown-link">
+                  <el-link type="primary">● ● ●</el-link>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="show(item)">
+                      编辑
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      ><span :style="{ color: 'red' }" @click="deleteR(item)">
+                        删除
+                      </span></el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
-          </el-card>
+          </div>
         </div>
       </div>
     </el-card>
-    <add-modal v-model:show="showAdd"></add-modal>
+    <add-modal
+      v-model:show="showAdd"
+      :albumId="queryParams.albumId"
+      @refresh="getData()"
+    ></add-modal>
     <edit-modal
       v-model:show="showEdit"
       :item="selected"
       :status="contentStatus"
+      :source="pictureType"
       @Refresh="getData()"
     />
   </div>
@@ -161,48 +230,43 @@ const deleteR = (item: PictureDto) => {
   .pictures {
     display: grid;
     .item {
-      border-radius: 15px;
-      .el-dropdown-item {
-        padding: 20px;
+      position: relative;
+      .menu {
+        position: absolute;
+        top:5px;
+        right:5px;
+        .el-dropdown-link{
+          padding: 3px 6px;
+        }
       }
-      // width: 23.5%;
-      .cover {
-        position: relative;
-        width: 100%;
-        padding-bottom: 60%;
-        background-size: cover;
-      }
+
     }
   }
 }
 @media screen and (min-width: 992px) {
   .picture {
     .pictures {
-      grid-template-columns: repeat(3, 1fr);
-
-      grid-column-gap: 20px;
-      grid-row-gap: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-gap: 20px;
     }
   }
 }
 @media screen and (min-width: 768px) and (max-width: 992px) {
   .picture {
     .pictures {
-      grid-template-columns: repeat(2, 1fr);
-
-      grid-column-gap: 20px;
-      grid-row-gap: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      grid-gap: 15px;
     }
   }
 }
 @media screen and (max-width: 768px) {
   .picture {
     .pictures {
-      grid-template-columns: repeat(1, 1fr);
-
-      // grid-column-gap:20px;
-      grid-row-gap: 15px;
-    
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      grid-gap: 15px;
     }
   }
 }

@@ -56,26 +56,35 @@ const getName = (url: string) => {
 function addMissingData(firstArray: any[], secondArray: any[]): void {
   // 查找第一个数组中在第二个数组中没有的数据
   const newData = firstArray.filter(
-    url => !secondArray.some(item2 => {
-      // console.log(item1,item2,item2.url == url);
-      return  item2.url == url
-    })
+    url =>
+      !secondArray.some(item2 => {
+        // console.log(item1,item2,item2.url == url);
+        return item2.url == url;
+      })
   );
-  console.log("newData",newData);
-  
-  newData.forEach((url) => {
-    
+  console.log("newData", newData);
+
+  newData.forEach(url => {
     fileList.value.push({
       url,
-      name:getName(url)
-    })
-  })
-  // 将新数据添加到第二个数组中
-  // fileList.value.push(...newData);
+      name: getName(url)
+    });
+  });
+}
+function deleteMoreData(firstArray: any[], secondArray: any[]): void {
+  const urlSet = new Set(firstArray.map(item => item.url));
+
+  // 查找第二个数组中多余的数据并删除
+  for (let i = secondArray.length - 1; i >= 0; i--) {
+    const item = secondArray[i];
+    if (!urlSet.has(item.url)) {
+      secondArray.splice(i, 1);
+    }
+  }
 }
 const valueOneChange = watch(value, (newValue, oldValue) => {
-  console.log(newValue,oldValue);
-  
+  console.log(newValue, oldValue);
+
   if (fileList.value.length == 0) {
     value.value.forEach((url: string) => {
       console.log("开始：");
@@ -91,9 +100,10 @@ const valueOneChange = watch(value, (newValue, oldValue) => {
     });
     console.log("value 改变", fileList.value);
     // 回显照片
-  }
-  else {
-    addMissingData(newValue,fileList.value)
+  } else if (newValue.length < fileList.value.length) {
+    deleteMoreData(newValue, fileList.value);
+  } else {
+    addMissingData(newValue, fileList.value);
   }
   // valueOneChange();
 });
@@ -106,20 +116,19 @@ const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 /**
  * 当文件添加或删除时，调用该方法，反馈实时数据给父组件
- * @param uploadFiles 
+ * @param uploadFiles
  */
 const handleFileChange = (uploadFiles: any) => {
-    const arr: string[] = [];
+  const arr: string[] = [];
   fileList.value.forEach(imgInfo => {
     arr.push(imgInfo.url);
   });
   emits("update:value", arr);
   console.log("图片list", arr);
-  
-}
+};
 const handleRemove: UploadProps["onRemove"] = (uploadFile, uploadFiles) => {
   console.log("文件移除", uploadFile, uploadFiles);
-  handleFileChange(uploadFiles)
+  handleFileChange(uploadFiles);
 };
 
 const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
@@ -176,7 +185,7 @@ const success = (
   // console.log("图片上传成功", response);
   ElMessage.success("图片上传成功！");
 
-  handleFileChange(uploadFiles)
+  handleFileChange(uploadFiles);
 };
 const error = (
   error: Error,

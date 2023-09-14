@@ -3,7 +3,6 @@ import { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
 import { onBeforeMount, reactive, ref, toRefs, watch } from "vue";
 import { Picture, updatePicture } from "@/api/picture";
-import SinglePictureUpload from "@/components/upload/SinglePicture/index.vue";
 defineOptions({
   name: "PictureEditModal"
 });
@@ -20,6 +19,7 @@ watch(show, () => {
   if (item?.value != null) {
     form.id = item.value.id;
     form.name = item.value.name;
+    form.url = item.value.url;
     form.description = item.value.description;
     form.source = item.value.source;
     form.status = item.value.status;
@@ -135,7 +135,7 @@ const resetForm = () => {
           v-model="form.description"
           :rows="2"
           type="textarea"
-          placeholder="相册介绍"
+          placeholder="照片介绍"
         />
       </el-form-item>
       <el-form-item label="照片来源:" prop="source">
@@ -143,7 +143,7 @@ const resetForm = () => {
           <el-option
             v-for="item in source"
             :key="item.name"
-            :label="item.label"
+            :label="`${item.label}（${item.name}）`"
             :value="item.name"
           />
         </el-select>
@@ -153,7 +153,7 @@ const resetForm = () => {
           <el-option
             v-for="item in status"
             :key="item.name"
-            :label="item.label"
+            :label="`${item.label}（${item.name}）`"
             :value="item.name"
           />
         </el-select>

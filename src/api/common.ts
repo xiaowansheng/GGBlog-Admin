@@ -21,6 +21,19 @@ export const getContentStatus = (params?: any, config?: any) => {
   );
 };
 
+/**
+ * 获取照片类型
+ * @param params
+ * @param config
+ * @returns
+ */
+export const getPictureType = (params?: any, config?: any) => {
+  return http.get<any, Result<PageData<NameLabelDto[]>>>(
+    "/picture/type",
+    params,
+    config
+  );
+};
 
 /**
  * 获取所有用户类型
