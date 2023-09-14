@@ -6,6 +6,7 @@ import { toRefs } from "@vueuse/core";
 import { buildUUID, ElRef } from "@pureadmin/utils";
 import {getOss} from "@/api/upload"
 import axios from "axios";
+import { shallowRef } from "vue";
 
 const ossUrl=import.meta.env.VITE_GLOB_OSS_URL
 const props = defineProps({
@@ -23,7 +24,7 @@ const props = defineProps({
 const emits = defineEmits(["change", "get", "update:value"]);
 const { value, height,dir } = toRefs(props);
 // markdown实例
-const vditor = ref<Vditor | null>(null);
+const vditor = shallowRef<Vditor | null>(null);
 // div元素引用
 const contentRef = ref<ElRef>(null);
     // 保存markdown文本

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onBeforeMount, reactive, ref } from "vue";
 import { Article, addArticleDraft, getArticleById } from "@/api/article";
-import { NameLabelDto, getContentStatus } from "@/api/common";
+// import { NameLabelDto, getContentStatus } from "@/api/common";
 import { ElMessage } from "element-plus";
 import AddAndEditModal from "./AddAndEditModal.vue";
-import Vditor from "@/components/editor/Markdown/index.vue";
+// import Vditor from "@/components/editor/Markdown/index.vue";
 import CherryMarkdown from "@/components/editor/CherryMarkdown/index.vue";
-import WangEditor from "@/components/editor/WangEditor/index.vue";
+// import WangEditor from "@/components/editor/WangEditor/index.vue";
 // import TuiEditor from "@/components/editor/TuiEditor/index.vue";
 import { useDetail } from "@/hooks/routerUtils";
 const { initToDetail, getParameter, closeToPage } = useDetail();
@@ -147,8 +147,8 @@ const close = () => {
                 placeholder="选择编辑器"
               >
                 <el-option label="CherryMarkdown" :value="1" />
-                <el-option label="VditorMarkdown" :value="2" />
-                <el-option label="WangEditor" :value="3" />
+                <!-- <el-option label="VditorMarkdown（BUG）" :value="2" />
+                <el-option label="WangEditor" :value="3" /> -->
                 <!-- <el-option label="TuiEditor" :value="4" /> -->
               </el-select>
             </div>
@@ -171,8 +171,8 @@ const close = () => {
             v-model:value="articleForm.content"
             :height="520"
           />
-          <vditor v-if="editorId == 2" v-model:value="articleForm.content" />
-          <wang-editor v-if="editorId == 3" v-model:value="articleForm.content" />
+          <!-- <vditor v-if="editorId == 2" v-model:value="articleForm.content" />
+          <wang-editor v-if="editorId == 3" v-model:value="articleForm.content" /> -->
           <!-- <tui-editor v-if="editorId == 4" v-model:value="articleForm.content" /> -->
         </div>
       </div>
