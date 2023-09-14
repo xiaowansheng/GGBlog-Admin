@@ -13,11 +13,12 @@ const props = defineProps({
   albumId: {
     String,
     default: null,
-    required:true
+    required: true
   }
 });
-const { show,albumId } = toRefs(props);
+const { show, albumId } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   visiable.value = show.value;
 });
@@ -26,7 +27,7 @@ watch(visiable, () => {
     emits("update:show", false);
   }
 });
-const photos = ref<string[]>([])
+const photos = ref<string[]>([]);
 const getName = (url: string) => {
   if (url) {
     const arr = url.split("/");
@@ -37,21 +38,27 @@ const getName = (url: string) => {
 };
 const submitForm = () => {
   if (photos.value.length > 0) {
-    const form:any=[]
+    loading.value = true;
+    const form: any = [];
     photos.value.forEach(photo => {
       form.push({
         albumId: albumId.value,
         url: photo,
-        name:getName(photo)
-      })
-    })
-    addBatchPicture(null, { data: form }).then(() => {
-      emits("refresh")
-      ElMessage.success("上传成功！")
-      photos.value=[]
-      visiable.value = false
+        name: getName(photo)
+      });
+    });
 
-    })
+    addBatchPicture(null, { data: form })
+      .then(() => {
+        emits("refresh");
+        ElMessage.success("上传成功！");
+        photos.value = [];
+        visiable.value = false;
+        loading.value = false;
+      })
+      .catch(() => {
+        loading.value = false;
+      });
   }
 };
 
@@ -62,15 +69,13 @@ const submitForm = () => {
 <template>
   <el-dialog v-model="visiable" :title="'上传图片'" class="form" style="">
     <div class="content">
-      <pictures-upload v-model:value="photos"/>
+      <pictures-upload v-model:value="photos" />
     </div>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <!-- <el-button @click="resetForm()">重置</el-button> -->
-        <el-button type="primary" @click="submitForm()">
-          提交
-        </el-button>
+        <el-button type="primary" v-loading="loading" :disabled="loading" @click="submitForm()"> 提交 </el-button>
       </span>
     </template>
   </el-dialog>

@@ -15,6 +15,7 @@ const props = defineProps({
 });
 const { show, item } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   if (item?.value != null) {
     form.id = item.value.id;
@@ -83,24 +84,37 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
+      loading.value = true;
       if (form.id) {
-        updateAlbum(null, { data: form }).then(() => {
-          ElMessage({
-            message: "修改成功！",
-            type: "success"
+        updateAlbum(null, { data: form })
+          .then(() => {
+            ElMessage({
+              message: "修改成功！",
+              type: "success"
+            });
+            emits("refresh");
+            visiable.value = false;
+
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("refresh");
-          visiable.value = false;
-        });
       } else {
-        addAlbum(null, { data: form }).then(() => {
-          ElMessage({
-            message: "保存成功！",
-            type: "success"
+        addAlbum(null, { data: form })
+          .then(() => {
+            ElMessage({
+              message: "保存成功！",
+              type: "success"
+            });
+            emits("refresh");
+            visiable.value = false;
+
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("refresh");
-          visiable.value = false;
-        });
       }
     } else {
       console.log("error submit!");
@@ -139,7 +153,11 @@ const resetForm = () => {
         <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="相册封面:" prop="cover">
-        <single-picture-upload v-model:value="form.cover" :height="'160px'" :width="'320px'"/>
+        <single-picture-upload
+          v-model:value="form.cover"
+          :height="'160px'"
+          :width="'320px'"
+        />
         <el-input v-model="form.cover" />
       </el-form-item>
       <el-form-item label="相册描述:">
@@ -165,7 +183,7 @@ const resetForm = () => {
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <el-button @click="resetForm()">重置</el-button>
-        <el-button type="primary" @click="submitForm(formRef)">
+        <el-button v-loading="loading" :disabled="loading" type="primary" @click="submitForm(formRef)">
           提交
         </el-button>
       </span>

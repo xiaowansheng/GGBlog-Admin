@@ -77,11 +77,16 @@ const rules = reactive<FormRules>({
   ]
 });
 const open = ref<boolean>(false);
+const loading=ref(false)
 const updateData = () => {
+  loading.value=true
   updateInformation(information).then(() => {
     open.value = false;
     ElMessage.success("修改成功！");
-  });
+    loading.value = false;
+  }).catch(() => {
+    loading.value = false;
+  })
 };
 </script>
 
@@ -107,7 +112,7 @@ const updateData = () => {
         </el-form-item>
         <el-form-item label="头像:" prop="avatar">
           <!-- <el-input :disabled="!open" v-model="information.avatar" /> -->
-          <SinglePictureUpload v-model="information.avatar" :disable="!open"/>
+          <SinglePictureUpload v-model:value="information.avatar" :disable="!open" :height="'150px'" :width="'150px'"/>
         </el-form-item>
         <el-form-item label="签名:" prop="signature">
           <el-input :disabled="!open" v-model="information.signature" />
@@ -133,7 +138,7 @@ const updateData = () => {
       <el-button type="warning" @click="open = !open">{{
         open ? "关闭修改" : "开启修改"
       }}</el-button>
-      <el-button type="primary" :disabled="!open" @click="updateData()"
+      <el-button type="primary" v-loading="loading" :disabled="!open||loading" @click="updateData()"
         >提交修改</el-button
       >
     </div>

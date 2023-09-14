@@ -15,6 +15,7 @@ const props = defineProps({
 
 const { show, item } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   // console.log(item?.value);
 
@@ -81,6 +82,8 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
+      
+          loading.value=true
       if (form.id) {
         updateRole(null, { data: form }).then(() => {
           ElMessage({
@@ -89,7 +92,11 @@ const submitForm = (formEl: FormInstance | undefined) => {
           });
           emits("refresh");
           visiable.value = false;
-        });
+          loading.value=false
+        }).catch(() => {
+          
+          loading.value=false
+        })
       } else {
         addRole(null, { data: form }).then(() => {
           ElMessage({
@@ -98,7 +105,11 @@ const submitForm = (formEl: FormInstance | undefined) => {
           });
           emits("refresh");
           visiable.value = false;
-        });
+          loading.value=false
+        }).catch(() => {
+          
+          loading.value=false
+        })
       }
     } else {
       console.log("error submit!");
@@ -162,8 +173,8 @@ const resetForm = () => {
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <el-button @click="resetForm()">重置</el-button>
-        <el-button type="primary" @click="submitForm(formRef)">
-          提交
+        <el-button type="primary" v-loading="loading" :disabled="loading" @click="submitForm(formRef)">
+          提交0
         </el-button>
       </span>
     </template>

@@ -53,6 +53,7 @@ const talkForm = reactive<Talk>({
   status: "",
   top: 0
 });
+const loading = ref(false);
 const submit = () => {
   talkForm.content = inputRef.value.innerHTML;
   const newTalkStr = JSON.stringify(talkForm);
@@ -63,16 +64,29 @@ const submit = () => {
     ElMessage.warning("内容不能为空哦，请输入内容后再发布~");
     return;
   }
+  loading.value = true;
   if (talkForm.id) {
-    updateTalk(null, { data: newTalk }).then(() => {
-      ElMessage.success("修改成功！");
-      closeToPage("TalkList");
-    });
+    updateTalk(null, { data: newTalk })
+      .then(() => {
+        ElMessage.success("修改成功！");
+        closeToPage("TalkList");
+
+        loading.value = false;
+      })
+      .catch(() => {
+        loading.value = false;
+      });
   } else {
-    addTalk(null, { data: newTalk }).then(() => {
-      ElMessage.success("发布成功！");
-      closeToPage("TalkList");
-    });
+    addTalk(null, { data: newTalk })
+      .then(() => {
+        ElMessage.success("发布成功！");
+        closeToPage("TalkList");
+
+        loading.value = false;
+      })
+      .catch(() => {
+        loading.value = false;
+      });
   }
 };
 
@@ -260,13 +274,13 @@ const selectEmoji = (url: string) => {
               />
             </div>
             <div class="op">
-              <el-button type="primary" @click="submit()" size="default"
+              <el-button v-loading="loading" :disabled="loading" type="primary" @click="submit()" size="default"
                 >发布</el-button
               >
             </div>
           </div>
         </div>
-        <div v-show="talkForm.images.length>0" class="upload">
+        <div v-show="talkForm.images.length > 0" class="upload">
           <pictures-upload v-model:value="talkForm.images" dir="talk" />
         </div>
       </div>
@@ -289,13 +303,13 @@ const selectEmoji = (url: string) => {
     // width: inherit;
     // height: inherit;
   }
-.show-file-list{
-  display: none;
-}
+  .show-file-list {
+    display: none;
+  }
   .el-upload {
     border: none;
     width: 40px;
-    height:40px !important;
+    height: 40px !important;
     .el-upload-dragger {
       border: none;
       padding: 0;

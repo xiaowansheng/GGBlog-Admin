@@ -16,6 +16,7 @@ const props = defineProps({
 
 const { show, isAdd, item } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   // console.log(item?.value);
 
@@ -67,13 +68,13 @@ const rules = reactive<FormRules>({
   cover: [
     {
       validator: (rule: any, value: any, callback: any) => {
-        if (value) {
+        if (form.url) {
           callback();
         } else {
           callback(new Error("菜单封面不能为空!"));
         }
       },
-      trigger: "blur"
+      trigger: "change"
     }
   ]
 });
@@ -90,7 +91,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
 const resetForm = () => {
   form.label = "";
   form.name = "";
-  form.cover = "";
+  form.url = "";
 };
 </script>
 
@@ -117,14 +118,14 @@ const resetForm = () => {
       </el-form-item>
       <el-form-item label="菜单封面" prop="cover">
         <!-- <el-input v-model="form.cover" /> -->
-        <SinglePictureUpload v-model="form.cover" :dir="'cover'" />
+        <SinglePictureUpload v-model:value="form.url" :dir="'cover'" :height="'180px'" :width="'320px'"/>
       </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <el-button @click="resetForm()">重置</el-button>
-        <el-button type="primary" @click="submitForm(formRef)">
+        <el-button type="primary" v-loading="loading" :disabled="loading" @click="submitForm(formRef)">
           提交
         </el-button>
       </span>

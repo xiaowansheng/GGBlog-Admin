@@ -21,6 +21,7 @@ onBeforeMount(() => {
 });
 const { show, item } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   if (item.value) {
     form.id = item.value.id;
@@ -102,7 +103,7 @@ const rules = reactive<FormRules>({
     {
       validator: (rule: any, value: any, callback: any) => {
         console.log(value);
-        
+
         if (form.userInfoVo.nickname || item.value) {
           callback();
         } else {
@@ -129,24 +130,36 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
+      loading.value = true;
       if (item.value?.id) {
-        updateUser(form).then(() => {
-          ElMessage({
-            message: "修改成功！",
-            type: "success"
+        updateUser(form)
+          .then(() => {
+            ElMessage({
+              message: "修改成功！",
+              type: "success"
+            });
+            emits("refresh");
+            visiable.value = false;
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("refresh");
-          visiable.value = false;
-        });
       } else {
-        addUser(form).then(() => {
-          ElMessage({
-            message: "保存成功！",
-            type: "success"
+        addUser(form)
+          .then(() => {
+            ElMessage({
+              message: "保存成功！",
+              type: "success"
+            });
+            emits("refresh");
+            visiable.value = false;
+
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("refresh");
-          visiable.value = false;
-        });
       }
     } else {
       console.log("error submit!");
@@ -160,7 +173,7 @@ const resetForm = () => {
   form.passsword = "";
   form.password2 = "";
   form.userInfoVo.nickname = "";
-  form.roleIds=[]
+  form.roleIds = [];
 };
 </script>
 
@@ -223,7 +236,7 @@ const resetForm = () => {
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <el-button v-if="!form.id" @click="resetForm()">重置</el-button>
-        <el-button type="primary" @click="submitForm(formRef)">
+        <el-button type="primary" v-loading="loading" :disabled="laoding" @click="submitForm(formRef)">
           提交
         </el-button>
       </span>

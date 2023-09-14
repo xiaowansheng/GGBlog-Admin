@@ -10,11 +10,12 @@ const emits = defineEmits(["update:show", "refresh"]);
 const props = defineProps({
   show: Boolean,
   status: null,
-  source:null,
+  source: null,
   item: null
 });
-const { show, item,status,source } = toRefs(props);
+const { show, item, status, source } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   if (item?.value != null) {
     form.id = item.value.id;
@@ -36,9 +37,9 @@ watch(visiable, () => {
 });
 const form = reactive<Picture>({
   id: null,
-  albumId:null,
+  albumId: null,
   name: "",
-  url:null,
+  url: null,
   description: "",
   source: "",
   status: ""
@@ -86,13 +87,20 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
-        updatePicture(null, { data: form }).then(() => {
+      loading.value = true;
+      updatePicture(null, { data: form })
+        .then(() => {
           ElMessage({
             message: "修改成功！",
             type: "success"
           });
           emits("refresh");
           visiable.value = false;
+
+          loading.value = false;
+        })
+        .catch(() => {
+          loading.value = false;
         });
     } else {
       console.log("error submit!");
@@ -110,12 +118,7 @@ const resetForm = () => {
 </script>
 
 <template>
-  <el-dialog
-    v-model="visiable"
-    :title="'编辑照片信息'"
-    class="form"
-    style=""
-  >
+  <el-dialog v-model="visiable" :title="'编辑照片信息'" class="form" style="">
     <el-form
       ref="formRef"
       :model="form"

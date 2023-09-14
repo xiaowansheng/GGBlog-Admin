@@ -15,6 +15,7 @@ const props = defineProps({
 
 const { show, item } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   // console.log(item?.value);
 
@@ -40,6 +41,8 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
+      
+      loading.value = true
       updateLeaveWord(form).then(() => {
         ElMessage({
           message: "修改成功！",
@@ -47,7 +50,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
         });
         emits("refresh");
         visiable.value = false;
-      });
+        
+          loading.value=false
+      }).catch(() => {
+        
+          loading.value=false
+      })
     } else {
       console.log("error submit!");
       return false;
@@ -96,7 +104,7 @@ const resetForm = () => {
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <!-- <el-button @click="resetForm()">重置</el-button> -->
-        <el-button type="primary" @click="submitForm(formRef)">
+        <el-button v-loading="loading" :disabled="loading" type="primary" @click="submitForm(formRef)">
           提交
         </el-button>
       </span>

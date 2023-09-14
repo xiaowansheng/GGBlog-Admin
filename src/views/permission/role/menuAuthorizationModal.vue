@@ -21,6 +21,7 @@ const props = defineProps({
 const { show, roleId } = toRefs(props);
 const visiable = ref(show.value);
 const loading = ref<boolean>(false);
+const submitLoading = ref<boolean>(false);
 watch(show, () => {
   visiable.value = show.value;
   if (visiable.value) {
@@ -83,7 +84,7 @@ const submitForm = () => {
       menuId
     });
   });
-    console.log("submit!", data);
+  console.log("submit!", data);
   updateRoleMenus(null, { data })
     .then(() => {
       ElMessage({

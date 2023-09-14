@@ -5,7 +5,7 @@ import { onBeforeMount, ref } from "vue";
 import { ElMessage } from "element-plus";
 import SinglePictureUpload from '@/components/upload/singlePicture/index.vue'
 defineOptions({
-  name: "Avatar"
+  name: "Reward"
 });
 export interface Contact {
   name: string;
@@ -60,7 +60,7 @@ const submitData = (item: Contact) => {
       <div class="part" v-for="item in config.value" :key="item.name">
         <label>{{ item.label }}（{{item.name}}）:</label>
         <!-- <el-input :disabled="!open" v-model="item.label" size="large" /> -->
-        <SinglePictureUpload class="upload" v-model="item.url"/>
+        <SinglePictureUpload class="upload" v-model:value="item.url"  :height="'200px'" :width="'200px'"/>
       </div>
     </div>
     <div class="update">

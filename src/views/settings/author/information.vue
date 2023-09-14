@@ -20,7 +20,7 @@ const getData = () => {
   getAuthorConfig().then((data: any) => {
     data.value = JSON.parse(data.value);
     config.value = data;
-    
+
     // uploadRef.value.setUrl(data.value.avatar)
   });
 };
@@ -34,7 +34,7 @@ const updateData = () => {
     ElMessage.success("修改成功！");
   });
 };
-const uploadRef=ref()
+const uploadRef = ref();
 </script>
 
 <template>
@@ -61,7 +61,7 @@ const uploadRef=ref()
               size="large"
             /> -->
         <single-picture-upload
-        ref="uploadRef"
+          ref="uploadRef"
           v-model:value="config.value.avatar"
           dir="avatar"
           :width="'150px'"

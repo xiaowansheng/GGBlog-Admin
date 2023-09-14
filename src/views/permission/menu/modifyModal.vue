@@ -16,8 +16,9 @@ const props = defineProps({
   item: null
 });
 
-const { show, isChildren, parentId, parentName,item } = toRefs(props);
+const { show, isChildren, parentId, parentName, item } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   // console.log(item?.value);
   if (item?.value != null) {
@@ -124,24 +125,36 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
+      loading.value = true;
       if (form.id) {
-        updateMenu(null, { data: form }).then(() => {
-          ElMessage({
-            message: "修改成功！",
-            type: "success"
+        updateMenu(null, { data: form })
+          .then(() => {
+            ElMessage({
+              message: "修改成功！",
+              type: "success"
+            });
+            emits("refresh");
+            visiable.value = false;
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("refresh");
-          visiable.value = false;
-        });
       } else {
-        addMenu(null, { data: form }).then(() => {
-          ElMessage({
-            message: "保存成功！",
-            type: "success"
+        addMenu(null, { data: form })
+          .then(() => {
+            ElMessage({
+              message: "保存成功！",
+              type: "success"
+            });
+            emits("refresh");
+            visiable.value = false;
+
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("refresh");
-          visiable.value = false;
-        });
       }
       console.log("submit!");
     } else {
@@ -228,7 +241,7 @@ const resetForm = () => {
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <el-button @click="resetForm()">重置</el-button>
-        <el-button type="primary" @click="submitForm(formRef)">
+        <el-button type="primary" v-loading="loading" :disabled="loading" @click="submitForm(formRef)">
           提交
         </el-button>
       </span>

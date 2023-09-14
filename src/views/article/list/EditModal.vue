@@ -14,6 +14,7 @@ const props = defineProps({
 
   item: null
 });
+const loading = ref(false);
 const roles = ref<any>([]);
 const { show, item, articleTypes, contentStatus } = toRefs(props);
 const visiable = ref(show.value);
@@ -105,14 +106,21 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
-      updateSimpleArticle(form).then(() => {
-        ElMessage({
-          message: "修改成功！",
-          type: "success"
+      loading.value = true;
+      updateSimpleArticle(form)
+        .then(() => {
+          ElMessage({
+            message: "修改成功！",
+            type: "success"
+          });
+          emits("refresh");
+          visiable.value = false;
+
+          loading.value = false;
+        })
+        .catch(() => {
+          loading.value = false;
         });
-        emits("refresh");
-        visiable.value = false;
-      });
     } else {
       console.log("error submit!");
       return false;
@@ -216,7 +224,7 @@ const resetForm = () => {
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <el-button v-if="!form.id" @click="resetForm()">重置</el-button>
-        <el-button type="primary" @click="submitForm(formRef)">
+        <el-button type="primary" v-loading="loading" :disabled="loading" @click="submitForm(formRef)">
           提交
         </el-button>
       </span>

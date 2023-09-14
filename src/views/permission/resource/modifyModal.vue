@@ -17,6 +17,7 @@ const props = defineProps({
 
 const { show, isChildren, parentId, parentName, item } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   // console.log(item?.value);
   if (item?.value) {
@@ -91,24 +92,35 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
+      loading.value = true;
       if (form.id) {
-        updateResource(null, { data: form }).then(() => {
-          ElMessage({
-            message: "修改成功！",
-            type: "success"
+        updateResource(null, { data: form })
+          .then(() => {
+            ElMessage({
+              message: "修改成功！",
+              type: "success"
+            });
+            emits("refresh");
+            visiable.value = false;
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("refresh");
-          visiable.value = false;
-        });
       } else {
-        addResource(null, { data: form }).then(() => {
-          ElMessage({
-            message: "保存成功！",
-            type: "success"
+        addResource(null, { data: form })
+          .then(() => {
+            ElMessage({
+              message: "保存成功！",
+              type: "success"
+            });
+            emits("refresh");
+            visiable.value = false;
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("refresh");
-          visiable.value = false;
-        });
       }
       console.log("submit!");
     } else {
@@ -155,7 +167,11 @@ const resetForm = () => {
       <el-form-item :label="isChildren ? '接口名称' : '模块名称'" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item  v-if="isChildren||item?.parentId"  label="请求方法" prop="requestMethod">
+      <el-form-item
+        v-if="isChildren || item?.parentId"
+        label="请求方法"
+        prop="requestMethod"
+      >
         <el-select
           v-model="form.requestMethod"
           placeholder="选择请求方法"
@@ -172,9 +188,14 @@ const resetForm = () => {
         <el-input v-model="form.path" />
       </el-form-item>
       <el-form-item label="描述信息">
-        <el-input type="textarea" resize="none" :rows="2" v-model="form.description" />
+        <el-input
+          type="textarea"
+          resize="none"
+          :rows="2"
+          v-model="form.description"
+        />
       </el-form-item>
-      <el-form-item v-if="isChildren||item?.parentId" label="是否开放">
+      <el-form-item v-if="isChildren || item?.parentId" label="是否开放">
         <el-switch
           v-model="form.open"
           inline-prompt
@@ -187,7 +208,7 @@ const resetForm = () => {
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <el-button @click="resetForm()">重置</el-button>
-        <el-button type="primary" @click="submitForm(formRef)">
+        <el-button type="primary" v-loading="loading" :disabled="loading" @click="submitForm(formRef)">
           提交
         </el-button>
       </span>

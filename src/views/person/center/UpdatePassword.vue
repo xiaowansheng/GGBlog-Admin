@@ -55,17 +55,22 @@ const rules = reactive<FormRules>({
   ]
 });
 const open = ref<boolean>(false);
+const loading = ref<boolean>(false);
 const formRef = ref<FormInstance>();
 
 const updateData = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
+  loading.value = true
       updatePassword(information).then(() => {
         open.value = false;
         ElMessage.success("修改成功！");
         resetForm(formEl);
-      });
+        loading.value = false;
+      }).catch(() => {
+        loading.value = false;
+      })
     } else {
       console.log("error submit!");
       return false;
@@ -122,7 +127,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
       <el-button type="warning" @click="open = !open">{{
         open ? "关闭修改" : "开启修改"
       }}</el-button>
-      <el-button type="primary" :disabled="!open" @click="updateData(formRef)"
+      <el-button type="primary" v-loading="loading" :disabled="!open||loading" @click="updateData(formRef)"
         >提交修改</el-button
       >
     </div>

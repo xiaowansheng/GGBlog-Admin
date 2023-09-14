@@ -26,6 +26,7 @@ const props = defineProps({
 });
 const { show, item: form } = toRefs(props);
 const visiable = ref(show.value);
+const loading = ref(false);
 watch(show, () => {
   visiable.value = show.value;
 });
@@ -71,7 +72,7 @@ const rules = reactive<FormRules>({
     {
       validator: (rule: any, value: any, callback: any) => {
         console.log(form.value);
-        
+
         if (form.value.cover) {
           callback();
         } else {
@@ -132,24 +133,35 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
+      loading.value = true;
       if (form.value?.id) {
-        updateArticle(form.value).then(() => {
-          ElMessage({
-            message: "修改成功！",
-            type: "success"
+        updateArticle(form.value)
+          .then(() => {
+            ElMessage({
+              message: "修改成功！",
+              type: "success"
+            });
+            emits("close");
+            visiable.value = false;
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("close");
-          visiable.value = false;
-        });
       } else {
-        addArticle(form.value).then(() => {
-          ElMessage({
-            message: "保存成功！",
-            type: "success"
+        addArticle(form.value)
+          .then(() => {
+            ElMessage({
+              message: "保存成功！",
+              type: "success"
+            });
+            emits("close");
+            visiable.value = false;
+            loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
-          emits("close");
-          visiable.value = false;
-        });
       }
     } else {
       console.log("error submit!");
@@ -426,7 +438,7 @@ const createTag = () => {
             :width="'320px'"
             :height="'180px'"
           />
-            <!-- @update:value="(url)=>form.cover=url" -->
+          <!-- @update:value="(url)=>form.cover=url" -->
         </el-form-item>
         <el-form-item label="文章类型:" prop="type">
           <!-- <el-input v-model="form.type" placeholder="选择文章类型" /> -->
@@ -500,7 +512,12 @@ const createTag = () => {
         <span class="dialog-footer">
           <el-button @click="visiable = false">取消</el-button>
           <el-button v-if="!form.id" @click="resetForm()">重置</el-button>
-          <el-button type="primary" @click="submitForm(formRef)">
+          <el-button
+            v-loading="loading"
+            :disabled="loading"
+            type="primary"
+            @click="submitForm(formRef)"
+          >
             提交
           </el-button>
         </span>
