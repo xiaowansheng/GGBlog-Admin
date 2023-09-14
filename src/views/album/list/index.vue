@@ -128,11 +128,25 @@ const deleteR = (item: AlbumDto) => {
             <div
               class="cover img"
               :style="'background-image: url(' + item.cover + ')'"
-              @click="router.push({name:'Pictures',params:{id:item.id},query:{name:item.name}})"
+              @click="
+                router.push({
+                  name: 'Pictures',
+                  params: { id: item.id },
+                  query: { name: item.name }
+                })
+              "
             >
               <!-- @click="router2.push('/pictures')" -->
               <!-- @click="router2.push('/menu/4')" -->
               <!-- <el-image class="img" style="width: 100px; height: 100px" :src="item.cover" :fit="'cover'" /> -->
+            </div>
+            <div class="status">
+              <el-tag  size="small" v-if="item.status == 'public'">{{
+                findStatus(item.status)
+              }}</el-tag>
+              <el-tag  size="small" v-else type="warning">{{
+                findStatus(item.status)
+              }}</el-tag>
             </div>
           </el-card>
         </div>
@@ -155,6 +169,7 @@ const deleteR = (item: AlbumDto) => {
   .albums {
     display: grid;
     .item {
+      position: relative;
       border-radius: 15px;
       .el-dropdown-item {
         padding: 20px;
@@ -166,6 +181,11 @@ const deleteR = (item: AlbumDto) => {
         padding-bottom: 60%;
         background-size: cover;
       }
+      .status {
+        position: absolute;
+        left: 15px;
+        bottom: 15px;
+      }
     }
   }
 }
@@ -176,7 +196,6 @@ const deleteR = (item: AlbumDto) => {
 
       grid-column-gap: 20px;
       grid-row-gap: 20px;
-
     }
   }
 }

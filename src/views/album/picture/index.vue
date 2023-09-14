@@ -7,31 +7,33 @@ import {
   deletePicture
 } from "@/api/picture";
 
-import { NameLabelDto, getContentStatus,getPictureType } from "@/api/common";
+import { NameLabelDto, getContentStatus, getPictureType } from "@/api/common";
 import EditModal from "./EditModal.vue";
 import AddModal from "./AddModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useDetail } from "@/hooks/routerUtils";
+import { onMounted } from "vue";
 const { initToDetail, getParameter, getQuery, closeToPage } = useDetail();
 defineOptions({
   name: "Pictures"
 });
 onBeforeMount(() => {
-  let title = getQuery?.name as string;
-  // console.log(name);
-  console.log(title);
-  
-  title = title?.length > 8 ? title?.slice(0, 8) + "..." : title;
-  initToDetail(title);
   getContentStatus().then((data: any) => {
     contentStatus.value = data;
   });
   getPictureType().then((data: any) => {
-    pictureType.value=data
-  })
+    pictureType.value = data;
+  });
   getData();
 });
+onMounted(() => {
+  let title = getQuery?.name as string;
+  // console.log(name);
+  console.log(title);
 
+  title = title?.length > 8 ? title?.slice(0, 8) + "..." : title;
+  initToDetail(title);
+});
 const getData = () => {
   const tempParams = {
     ...params,
@@ -203,6 +205,14 @@ const photos = ref<string[]>([]);
                 </template>
               </el-dropdown>
             </div>
+            <div class="status">
+              <el-tag size="small" v-if="item.status == 'public'">{{
+                findStatus(item.status)
+              }}</el-tag>
+              <el-tag  size="small" v-else type="warning">{{
+                findStatus(item.status)
+              }}</el-tag>
+            </div>
           </div>
         </div>
       </div>
@@ -233,13 +243,17 @@ const photos = ref<string[]>([]);
       position: relative;
       .menu {
         position: absolute;
-        top:5px;
-        right:5px;
-        .el-dropdown-link{
+        top: 5px;
+        right: 5px;
+        .el-dropdown-link {
           padding: 3px 6px;
         }
       }
-
+      .status {
+        position: absolute;
+        left: 5px;
+        bottom: 5px;
+      }
     }
   }
 }
