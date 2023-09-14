@@ -37,6 +37,9 @@ const getData = () => {
     ...queryParams
   };
   getTalkPage(params).then((data: any) => {
+    data.list.forEach(talk => {
+      talk.images = JSON.parse(talk.images);
+    });
     total.value = data.total;
     list.value = data.list;
   });
@@ -239,6 +242,16 @@ const deleteR = (item: TalkDto) => {
           <div class="content">
             <!-- {{ item.content }} -->
             <div class="text" v-html="item.content"></div>
+            <div class="images">
+              <el-image
+                v-for="(picture,index) in item.images"
+                style="width: 100%; height: 100%"
+                :src="picture"
+                :fit="'cover'"
+                :initial-index="index"
+                :preview-src-list="item.images"
+              />
+            </div>
             <div class="primacy">
               <div class="left">
                 <el-tag v-if="item.status == 'public'" type="success">{{
@@ -278,8 +291,8 @@ const deleteR = (item: TalkDto) => {
 .talk-list {
   .content {
     .text {
-      display: flex;
-      align-items: center;
+      // display: flex;
+      // align-items: center;
       font-size: 18px;
       img {
         display: inline-block;
@@ -328,5 +341,42 @@ const deleteR = (item: TalkDto) => {
 }
 .item:not(:first-of-type) {
   margin-top: 25px;
+}
+@media screen and (min-width:1200px) {
+  .item {
+    .images {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-gap: 10px;
+    }
+  }
+}
+@media screen and (min-width: 992px) and (max-width: 1200px) {
+  .item {
+    .images {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-gap: 10px;
+    }
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 992px) {
+  .item {
+    .images {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 8px;
+    }
+  }
+}
+@media screen and (max-width: 768px) {
+  .item {
+    .images {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 5px;
+    
+    }
+  }
 }
 </style>

@@ -306,12 +306,16 @@ const selectEmoji = (url: string) => {
 <style lang="scss" scoped>
 .text {
   .input {
+    font-size: 22px;
     padding: 8px 15px;
     border-radius: 15px;
     border: 3px rgb(209, 229, 240) solid;
     width: 100%;
     height: 220px;
     overflow-y: auto;
+    // display: flex;
+    // align-items: center;
+    // line-height: 1.5;
   }
   .input:focus {
     border-color: rgb(156, 208, 238);
