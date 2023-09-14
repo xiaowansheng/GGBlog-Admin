@@ -195,10 +195,10 @@ const uploadRef = ref<UploadInstance>();
     :on-error="error"
     :on-success="success"
     :multiple="false"
-    list-type="picture"
     :disabled="disable"
     :limit="1"
     :auto-upload="false"
+    list-type="picture"
     :show-file-list="false"
   >
   <div v-if="!url" class="no-img" :style="`width: ${width}; height:${height}`">

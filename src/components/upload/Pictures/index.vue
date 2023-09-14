@@ -25,13 +25,17 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  showFileList: {
+    type: Boolean,
+    default: true
+  },
   dir: {
     type: String,
     default: "default"
   }
 });
 const emits = defineEmits(["update:value"]);
-const { value, dir, disable } = toRefs(props);
+const { value, dir, disable, showFileList } = toRefs(props);
 const fileList = ref<UploadUserFile[]>([]);
 const getName = (url: string) => {
   if (url) {
@@ -41,23 +45,57 @@ const getName = (url: string) => {
     return url;
   }
 };
-const valueOneChange=watch(value, () => {
-  value.value.forEach((url: string) => {
-    console.log("开始：");
-    console.log(url);
-    
+// const addPicture=(picture: UploadUserFile) =>{
+//   fileList.value.push(picture)
+// }
+// /**
+//  * 查找第一个数组中在第二个数组里没有的数据加到第二个数组里
+//  * @param firstArray
+//  * @param secondArray
+//  */
+function addMissingData(firstArray: any[], secondArray: any[]): void {
+  // 查找第一个数组中在第二个数组中没有的数据
+  const newData = firstArray.filter(
+    url => !secondArray.some(item2 => {
+      // console.log(item1,item2,item2.url == url);
+      return  item2.url == url
+    })
+  );
+  console.log("newData",newData);
+  
+  newData.forEach((url) => {
     
     fileList.value.push({
-      name: getName(url),
-      status: 'success',
       url,
+      name:getName(url)
+    })
+  })
+  // 将新数据添加到第二个数组中
+  // fileList.value.push(...newData);
+}
+const valueOneChange = watch(value, (newValue, oldValue) => {
+  console.log(newValue,oldValue);
+  
+  if (fileList.value.length == 0) {
+    value.value.forEach((url: string) => {
+      console.log("开始：");
+      console.log(url);
+
+      fileList.value.push({
+        name: getName(url),
+        status: "success",
+        url
+      });
+      console.log("结束：");
+      console.log(url);
     });
-    console.log("结束：");
-    console.log(url);
-  });
-  console.log("value 改变", fileList.value);
-  // 回显照片
-  valueOneChange()
+    console.log("value 改变", fileList.value);
+    // 回显照片
+  }
+  else {
+    addMissingData(newValue,fileList.value)
+  }
+  // valueOneChange();
 });
 // watch(fileList, () => {
 //   console.log("图片列表变化：", fileList.value);
@@ -66,9 +104,22 @@ const valueOneChange=watch(value, () => {
 // });
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
-
+/**
+ * 当文件添加或删除时，调用该方法，反馈实时数据给父组件
+ * @param uploadFiles 
+ */
+const handleFileChange = (uploadFiles: any) => {
+    const arr: string[] = [];
+  fileList.value.forEach(imgInfo => {
+    arr.push(imgInfo.url);
+  });
+  emits("update:value", arr);
+  console.log("图片list", arr);
+  
+}
 const handleRemove: UploadProps["onRemove"] = (uploadFile, uploadFiles) => {
   console.log("文件移除", uploadFile, uploadFiles);
+  handleFileChange(uploadFiles)
 };
 
 const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
@@ -124,12 +175,8 @@ const success = (
 ): void => {
   // console.log("图片上传成功", response);
   ElMessage.success("图片上传成功！");
-  const arr: string[] = [];
-  fileList.value.forEach(imgInfo => {
-    arr.push(imgInfo.url);
-  });
-  emits("update:value", arr);
-  console.log("图片list", arr);
+
+  handleFileChange(uploadFiles)
 };
 const error = (
   error: Error,
@@ -180,6 +227,7 @@ const uploadRef = ref();
   <div>
     <!-- :before-upload="beforeUpload" -->
     <el-upload
+      class="pictures-uplaod"
       ref="uploadRef"
       v-model:file-list="fileList"
       :action="ossUrl"
@@ -192,12 +240,28 @@ const uploadRef = ref();
       :on-success="success"
       :on-error="error"
       :disabled="disable"
+      :show-file-list="showFileList"
     >
-      <el-icon><Plus /></el-icon>
+      <!-- 默认触发文件选择框的内容 -->
+      <slot name="default">
+        <el-icon><Plus /></el-icon>
+      </slot>
     </el-upload>
 
-    <el-dialog v-model="dialogVisible">
+    <el-dialog v-if="showFileList" v-model="dialogVisible">
       <img w-full :src="dialogImageUrl" alt="Preview Image" />
     </el-dialog>
   </div>
 </template>
+<style lang="scss">
+.pictures-uplaod {
+  // overflow: hidden;
+  .el-upload-dragger {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+</style>

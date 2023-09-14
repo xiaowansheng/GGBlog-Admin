@@ -2463,7 +2463,7 @@ input[type="button"] {
 @media (min-width: 1200px) {
   .hero-section__option img {
     position: static;
-    max-width: 100%;
+    width: 100%;
   }
 }
 
