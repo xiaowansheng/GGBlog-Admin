@@ -97,7 +97,8 @@ const submitData = (item: Contact) => {
     align-items: center;
     margin: 10px;
     padding: 8px 15px;
-    border: 2px rgb(0, 170, 255) solid;
+    border: 3px rgb(176, 220, 241) solid;
+    border-radius: 15px;
   .swich {
     margin-left: 10px;
   }

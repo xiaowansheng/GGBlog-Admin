@@ -83,7 +83,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
   // emit 交给父类修改提交
   formEl.validate(valid => {
     if (valid) {
-      emits("updateData", true,form);
+      emits("updateData", isAdd.value,form);
     }
   });
 };

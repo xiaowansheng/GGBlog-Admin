@@ -52,10 +52,11 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
     }
   }
   newConfig.value = JSON.stringify(newConfig.value);
+  console.log(newConfig);
   updateConfig(null, { data: newConfig }).then(() => {
-    getData()
+    getData();
     ElMessage.success(isAdd ? "添加成功！" : "修改成功！");
-    show.value=false
+    show.value = false;
   });
 };
 const deleteR = (item: Menu) => {
@@ -151,12 +152,11 @@ const deleteR = (item: Menu) => {
         position: relative;
         width: 100%;
         padding-bottom: 60%;
-
-        .img {
-          // border-bottom-left-radius: 15px;
-          // border-bottom-right-radius: 15px;
-          background-size: cover;
-        }
+      }
+      .img {
+        // border-bottom-left-radius: 15px;
+        // border-bottom-right-radius: 15px;
+        background-size: cover;
       }
     }
   }

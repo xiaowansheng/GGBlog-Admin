@@ -57,7 +57,7 @@ const submitData = (item: Contact) => {
     </div>
     <div class="information">
       <div class="part" v-for="item in config.value" :key="item.name">
-        <label>{{ item.label }}（{{item.name}}）:</label>
+        <label>{{ item.label }}（{{ item.name }}）:</label>
         <!-- <el-input :disabled="!open" v-model="item.label" size="large" /> -->
         <el-switch
           class="swich"
@@ -88,19 +88,20 @@ const submitData = (item: Contact) => {
   display: flex;
   flex-wrap: wrap !important;
   flex-flow: row;
-  gap:15px;
+  gap: 15px;
   padding: 25px 10px;
-  .part{
+  .part {
     // width: 180px;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
     margin: 10px;
     padding: 8px 15px;
-    border: 2px rgb(0, 170, 255) solid;
-  .swich {
-    margin-left: 10px;
-  }
+    border: 3px rgb(176, 220, 241) solid;
+    border-radius: 15px;
+    .swich {
+      margin-left: 10px;
+    }
   }
 }
 .operation {
