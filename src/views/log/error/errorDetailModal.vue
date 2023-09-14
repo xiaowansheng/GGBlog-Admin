@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {  ref, toRefs, watch } from "vue";
+import { ref, toRefs, watch } from "vue";
 import { ErrorDto } from "@/api/errorLog";
 defineOptions({
   name: "ErrorDetailModal"
@@ -23,8 +23,13 @@ watch(visiable, () => {
 </script>
 
 <template>
-  <el-dialog v-model="visiable" :title="'操作日志详情'" class="detail" style="">
-    <el-descriptions v-if="visiable" :title="'异常：'+item.errorName" :column="1" border>
+  <el-dialog v-model="visiable" :title="'异常日志详情'" class="detail" style="">
+    <el-descriptions
+      v-if="visiable"
+      :title="'异常：' + item.errorName"
+      :column="1"
+      border
+    >
       <!-- <el-descriptions-item
         label="Username"
         label-align="left"
@@ -34,9 +39,12 @@ watch(visiable, () => {
         width="150px"
         >kooriookami</el-descriptions-item
       > -->
-      <el-descriptions-item label="记录 ID" label-align="center" align="center">{{
-        item.id
-      }}</el-descriptions-item>
+      <el-descriptions-item
+        label="记录 ID"
+        label-align="center"
+        align="center"
+        >{{ item.id }}</el-descriptions-item
+      >
       <el-descriptions-item
         label="用户编号"
         label-align="center"
@@ -71,28 +79,49 @@ watch(visiable, () => {
         label="调用方法"
         label-align="center"
         align="center"
-        >
-                <el-input
-                resize="none"
+      >
+        <el-input
+          resize="none"
           autosize
           :disabled="true"
           type="textarea"
           :value="item.callingMethod"
         />
-        </el-descriptions-item
-      >
+      </el-descriptions-item>
       <el-descriptions-item
-        label="操作类型"
+        label="错误名称"
         label-align="center"
         align="center"
-        >{{ item.type }}</el-descriptions-item
       >
+        <el-input
+          resize="none"
+          autosize
+          :disabled="true"
+          type="textarea"
+          :value="item.errorName"
+      /></el-descriptions-item>
       <el-descriptions-item
-        label="操作描述"
+        label="错误信息"
         label-align="center"
         align="center"
-        >{{ item.description }}</el-descriptions-item
       >
+        <el-input
+          resize="none"
+          autosize
+          :disabled="true"
+          type="textarea"
+          class="input"
+          :value="item.errorMessage.replace(/<br\/>/g, '\n')"
+      /></el-descriptions-item>
+
+      <!-- <el-descriptions-item
+        label="错误信息"
+        label-align="center"
+        align="left"
+      >
+      <div style="overflow-x: auto;" v-html="item.errorMessage" contenteditable="false">
+      </div>
+        </el-descriptions-item> -->
       <el-descriptions-item
         label="请求方法"
         label-align="center"
@@ -103,15 +132,14 @@ watch(visiable, () => {
         label="请求参数"
         label-align="center"
         align="center"
-        >               <el-input
+      >
+        <el-input
           autosize
-          
-                resize="none"
+          resize="none"
           :disabled="true"
           type="textarea"
-          :value="JSON.stringify(JSON.parse(item.requestParam ), null, '\t')"
-        /></el-descriptions-item
-      >
+          :value="JSON.stringify(JSON.parse(item.requestParam), null, '\t')"
+      /></el-descriptions-item>
       <el-descriptions-item
         label="响应结果"
         label-align="center"
@@ -121,21 +149,30 @@ watch(visiable, () => {
       <el-descriptions-item label="耗时" label-align="center" align="center">{{
         item.elapsedTime
       }}</el-descriptions-item>
-      <el-descriptions-item label="IP地址" label-align="center" align="center">{{
-        item.ipAddress
-      }}</el-descriptions-item>
-      <el-descriptions-item label="IP来源" label-align="center" align="center">{{
-        item.ipSource
-      }}</el-descriptions-item>
+      <el-descriptions-item
+        label="IP地址"
+        label-align="center"
+        align="center"
+        >{{ item.ipAddress }}</el-descriptions-item
+      >
+      <el-descriptions-item
+        label="IP来源"
+        label-align="center"
+        align="center"
+        >{{ item.ipSource }}</el-descriptions-item
+      >
       <el-descriptions-item
         label="设备名称"
         label-align="center"
         align="center"
         >{{ item.device }}</el-descriptions-item
       >
-      <el-descriptions-item label="浏览器" label-align="center" align="center">{{
-        item.browser
-      }}</el-descriptions-item>
+      <el-descriptions-item
+        label="浏览器"
+        label-align="center"
+        align="center"
+        >{{ item.browser }}</el-descriptions-item
+      >
       <el-descriptions-item
         label="创建时间"
         label-align="center"
@@ -160,5 +197,3 @@ watch(visiable, () => {
     </template>
   </el-dialog>
 </template>
-
-
