@@ -135,8 +135,17 @@ const deleteR = (item: Menu) => {
     </div>
   </el-card>
 </template>
+<style lang="scss">
+.menus{
+  
+.el-card__body{
+  padding: 0;
+}
+}
+</style>
 
 <style lang="scss" scoped>
+
 .menu-config {
   .operation {
     margin-bottom: 15px;
@@ -151,7 +160,7 @@ const deleteR = (item: Menu) => {
       .cover {
         position: relative;
         width: 100%;
-        padding-bottom: 60%;
+        padding-bottom: 56.52%;
       }
       .img {
         // border-bottom-left-radius: 15px;
