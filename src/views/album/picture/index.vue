@@ -209,12 +209,23 @@ const photos = ref<string[]>([]);
               <el-tag size="small" v-if="item.status == 'public'">{{
                 findStatus(item.status)
               }}</el-tag>
-              <el-tag  size="small" v-else type="warning">{{
+              <el-tag size="small" v-else type="warning">{{
                 findStatus(item.status)
               }}</el-tag>
             </div>
           </div>
         </div>
+        <el-pagination
+          :hide-on-single-page="false"
+          background
+          v-model:current-page="params.page"
+          v-model:page-size="params.limit"
+          @update:current-page="getData()"
+          @update:page-size="getData()"
+          layout="total,prev, pager, next,sizes,jumper"
+          :total="total"
+          :page-sizes="[10, 20, 30, 50, 100]"
+        />
       </div>
     </el-card>
     <add-modal
