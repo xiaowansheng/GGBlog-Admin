@@ -84,9 +84,10 @@ const deleteR = (item: ResourceDto) => {
     cancelButtonText: "取消",
     type: "warning"
   }).then(() => {
-    deleteResource(item.id);
-    ElMessage.success("删除成功");
-    getData();
+    deleteResource(item.id).then(() => {
+      ElMessage.success("删除成功");
+      getData();
+    });
   });
 };
 </script>

@@ -79,8 +79,8 @@ const deleteR = (item: MenuDto) => {
     type: "warning"
   }).then(() => {
     deleteMenu(item.id).then(() => {
-      getData();
       ElMessage.success("删除成功");
+      getData();
     });
   });
 };
@@ -92,7 +92,7 @@ const deleteR = (item: MenuDto) => {
       <template #header>
         <div class="card-header">
           <span class="title">菜单信息</span>
-          <el-button class="button" @click="getAllMenus()">刷新数据</el-button>
+          <el-button class="button" @click="getData()">刷新数据</el-button>
         </div>
       </template>
       <div class="content">
@@ -161,7 +161,12 @@ const deleteR = (item: MenuDto) => {
                 :inactive-value="0"
               /> </template
           ></el-table-column>
-          <el-table-column prop="sort" :align="'center'" label="排序"  width="60"/>
+          <el-table-column
+            prop="sort"
+            :align="'center'"
+            label="排序"
+            width="60"
+          />
           <!-- <el-table-column
             prop="createTime"
             :align="'center'"
@@ -175,7 +180,7 @@ const deleteR = (item: MenuDto) => {
             width="200"
           /> -->
           <el-table-column :align="'center'" label="操作" width="250">
-            <template #default="{row}">
+            <template #default="{ row }">
               <el-button
                 v-if="!row.parentId"
                 size="default"
@@ -219,7 +224,6 @@ const deleteR = (item: MenuDto) => {
 </template>
 
 <style lang="scss" scoped>
-
 // 表格中的图标居中
 .el-table {
   svg {
