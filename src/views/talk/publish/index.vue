@@ -3,7 +3,6 @@ import { onBeforeMount, reactive, ref } from "vue";
 import { Talk, addTalk, updateTalk, getTalkById } from "@/api/talk";
 import { NameLabelDto, getContentStatus } from "@/api/common";
 import PicturesUpload from "@/components/upload/Pictures/index.vue";
-import MyPicturesUpload from "@/components/upload/MyPictures/index.vue";
 import { ElMessage } from "element-plus";
 import Expression from "@/components/Expression/index.vue";
 import { useDetail } from "@/hooks/routerUtils";
