@@ -48,38 +48,38 @@ const getData = () => {
   getAllTag().then((data: any) => {
     tagData.value = data;
     const arr: any = [];
-    // const tagsNum = data.length;
-    // for (let i = 0; i < tagsNum; i++) {
-    //   let tag: any = {};
-    //   let k = -1 + (2 * (i + 1) - 1) / tagsNum;
-    //   let a = Math.acos(k);
-    //   let b = a * Math.sqrt(tagsNum * Math.PI);
-    //   tag.text = data[i].name;
-    //   // console.log("cx:", CX.value, "CY:", CY.value);
-
-    //   tag.x = CX.value + config.RADIUS * Math.sin(a) * Math.cos(b);
-    //   tag.y = CY.value + config.RADIUS * Math.sin(a) * Math.sin(b);
-    //   tag.z = config.RADIUS * Math.cos(a);
-    //   // tag.href = 'https://imgss.github.io';
-    //   arr.push(tag);
-    // }
-
-    // TODO 测试
-    const tagsNum = 50;
+    const tagsNum = data.length;
     for (let i = 0; i < tagsNum; i++) {
       let tag: any = {};
       let k = -1 + (2 * (i + 1) - 1) / tagsNum;
       let a = Math.acos(k);
       let b = a * Math.sqrt(tagsNum * Math.PI);
+      tag.text = data[i].name;
       // console.log("cx:", CX.value, "CY:", CY.value);
 
-      tag.text = i + "tag" + i;
       tag.x = CX.value + config.RADIUS * Math.sin(a) * Math.cos(b);
       tag.y = CY.value + config.RADIUS * Math.sin(a) * Math.sin(b);
       tag.z = config.RADIUS * Math.cos(a);
       // tag.href = 'https://imgss.github.io';
       arr.push(tag);
     }
+
+    // TODO 测试，可以查看标签数量很多时的动画效果
+    // const tagsNum = 50;
+    // for (let i = 0; i < tagsNum; i++) {
+    //   let tag: any = {};
+    //   let k = -1 + (2 * (i + 1) - 1) / tagsNum;
+    //   let a = Math.acos(k);
+    //   let b = a * Math.sqrt(tagsNum * Math.PI);
+    //   // console.log("cx:", CX.value, "CY:", CY.value);
+
+    //   tag.text = i + "tag" + i;
+    //   tag.x = CX.value + config.RADIUS * Math.sin(a) * Math.cos(b);
+    //   tag.y = CY.value + config.RADIUS * Math.sin(a) * Math.sin(b);
+    //   tag.z = config.RADIUS * Math.cos(a);
+    //   // tag.href = 'https://imgss.github.io';
+    //   arr.push(tag);
+    // }
     // console.log("tags:", arr);
     tags.value = arr;
 
@@ -92,17 +92,56 @@ const categoryChartRef = ref<HTMLDivElement>();
 const tagChartRef = ref<HTMLDivElement>();
 // 使用shallowRef，防止eachrt报type错误
 const numberChart: any = shallowRef();
-
-const setNumberChart = () => {
+const setNumberChart = (isPie: boolean = true) => {
   const categoryTotal = categoryData.value.reduce(
     (sum: number, obj: any) => sum + obj.value,
     0
   );
+  const mySeries = isPie
+    ? {
+        // name: "percent",
+        type: "pie",
+        top: "20%",
+        // radius: "60%",
+        data: categoryData.value.map((obj: any) => {
+          return {
+            name: obj.name,
+            value: obj.value
+          };
+        }),
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: "rgba(0, 0, 0, 0.5)"
+            }
+          },
+        label: {
+          formatter: "{b}: {c} ({d}%)"
+        }
+      }
+    : [
+        {
+          //无效
+          // show:this.showDatasource[0],
+          name: "文章数量",
+          // type: 'scatter',
+          type: "bar",
+          xAxisIndex: 0, // 指定使用第1个 x 轴
+          itemStyle: {
+            normal: {
+              color: "rgb(123, 201, 240)"
+            }
+          },
+          data: categoryData.value.map((obj: any) => obj.value)
+        }
+      ];
+
   let option: any = {
     //动画持续时间
     // animationDuration: 10000,
     title: {
-      text: "分类的文章数量统计",
+      text: "分类统计",
       left: "center",
       // subtext: 'Condition Statistic',
       subtext: `文章分类总数：${categoryTotal}`,
@@ -115,61 +154,101 @@ const setNumberChart = () => {
         left: 100
       }
     },
-    tooltip: {
-      order: "valueDesc",
-      trigger: "axis",
-      axisPointer: {
-        type: "shadow"
-      }
-    },
-    xAxis: [
-      {
-        // name: "分类名称",
-        type: "category",
-        data: categoryData.value.map((obj: any) => obj.name),
-        //区域分割线
-        splitLine: {
-          show: true
+    tooltip: isPie
+      ? {
+          order: "valueDesc",
+          trigger: "item",
+          formatter: "{b}<br/>数量: {c}<br />百分比: {d}"
+        }
+      : {
+          order: "valueDesc",
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow"
+          }
         },
-        // nameLocation: 'middle',
-        axisLabel: {
-          rotate: -45
+    toolbox: {
+      show: true,
+      orient: "horizontal",
+      itemSize: 15,
+      showTitle: true,
+      feature: {
+        // magicType: {
+        //   type: ["line", "bar"]
+        // },
+        myBar: {
+          show: true,
+          title: "切换为柱状图",
+          icon: "path://M20,80h20v-60h-20Z M55,60h20v-40h-20Z M90,40h20v-20h-20Z",
+          onclick: () => {
+            setNumberChart(false);
+          }
         },
-        axisPointer: {
-          type: "shadow",
-          label: {
-            formatter: "分类名称：{value}"
+        myPie: {
+          show: true,
+          title: "切换为饼图",
+          icon: "path://M50,50m-40,0a40,40 0 0,1 80,0a40,40 0 0,1 -80,0Z M50,10a40,40 0 0,1 40,40a40,40 0 0,1 -40,40Z M90,50a40,40 0 0,1 -40,40a40,40 0 0,1 -40,-40Z M50,90a40,40 0 0,1 -40,-40a40,40 0 0,1 40,-40Z M10,50a40,40 0 0,1 40,-40a40,40 0 0,1 40,40Z",
+          onclick: () => {
+            setNumberChart(true);
           }
         }
       }
-    ],
-    yAxis: [
-      {
-        // name: "数量",
-        min: 0,
-        minInterval: 1
-      }
-    ],
+    },
+    legend: isPie
+      ? {
+          orient: "vertical",
+          left: "left"
+        }
+      : {
+          show: false
+        },
+    xAxis: isPie
+      ? [
+          {
+            show: false
+          }
+        ]
+      : [
+          {
+            // name: "分类名称",
+            type: "category",
+            data: categoryData.value.map((obj: any) => obj.name),
+            //区域分割线
+            splitLine: {
+              show: true
+            },
+            // nameLocation: 'middle',
+            axisLabel: {
+              rotate: -45
+            },
+            axisPointer: {
+              type: "shadow",
+              label: {
+                formatter: "{value}"
+              }
+            }
+          }
+        ],
+    yAxis: isPie
+      ? [
+          {
+            show: false
+          }
+        ]
+      : [
+          {
+            // name: "数量",
+            min: 0,
+            minInterval: 1
+          }
+        ],
     grid: {
       // right: 140,
     },
-    series: [
-      {
-        //无效
-        // show:this.showDatasource[0],
-        name: "文章数量",
-        // type: 'scatter',
-        type: "bar",
-        xAxisIndex: 0, // 指定使用第1个 x 轴
-        itemStyle: {
-          normal: {
-            color: "rgb(123, 201, 240)"
-          }
-        },
-        data: categoryData.value.map((obj: any) => obj.value)
-      }
-    ]
+    series: mySeries
   };
+
+  numberChart.value?.clear();
   option && numberChart.value?.setOption(option);
 };
 
@@ -271,12 +350,12 @@ const rotateY = angleY => {
 .cate-tag-statistics {
   margin-bottom: 15px;
 }
-.chart,.tags{
+.chart,
+.tags {
   height: 330px;
   overflow: hidden;
 }
 .chart {
   padding: 10px 10px;
 }
-
 </style>

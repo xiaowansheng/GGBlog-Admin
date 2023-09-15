@@ -97,7 +97,7 @@ const setNumberChart = () => {
     legend: {
       // Try 'horizontal'
       orient: "vertical",
-      right: 10
+      left: 10
       // top: 'center',
     },
     tooltip: {
@@ -105,6 +105,17 @@ const setNumberChart = () => {
       trigger: "axis",
       axisPointer: {
         type: "shadow"
+      }
+    },
+    toolbox: {
+      show: true,
+      orient: "horizontal",
+      itemSize: 15,
+      showTitle: true,
+      feature: {
+        magicType: {
+          type: ["line", "bar"]
+        }
       }
     },
     xAxis: [
