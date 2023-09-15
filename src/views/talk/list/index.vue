@@ -241,9 +241,9 @@ const deleteR = (item: TalkDto) => {
           <div class="content">
             <!-- {{ item.content }} -->
             <div class="text" v-html="item.content"></div>
-            <div class="images" v-if="item.images&&item.images.length>0">
+            <div class="images" v-if="item.images && item.images.length > 0">
               <el-image
-                v-for="(picture,index) in item.images"
+                v-for="(picture, index) in item.images"
                 style="width: 100%; height: 100%"
                 :src="picture"
                 :fit="'cover'"
@@ -287,10 +287,14 @@ const deleteR = (item: TalkDto) => {
   </div>
 </template>
 <style lang="scss">
-.talk-list {
-   .el-card__body{
-    padding: 8px;
+@media screen and (max-width: 768px) {
+  .talk-list {
+    .el-card__body {
+      padding: 8px;
+    }
   }
+}
+.talk-list {
   .content {
     .text {
       // display: flex;
@@ -326,7 +330,7 @@ const deleteR = (item: TalkDto) => {
       }
     }
   }
-  .images{
+  .images {
     margin-top: 15px;
   }
   .primacy {
@@ -347,7 +351,7 @@ const deleteR = (item: TalkDto) => {
 .item:not(:first-of-type) {
   margin-top: 25px;
 }
-@media screen and (min-width:1200px) {
+@media screen and (min-width: 1200px) {
   .item {
     .images {
       display: grid;
@@ -377,12 +381,10 @@ const deleteR = (item: TalkDto) => {
 @media screen and (max-width: 768px) {
   .item {
     .images {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 5px;
-    
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 5px;
     }
-    
   }
 }
 </style>

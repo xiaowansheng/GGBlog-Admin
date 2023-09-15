@@ -9,7 +9,7 @@ defineOptions({
 onBeforeMount(() => {
   getData();
 });
-const editId=ref<number>(0)
+const editId=ref<number>(1)
 const getData = () => {
   getAboutAuthor().then((data: any) => {
     about.id = data.id;
