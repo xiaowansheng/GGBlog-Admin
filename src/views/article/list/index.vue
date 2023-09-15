@@ -252,8 +252,24 @@ const deleteR = (item: ArticleDto) => {
             prop="title"
             :align="'center'"
             label="标题"
-            width="150"
-          />
+            width="180"
+          >
+            <template #default="{ row }">
+              <el-popover
+                placement="top-start"
+                title="文章标题"
+                :width="200"
+                trigger="hover"
+                :content="row.title"
+              >
+                <template #reference>
+                  <span class="ellipsis-three">
+                    {{ row.title }}
+                  </span>
+                </template>
+              </el-popover>
+            </template>
+          </el-table-column>
 
           <el-table-column :align="'center'" label="封面" width="180">
             <template #default="{ row }">

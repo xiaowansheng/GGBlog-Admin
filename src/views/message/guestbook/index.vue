@@ -323,7 +323,7 @@ const deleteBatch = () => {
                 :content="row.content"
                 placement="top-start"
               >
-                <span class="ellipsis">{{ row.content }}</span>
+                <span class="ellipsis-two">{{ row.content }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -364,7 +364,7 @@ const deleteBatch = () => {
                 :content="row.ipSource"
                 placement="top-start"
               >
-                <span class="ellipsis">{{ row.ipSource }}</span>
+                <span class="ellipsis-two">{{ row.ipSource }}</span>
               </el-tooltip>
             </template>
           </el-table-column>

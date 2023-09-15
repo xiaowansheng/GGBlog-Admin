@@ -1,8 +1,8 @@
-.bkcolor{
+.bkcolor {
   background-color: var(--el-bg-color);
 }
 
-.panel-bkcolor{
+.panel-bkcolor {
   background-color: var(--el-bg-color);
 }
 
@@ -37,17 +37,17 @@
   }
 }
 
-@media screen and (min-width : 992px) {
+@media screen and (min-width: 992px) {
   .el-dialog.detail {
     width: 768px;
   }
 }
-@media screen and (min-width : 768px) and (max-width : 992px) {
+@media screen and (min-width: 768px) and (max-width: 992px) {
   .el-dialog.detail {
     width: 576px;
   }
 }
-@media screen and (max-width :768px) {
+@media screen and (max-width: 768px) {
   .el-dialog.detail {
     width: 90%;
   }
@@ -100,7 +100,7 @@
     }
   }
   // 表格操作
-  .operation{
+  .operation {
     margin-bottom: 15px;
   }
 }
@@ -154,7 +154,7 @@
   }
 }
 
-.ellipsis {
+.ellipsis-two {
   overflow: hidden;
   // white-space: nowrap;
   text-overflow: ellipsis;
@@ -163,6 +163,14 @@
   -webkit-box-orient: vertical;
 }
 
+.ellipsis-three {
+  overflow: hidden;
+  // white-space: nowrap;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* 显示的行数 */
+  -webkit-box-orient: vertical;
+}
 // .tooltip{
 //   font-size: 15px;
 // }

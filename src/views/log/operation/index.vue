@@ -145,7 +145,7 @@ const show = (item: OperationDto = null) => {
                 :content="row.userName"
                 placement="top-start"
               >
-                <span class="ellipsis">{{ row.userName }}</span>
+                <span class="ellipsis-two">{{ row.userName }}</span>
               </el-tooltip>
             </template></el-table-column>
           <el-table-column :align="'center'" label="请求方法" width="100">

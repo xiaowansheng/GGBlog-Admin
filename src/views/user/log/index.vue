@@ -130,7 +130,7 @@ const selected = ref<LoginLogDto>();
                 :content="row.ipSource"
                 placement="top-start"
               >
-                <span class="ellipsis">{{ row.ipSource }}</span>
+                <span class="ellipsis-two">{{ row.ipSource }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -154,7 +154,7 @@ const selected = ref<LoginLogDto>();
                 :content="row.location"
                 placement="top-start"
               >
-                <span class="ellipsis">{{ row.location }}</span>
+                <span class="ellipsis-two">{{ row.location }}</span>
               </el-tooltip>
             </template>
           </el-table-column>

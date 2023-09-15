@@ -257,7 +257,7 @@ const updateStatus = (item: UserAuthDto) => {
                 :content="row.userInfoDto.nickname"
                 placement="top-start"
               >
-                <span class="ellipsis">{{ row.userInfoDto.nickname }}</span>
+                <span class="ellipsis-two">{{ row.userInfoDto.nickname }}</span>
               </el-tooltip>
             </template></el-table-column
           >
@@ -291,7 +291,7 @@ const updateStatus = (item: UserAuthDto) => {
                 :content="row.userInfoDto.signature"
                 placement="top-start"
               >
-                <span class="ellipsis">{{ row.userInfoDto.signature }}</span>
+                <span class="-two">{{ row.userInfoDto.signature }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -308,7 +308,7 @@ const updateStatus = (item: UserAuthDto) => {
                 :content="row.userInfoDto.introduction"
                 placement="top-start"
               >
-                <span class="ellipsis">{{ row.userInfoDto.introduction }}</span>
+                <span class="ellipsis-two">{{ row.userInfoDto.introduction }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
