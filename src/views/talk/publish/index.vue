@@ -60,7 +60,7 @@ const submit = () => {
   const newTalk = JSON.parse(newTalkStr);
   newTalk.images = JSON.stringify(newTalk.images);
 
-  if (!talkForm.content && !talkForm.images && talkForm.images.length == 0) {
+  if (!talkForm.content || !talkForm.images || talkForm.images.length == 0) {
     ElMessage.warning("内容不能为空哦，请输入内容后再发布~");
     return;
   }
