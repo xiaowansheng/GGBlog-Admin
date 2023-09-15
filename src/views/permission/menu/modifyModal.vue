@@ -156,7 +156,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
             loading.value = false;
           });
       }
-      console.log("submit!");
     } else {
       console.log("error submit!");
       return false;

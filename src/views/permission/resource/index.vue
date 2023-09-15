@@ -56,7 +56,6 @@ const parentId = ref<number>();
 const parentName = ref<string>();
 const isChildren = ref(false);
 const show = (isAdd: boolean, isChild: boolean, item: any = null) => {
-  console.log("11");
   if (isAdd) {
     if (item) {
       // 添加子菜单

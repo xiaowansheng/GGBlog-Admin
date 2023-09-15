@@ -17,8 +17,6 @@ const { show, item } = toRefs(props);
 const visiable = ref(show.value);
 const loading = ref(false);
 watch(show, () => {
-  // console.log(item?.value);
-
   if (item?.value != null) {
     form.id = item.value.id;
     form.name = item.value.name;

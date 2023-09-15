@@ -50,7 +50,6 @@ const pageParams = reactive<PageParams>({
 });
 const dateInterval = ref<any>();
 const dateChange = (value: [Date, Date]) => {
-  console.log(value);
   if (value[0] && value[1]) {
     queryParams.beginDate = formatDate(value[0]);
     queryParams.endDate = formatDate(value[1]);

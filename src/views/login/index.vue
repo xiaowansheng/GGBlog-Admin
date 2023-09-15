@@ -61,7 +61,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
           password: ruleForm.password
         })
         .then(data => {
-          console.log("data:", data);
+          // console.log("data:", data);
 
           // 获取后端路由
           initRouter()

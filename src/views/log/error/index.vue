@@ -15,7 +15,7 @@ const getData = () => {
     ...queryParams
   };
   getErrorPage(tempParams).then((data: any) => {
-    console.log(data);
+    // console.log(data);
     total.value = data.total;
     list.value = data.list;
   });
@@ -46,7 +46,6 @@ const getCallMethod = (method: string) => {
 const showDialog = ref(false);
 const selected = ref<ErrorDto>();
 const show = (item: ErrorDto = null) => {
-  console.log("11");
   selected.value = item;
   showDialog.value = true;
 };

@@ -87,18 +87,14 @@ const valueOneChange = watch(value, (newValue, oldValue) => {
 
   if (fileList.value.length == 0) {
     value.value.forEach((url: string) => {
-      console.log("开始：");
+      // console.log("开始：");
       console.log(url);
-
       fileList.value.push({
         name: getName(url),
         status: "success",
         url
       });
-      console.log("结束：");
-      console.log(url);
     });
-    console.log("value 改变", fileList.value);
     // 回显照片
   } else if (newValue.length < fileList.value.length) {
     deleteMoreData(newValue, fileList.value);
@@ -147,10 +143,6 @@ const info: any = reactive({
   // urls: []
 });
 watch(fileList, (newList, oldList) => {
-  console.log("newList", newList);
-  console.log("oldList", oldList);
-  // return
-  // console.log("文件列表改变：");
   if (fileList.value.length && newList.length > oldList.length) {
     const file = fileList.value[fileList.value.length - 1];
     getOss(dir.value).then((data: any) => {
@@ -168,8 +160,8 @@ watch(fileList, (newList, oldList) => {
       info.host = data.host;
       info.expire = data.expire;
 
-      console.log("uploadForm", uploadForm);
-      console.log("info", info);
+      // console.log("uploadForm", uploadForm);
+      // console.log("info", info);
       file.url = data.host + "/" + uploadForm.key;
       console.log("当前上传的图片地址：", file.url);
 
@@ -197,7 +189,7 @@ const error = (
 };
 const uploadRef = ref();
 // const beforeUpload:UploadProps["beforeUpload"] = (rawFile: UploadRawFile): Promise<boolean> => {
-//   // TODO 上传时form为空
+//   // TODO element-plus的 bug，promise等待失效，上传时form为空，最新版也有这个问题，改用手动上传
 //   return new Promise((resolve, reject) => {
 
 //     if (fileList.value.length) {

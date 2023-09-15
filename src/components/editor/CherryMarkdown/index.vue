@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import "cherry-markdown/dist/cherry-markdown.css";
 import Cherry from "cherry-markdown";
-import { onMounted, ref, toRefs, watch ,shallowRef} from "vue";
+import { onMounted, ref, toRefs, watch, shallowRef } from "vue";
 import { onActivated } from "vue";
 import { onDeactivated } from "vue";
 import { onBeforeMount } from "vue";
@@ -46,16 +46,10 @@ const props = defineProps({
 const emits = defineEmits(["change", "get", "update:value"]);
 const { id, value, height, dir } = toRefs(props);
 
-// TODO 同步进行，获取数据后才开始加载页面
 const valueWatch = watch(value, () => {
   // 获取并设置文章初始内容
-  // console.log("change value：\n", value.value);
-  // TODO BUG  设置初始值时,光标错乱
-
   contentValue.value = value.value;
   cherryInstance.value?.insertValue(value.value, false);
-
-  // console.log("cherryInstance.value?.getStatus()",cherryInstance.value?.getStatus());
   // 监听一次,为了获取编辑时的文章内容
   valueWatch();
 });
@@ -132,7 +126,68 @@ const customMenuA = Cherry.createMenuHook("加粗斜体", {
 const customMenuB = Cherry.createMenuHook("实验室", {
   iconName: ""
 });
-
+/**
+ * 定义一个自带二级菜单的工具栏
+ */
+const customMenuC = Cherry.createMenuHook("帮助中心", {
+  iconName: "question",
+  onClick: (selection, type) => {
+    switch (type) {
+      case "markdown":
+        return `${selection}markdown教程在这里：https://markdown.com.cn/`;
+      case "Emoji":
+        return `${selection}Emoji表情在这里：https://emojipedia.org/zh/`;
+      case "formula":
+        return `${selection}LaTeX公式编辑器在这里：https://www.latexlive.com/`;
+      case "Example":
+        return `${selection}完整示例看这里：https://tencent.github.io/cherry-markdown/examples/index.html`;
+      default:
+        return selection;
+    }
+  },
+  subMenuConfig: [
+    {
+      noIcon: true,
+      name: "markdown教程",
+      onclick: event => {
+        cherryInstance.value.toolbar.menus.hooks.customMenuCName.fire(
+          null,
+          "markdown"
+        );
+      }
+    },
+    {
+      noIcon: true,
+      name: "Emoji 表情",
+      onclick: event => {
+        cherryInstance.value.toolbar.menus.hooks.customMenuCName.fire(
+          null,
+          "Emoji"
+        );
+      }
+    },
+    {
+      noIcon: true,
+      name: "公式编辑器",
+      onclick: event => {
+        cherryInstance.value.toolbar.menus.hooks.customMenuCName.fire(
+          null,
+          "formula"
+        );
+      }
+    },
+    {
+      noIcon: true,
+      name: "完整示例",
+      onclick: event => {
+        cherryInstance.value.toolbar.menus.hooks.customMenuCName.fire(
+          null,
+          "Example"
+        );
+      }
+    }
+  ]
+});
 const uploadForm: any = reactive({
   policy: "",
   signature: "",
@@ -146,7 +201,7 @@ const info: any = reactive({
 });
 /**
  * 手动上传图片等文件
- * @param formData 
+ * @param formData
  */
 function upload(formData: FormData): Promise<any> {
   return axios.post(ossUrl, formData);
@@ -170,20 +225,15 @@ const callbacks = {
     file: File,
     callback: (path: string, arg: { [key: string]: any }) => void
   ) {
-    console.log(file);
-    
+    console.log("上传文件：",file);
     if (!/^image\/(jpeg|png|gif)$/i.test(file.type)) {
-      ElMessage.warning("暂时只支持图片上传！")
-      return
-     }
-    // const fileUrl = URL.createObjectURL(file);
-    // console.log("url", fileUrl);
+      ElMessage.warning("暂时只支持图片上传！");
+      return;
+    }
     getOss(dir.value).then((data: any) => {
       // 去除默认开头斜杠/
       data.dir = data.dir.replace(/^\//, "");
-      console.log("oss:", data);
-
-      // uploadForm.value = data;
+      // console.log("oss:", data);
       uploadForm.policy = data.policy;
       uploadForm.signature = data.signature;
       uploadForm.ossaccessKeyId = data.accessid;
@@ -193,8 +243,8 @@ const callbacks = {
       info.host = data.host;
       info.expire = data.expire;
 
-      console.log("uploadForm", uploadForm);
-      console.log("info", info);
+      // console.log("uploadForm", uploadForm);
+      // console.log("info", info);
       info.url = data.host + "/" + uploadForm.key;
 
       let formData = new FormData();
@@ -507,9 +557,10 @@ const config = {
       {
         customMenuBName: ["ruby", "audio", "video", "customMenuAName"]
       },
-      "theme"
+      "theme",
+      "customMenuCName"
     ],
-    toolbarRight: ["fullScreen", "|"],
+    // toolbarRight: ["fullScreen", "|"], // TODO 全屏样式错乱
     bubble: [
       "bold",
       "italic",
@@ -526,7 +577,8 @@ const config = {
     sidebar: ["mobilePreview", "copy", "theme"],
     customMenu: {
       customMenuAName: customMenuA,
-      customMenuBName: customMenuB
+      customMenuBName: customMenuB,
+      customMenuCName: customMenuC,
     }
   },
   drawioIframeUrl: window.location.origin + "/cherry/drawio_demo.html",

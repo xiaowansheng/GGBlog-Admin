@@ -102,8 +102,6 @@ const rules = reactive<FormRules>({
   nickname: [
     {
       validator: (rule: any, value: any, callback: any) => {
-        console.log(value);
-
         if (form.userInfoVo.nickname || item.value) {
           callback();
         } else {

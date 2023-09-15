@@ -71,8 +71,6 @@ const rules = reactive<FormRules>({
   cover: [
     {
       validator: (rule: any, value: any, callback: any) => {
-        console.log(form.value);
-
         if (form.value.cover) {
           callback();
         } else {
@@ -292,8 +290,6 @@ const createTag = () => {
   // 检查是否是已经存在的标签，不是则添加，是则直接使用
   for (let i = 0; i < tags.value.length; i++) {
     const cate = tags.value[i];
-    console.log(cate);
-
     if (cate.name == tagValue.value) {
       selectTag(cate);
       return;

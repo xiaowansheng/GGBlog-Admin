@@ -9,15 +9,15 @@ import {
 } from "vue-router";
 
 export function useDetail() {
-  console.log(
-    "useMultiTagsStoreHook()",
-    useMultiTagsStoreHook().$state
-  );
+  // console.log(
+  //   "useMultiTagsStoreHook()",
+  //   useMultiTagsStoreHook().$state
+  // );
   
-  console.log(
-    "usePermissionStoreHookusePermissionStoreHook()",
-    usePermissionStoreHook().$state
-  );
+  // console.log(
+  //   "usePermissionStoreHookusePermissionStoreHook()",
+  //   usePermissionStoreHook().$state
+  // );
   
   const route = useRoute();
   const router = useRouter();
@@ -52,7 +52,7 @@ export function useDetail() {
 
   // 用于页面刷新，重新获取浏览器地址栏参数并保存到标签页
   const initToDetail = () => {
-    console.log("route", route);
+    // console.log("route", route);
     if (getParameter) toDetail(getParameter);
   };
 

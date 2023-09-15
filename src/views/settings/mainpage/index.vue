@@ -20,7 +20,7 @@ const getData = () => {
   getMenuConfig().then((data: any) => {
     data.value = JSON.parse(data.value);
     config.value = data;
-    console.log("menu config:", data.value);
+    // console.log("menu config:", data.value);
   });
 };
 const show = ref<boolean>(false);
@@ -52,7 +52,7 @@ const updateMenu = (isAdd: boolean, item: Menu) => {
     }
   }
   newConfig.value = JSON.stringify(newConfig.value);
-  console.log(newConfig);
+  // console.log(newConfig);
   updateConfig(null, { data: newConfig }).then(() => {
     getData();
     ElMessage.success(isAdd ? "添加成功！" : "修改成功！");

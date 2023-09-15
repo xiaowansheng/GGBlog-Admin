@@ -15,7 +15,7 @@ const getData = () => {
     ...queryParams
   };
   getOperationPage(tempParams).then((data: any) => {
-    console.log(data);
+    // console.log(data);
     total.value = data.total;
     list.value = data.list;
   });

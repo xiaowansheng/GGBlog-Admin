@@ -103,7 +103,7 @@ const deleteR = (item: GuestbookDto) => {
 
 const selectBatch = ref<GuestbookDto[]>([]);
 const selectChange = (selection: GuestbookDto[]) => {
-  console.log(selection);
+  // console.log(selection);
   selectBatch.value = selection;
 };
 

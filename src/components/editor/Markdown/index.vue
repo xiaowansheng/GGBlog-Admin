@@ -72,7 +72,7 @@ const init=()=> {
   console.log("init markdown");
   
   if (!contentElement) return;
-  console.log("contentElement",contentElement);
+  // console.log("contentElement",contentElement);
   let toolbar;
   if (window.innerWidth < 768 || window.innerWidth >= 768) {
     toolbar = [
@@ -1064,7 +1064,7 @@ const init=()=> {
                 formData.append(key, form[key]);
               }
               formData.append("file", files[0]);
-              console.log("insEditor:", vditor.value);
+              // console.log("insEditor:", vditor.value);
               // console.log('isupload:', vditor.value.isUploading());
               // console.log('getCursorPosition:', vditor.value.getCursorPosition());
 

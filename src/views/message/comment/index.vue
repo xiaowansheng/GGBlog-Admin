@@ -121,7 +121,7 @@ const deleteR = (item: CommentDto) => {
 
 const selectBatch = ref<CommentDto[]>([]);
 const selectChange = (selection: CommentDto[]) => {
-  console.log(selection);
+  // console.log(selection);
   selectBatch.value = selection;
 };
 

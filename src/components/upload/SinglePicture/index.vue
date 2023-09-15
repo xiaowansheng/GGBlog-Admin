@@ -73,8 +73,8 @@ watch(fileList, () => {
     const file = fileList.value[0];
     getOss(dir.value).then((data: any) => {
       // 去除默认开头斜杠/
-      data.dir = data.dir.replace(/^\//, "");
-      console.log("oss:", data);
+      // data.dir = data.dir.replace(/^\//, "");
+      // console.log("oss:", data);
 
       // uploadForm.value = data;
       uploadForm.policy = data.policy;
@@ -86,8 +86,8 @@ watch(fileList, () => {
       info.host = data.host;
       info.expire = data.expire;
 
-      console.log("uploadForm", uploadForm);
-      console.log("info", info);
+      // console.log("uploadForm", uploadForm);
+      // console.log("info", info);
       info.url = data.host + "/" + uploadForm.key;
       uploadRef.value?.submit();
     });
@@ -135,27 +135,8 @@ const remove = () => {
   url.value = "";
   console.log("移除图片~~");
 };
-// async function beforeUpload(rawFile: UploadRawFile) {
-//   try {
-//     const data: any = await getOss(dir.value);
-//     console.log("oss:", data);
-//     // uploadForm.value = data;
-//     uploadForm.policy = data.policy;
-//     uploadForm.signature = data.signature;
-//     uploadForm.ossaccessKeyId = data.accessid;
-//     //
-//     uploadForm.key = data.dir + "/" + buildUUID() + `_${rawFile.name}`;
-//     uploadForm.dir = data.dir;
-//     uploadForm.host = data.host;
-//     uploadForm.expire = data.expire;
-//     console.log("uploadForm", uploadForm);
-//     return true;
-//   } catch (e) {
-//     console.error("获取oss上传凭证失败。");
-//     return false;
-//   }
-
-//   // TODO 上传时form为空
+//  function beforeUpload(rawFile: UploadRawFile) {
+//   // TODO 上传时form为空，element-lpus bug
 //   // return new Promise((resolve, reject) => {
 //   //   getOss(dir.value)
 //   //     .then((data: any) => {

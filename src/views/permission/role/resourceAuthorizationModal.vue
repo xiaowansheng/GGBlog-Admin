@@ -44,7 +44,6 @@ watch(show, () => {
     tree.value = [];
     defaultSelected.value = [];
   }
-  // console.log(roleId?.value);
 });
 
 // watch(roleId, () => {
@@ -77,7 +76,6 @@ const submitForm = () => {
   btnLoading.value = true;
   const data: any = [];
   selected.value.forEach(resourceId => {
-    console.log("submit!", data);
     data.push({
       roleId: roleId!.value,
       resourceId
@@ -115,18 +113,16 @@ const resetChecked = () => {
 let selected = ref<number[]>([]);
 const check = (node: any, status: any) => {
   const { checkedNodes, checkedKeys } = status;
-  console.log(checkedNodes, checkedKeys);
+  // console.log(checkedNodes, checkedKeys);
   const arr: any = [];
   for (let i = 0; i < checkedNodes.length; i++) {
     const temp = checkedNodes[i];
-    console.log(temp);
-
     if (!temp.children || temp.children.length == 0) {
       arr.push(temp.id);
     }
   }
   selected.value = arr;
-  console.log("选中的id", arr);
+  // console.log("选中的id", arr);
 };
 </script>
 

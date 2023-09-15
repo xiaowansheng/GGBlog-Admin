@@ -85,7 +85,7 @@ const temp=useEditor((root) => Editor.make()
   .use(commonmark)
   )
 // const editor = 
-console.log("temp:", temp);
+// console.log("temp:", temp);
 </script>
 
 <template>

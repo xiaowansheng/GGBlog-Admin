@@ -18,7 +18,7 @@ const editorId = ref<number>(1);
 onBeforeMount(() => {
   if (getParameter?.id) {
     articleForm.id = Number.parseInt(getParameter.id.toString());
-    console.log("talk-id：", articleForm.id);
+    // console.log("talk-id：", articleForm.id);
     getData(articleForm.id);
   } else {
     editorId.value = 1;
@@ -49,7 +49,6 @@ const getData = (id: number | string) => {
         articleForm.status = data.status;
         articleForm.categoryVo.id = data.categoryDto?.id;
         articleForm.categoryVo.name = data.categoryDto?.name;
-        console.log("data.tagDtos", data.tagDtos);
         const tagArr: [] = data.tagDtos ?? [];
         for (let i = 0; i < tagArr.length; i++) {
           const tag: any = tagArr[i];
@@ -57,7 +56,6 @@ const getData = (id: number | string) => {
             id: tag.id,
             name: tag.name
           });
-          console.log("tagDtos", tag);
         }
 
         editorId.value = 1;

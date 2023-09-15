@@ -101,7 +101,6 @@ const setlastRange = () => {
   const selection = window.getSelection();
   const range = selection.getRangeAt(0);
   if (range) {
-    // console.log(range);
     const preSelectionRange = range.cloneRange();
     lastRange = preSelectionRange;
   } else {

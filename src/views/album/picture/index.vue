@@ -29,7 +29,7 @@ onBeforeMount(() => {
 onMounted(() => {
   let title = getQuery?.name as string;
   // console.log(name);
-  console.log(title);
+  // console.log(title);
 
   title = title?.length > 8 ? title?.slice(0, 8) + "..." : title;
   initToDetail(title);
