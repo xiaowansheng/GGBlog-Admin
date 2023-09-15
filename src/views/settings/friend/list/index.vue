@@ -8,6 +8,7 @@ import {
 } from "@/api/friend";
 import AddAndModifyModal from "./addAndModifyModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import SinglePictureUpload from "@/components/upload/SinglePicture/index.vue"
 defineOptions({
   name: "Friend"
 });
@@ -175,21 +176,21 @@ const deleteR = (item: FriendDto) => {
             label="网站名称"
             width="150"
           />
-          <!-- <el-table-column
+          <el-table-column
             prop="icon"
             :align="'center'"
             label="网站图标"
-            width="120"
+            width="100"
           >
-            <template #default="scope">
+            <template #default="{row}">
               <el-avatar
                 shape="square"
                 :size="50"
                 :fit="'fill'"
-                :src="scope.row.url"
+                :src="row.icon"
               />
             </template>
-          </el-table-column> -->
+          </el-table-column>
           <el-table-column
             prop="author"
             :align="'center'"
@@ -207,7 +208,23 @@ const deleteR = (item: FriendDto) => {
             prop="introduction"
             :align="'center'"
             label="介绍信息"
-          />
+          >
+        <template #default="{ row }">
+              <el-popover
+                placement="top-start"
+                title="网站介绍"
+                :width="200"
+                trigger="hover"
+                :content="row.introduction"
+              >
+                <template #reference>
+                  <span class="ellipsis-two">
+                    {{ row.introduction }}
+                  </span>
+                </template>
+              </el-popover>
+            </template>
+        </el-table-column>
           <el-table-column :align="'center'" label="是否隐藏" width="100">
             <template #default="scope">
               <el-switch
@@ -220,7 +237,7 @@ const deleteR = (item: FriendDto) => {
           <el-table-column :align="'center'" label="审核情况" width="100">
             <template #default="scope">
                 <el-tag v-if="scope.row.review==1" type="success">通过</el-tag>
-                <el-tag v-if="scope.row.review==-1" type="error">未通过</el-tag>
+                <el-tag v-if="scope.row.review==-1" type="danger">未通过</el-tag>
                 <el-tag v-if="scope.row.review==0" type="warning">待审核</el-tag>
               </template
           ></el-table-column>
