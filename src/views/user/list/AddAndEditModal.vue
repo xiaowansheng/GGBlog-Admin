@@ -234,7 +234,12 @@ const resetForm = () => {
       <span class="dialog-footer">
         <el-button @click="visiable = false">取消</el-button>
         <el-button v-if="!form.id" @click="resetForm()">重置</el-button>
-        <el-button type="primary" v-loading="loading" :disabled="laoding" @click="submitForm(formRef)">
+        <el-button
+          type="primary"
+          v-loading="loading"
+          :disabled="loading"
+          @click="submitForm(formRef)"
+        >
           提交
         </el-button>
       </span>
