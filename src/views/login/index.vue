@@ -45,8 +45,8 @@ const { title, getDropdownItemStyle, getDropdownItemClass } = useNav();
 const { locale, translationCh, translationEn } = useTranslationLang();
 
 const ruleForm = reactive({
-  username: "test",
-  password: "test"
+  username: "",
+  password: ""
 });
 
 const onLogin = async (formEl: FormInstance | undefined) => {
@@ -62,7 +62,6 @@ const onLogin = async (formEl: FormInstance | undefined) => {
         })
         .then(data => {
           // console.log("data:", data);
-
           // 获取后端路由
           initRouter()
             .then(() => {
@@ -205,6 +204,9 @@ onBeforeUnmount(() => {
                 />
               </el-form-item>
             </Motion>
+            <div class="tips">
+              <span>测试账号：test，密码：test</span>
+            </div>
 
             <Motion :delay="250">
               <el-button
@@ -253,5 +255,12 @@ onBeforeUnmount(() => {
   display:flex;
    justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
+}
+
+
+.tips{
+  // text-align: left;
+// 提示文字
+  font-size: 14px;
 }
 </style>
