@@ -172,7 +172,7 @@ const resetForm = () => {
         <el-button @click="visiable = false">取消</el-button>
         <el-button @click="resetForm()">重置</el-button>
         <el-button type="primary" v-loading="loading" :disabled="loading" @click="submitForm(formRef)">
-          提交0
+          提交
         </el-button>
       </span>
     </template>

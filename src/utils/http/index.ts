@@ -82,7 +82,10 @@ class PureHttp {
           "/user/auth/refresh/token",
           "/user/auth/login",
         ];
-        return whiteList.some(v => config.url.indexOf(v) > -1)
+        // 字串匹配
+        // return whiteList.some(v => config.url.indexOf(v) > -1)
+        // 改为完全匹配
+        return whiteList.some(v => v == config.url)
           ? config
           : new Promise(resolve => {
               const data = getToken();
