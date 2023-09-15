@@ -242,7 +242,7 @@ const deleteR = (item: TalkDto) => {
           <div class="content">
             <!-- {{ item.content }} -->
             <div class="text" v-html="item.content"></div>
-            <div class="images">
+            <div class="images" v-if="item.images&&item.images.length>0">
               <el-image
                 v-for="(picture,index) in item.images"
                 style="width: 100%; height: 100%"
@@ -289,6 +289,9 @@ const deleteR = (item: TalkDto) => {
 </template>
 <style lang="scss">
 .talk-list {
+   .el-card__body{
+    padding: 8px;
+  }
   .content {
     .text {
       // display: flex;
@@ -323,6 +326,9 @@ const deleteR = (item: TalkDto) => {
         }
       }
     }
+  }
+  .images{
+    margin-top: 15px;
   }
   .primacy {
     font-size: 14px;
@@ -377,6 +383,7 @@ const deleteR = (item: TalkDto) => {
         grid-gap: 5px;
     
     }
+    
   }
 }
 </style>
