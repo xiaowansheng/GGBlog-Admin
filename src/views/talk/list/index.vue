@@ -181,7 +181,8 @@ const deleteR = (item: TalkDto) => {
             />
           </div>
         </div>
-        <el-card class="item" v-for="item in list" :key="item.id">
+        <el-empty v-if="total == 0" description="Empty~" />
+        <el-card v-else class="item" v-for="item in list" :key="item.id">
           <template #header>
             <div class="item-header">
               <!-- 查询作者信息，取出头像和昵称 -->

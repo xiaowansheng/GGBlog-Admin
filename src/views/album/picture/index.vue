@@ -126,8 +126,8 @@ const photos = ref<string[]>([]);
             >添加</el-button
           >
         </div>
-        <el-empty v-show="total == 0" description="Empty" />
-        <div class="pictures">
+        <el-empty v-if="total == 0" description="Empty" />
+        <div v-else class="pictures">
           <!-- <el-card class="box-card item" v-for="item in list" :key="item.name">
             <template #header>
               <div class="card-header">

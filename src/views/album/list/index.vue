@@ -101,7 +101,8 @@ const deleteR = (item: AlbumDto) => {
             >添加</el-button
           >
         </div>
-        <div class="albums">
+        <el-empty v-if="total == 0" description="Empty~" />
+        <div v-else class="albums">
           <el-card class="box-card item" v-for="item in list" :key="item.name">
             <template #header>
               <div class="card-header">
@@ -141,10 +142,10 @@ const deleteR = (item: AlbumDto) => {
               <!-- <el-image class="img" style="width: 100px; height: 100px" :src="item.cover" :fit="'cover'" /> -->
             </div>
             <div class="status">
-              <el-tag  size="small" v-if="item.status == 'public'">{{
+              <el-tag size="small" v-if="item.status == 'public'">{{
                 findStatus(item.status)
               }}</el-tag>
-              <el-tag  size="small" v-else type="warning">{{
+              <el-tag size="small" v-else type="warning">{{
                 findStatus(item.status)
               }}</el-tag>
             </div>
