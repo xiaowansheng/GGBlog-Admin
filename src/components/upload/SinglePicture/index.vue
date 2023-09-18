@@ -6,7 +6,7 @@ import {
   ElMessage,
   UploadFile,
   UploadFiles,
-  UploadInstance,
+  UploadInstance
 } from "element-plus";
 import { reactive, ref, toRefs, watch } from "vue";
 const ossUrl = import.meta.env.VITE_GLOB_OSS_URL;
@@ -16,7 +16,7 @@ defineOptions({
 const props = defineProps({
   value: {
     type: String,
-    default:""
+    default: ""
   },
   disable: {
     type: Boolean,
@@ -33,21 +33,21 @@ const props = defineProps({
   width: {
     type: String,
     default: "250px"
-  },
+  }
 });
 const emits = defineEmits(["update:value"]);
 
 const { value, dir, disable }: any = toRefs(props);
 const url = ref<string>(value.value);
-const valueOneChange=watch(value, () => {
+const valueOneChange = watch(value, () => {
   // 解决照片回显问题
-  console.log(("image-value更新"));
+  console.log("image-value更新");
   if (value.value != url.value) {
-    
-  url.value = value!.value;
+    url.value = value!.value;
+    fileList.value.splice(0);
   }
   // valueOneChange()
-})
+});
 
 // const setUrl=(val:string)=>{
 // url.value=val
@@ -164,7 +164,7 @@ const uploadRef = ref<UploadInstance>();
 
 <template>
   <!-- :before-upload="beforeUpload" -->
-    <!-- :on-change="handleFileChange" -->
+  <!-- :on-change="handleFileChange" -->
   <el-upload
     ref="uploadRef"
     class="single-upload"
@@ -184,11 +184,14 @@ const uploadRef = ref<UploadInstance>();
     list-type="picture"
     :show-file-list="false"
   >
-  <div v-if="!url" class="no-img" :style="`width: ${width}; height:${height}`">
-    
-    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-    <div class="el-upload__text">拖拽上传 或 <em>点击上传</em></div>
-  </div>
+    <div
+      v-if="!url"
+      class="no-img"
+      :style="`width: ${width}; height:${height}`"
+    >
+      <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+      <div class="el-upload__text">拖拽上传 或 <em>点击上传</em></div>
+    </div>
     <div v-if="url" class="img" :style="`width: ${width}; height:${height}`">
       <el-image style="width: 100%; height: 100%" :src="url" :fit="'cover'" />
     </div>
@@ -200,10 +203,10 @@ const uploadRef = ref<UploadInstance>();
   </el-upload>
 </template>
 <style lang="scss">
-.single-upload{
-  .el-upload-dragger{
+.single-upload {
+  .el-upload-dragger {
     padding: 10px;
-    .no-img{
+    .no-img {
       padding-top: 10px;
     }
   }
