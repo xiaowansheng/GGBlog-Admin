@@ -145,8 +145,8 @@ const close = () => {
                 placeholder="选择编辑器"
               >
                 <el-option label="CherryMarkdown" :value="1" />
-                <!-- <el-option label="VditorMarkdown（BUG）" :value="2" />
-                <el-option label="WangEditor" :value="3" /> -->
+                <!-- <el-option label="VditorMarkdown（BUG）" :value="2" /> -->
+                <!-- <el-option label="WangEditor" :value="3" /> -->
                 <!-- <el-option label="TuiEditor" :value="4" /> -->
               </el-select>
             </div>
@@ -169,9 +169,9 @@ const close = () => {
             v-model:value="articleForm.content"
             :height="520"
           />
-          <!-- <vditor v-if="editorId == 2" v-model:value="articleForm.content" />
-          <wang-editor v-if="editorId == 3" v-model:value="articleForm.content" /> -->
-          <!-- <tui-editor v-if="editorId == 4" v-model:value="articleForm.content" /> -->
+          <!-- <vditor v-if="editorId == 2" v-model:value="articleForm.content" /> -->
+          <!-- <wang-editor v-if="editorId == 3" v-model:value="articleForm.content" /> --> 
+          <!-- <tui-editor v-if="editorId == 4" v-model:value="articleForm.content" />-->
         </div>
       </div>
     </el-card>

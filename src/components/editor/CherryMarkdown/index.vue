@@ -616,8 +616,8 @@ const init = () => {
   cherryInstance.value = new Cherry(config);
 };
 const destroy = () => {};
-// init()
 // onActivated(init)
+// 页面挂载后才加载
 onMounted(init);
 // onActivated(init);
 onBeforeUnmount(destroy);

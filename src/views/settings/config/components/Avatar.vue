@@ -60,7 +60,7 @@ const submitData = (item: Contact) => {
       <div class="part" v-for="item in config.value" :key="item.name">
         <label>{{ item.label }}（{{item.name}}）:</label>
         <!-- <el-input :disabled="!open" v-model="item.label" size="large" /> -->
-        <SinglePictureUpload class="upload" v-model:value="item.url" :height="'150px'" :width="'150px'"/>
+        <SinglePictureUpload class="upload" v-model:value="item.url" :disable="!open" :height="'150px'" :width="'150px'"/>
       </div>
     </div>
     <div class="update">
