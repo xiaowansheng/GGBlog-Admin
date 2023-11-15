@@ -7,7 +7,9 @@ import { $t, transformI18n } from "@/plugins/i18n";
 //   /^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)]|[()])+$)(?!^.*[\u4E00-\u9FA5].*$)([^(0-9a-zA-Z)]|[()]|[a-z]|[A-Z]|[0-9]){6,18}$/;
 
   // 密码正则（密码格式应为4-18位数字、字母、符号的任意一种组合）
-export const REGEXP_PWD =/^(?=.*[\d\w\p{P}])[\d\w\p{P}]{4,18}$/
+// export const REGEXP_PWD = /^(?=.*[\d\w\p{P}])[\d\w\p{P}]{4,18}$/
+export const REGEXP_PWD = /^(?=.*[\d\w@$#])[\d\w@$#.]{4,18}$/;
+
 
 /** 登录校验 */
 const loginRules = reactive(<FormRules>{

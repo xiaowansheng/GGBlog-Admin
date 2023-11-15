@@ -111,6 +111,7 @@ const updateData = () => {
               v-model="config.value.createTime"
               type="datetime"
               format="YYYY-MM-DD HH:mm"
+              value-format="YYYY-MM-DD HH:mm"
               placeholder="输入网站创建时间~"
               size="large"
             />
