@@ -154,8 +154,17 @@ class PureHttp {
         } else if (code && message) {
           ElMessage.error(message);
           if (code == 40011) {
-            console.log(1);
             ElMessageBox.confirm("登录凭证过期，是否跳转到登录页重新登录？", "Warning", {
+              confirmButtonText: "跳转",
+              cancelButtonText: "取消",
+              type: "warning"
+            }).then(() => {
+              // 重新登录
+              useUserStoreHook().loginAgain();
+            });
+            return;
+          } else if (code == 41001) {
+            ElMessageBox.confirm("未登录，是否跳转到登录页重新登录？", "Warning", {
               confirmButtonText: "跳转",
               cancelButtonText: "取消",
               type: "warning"
