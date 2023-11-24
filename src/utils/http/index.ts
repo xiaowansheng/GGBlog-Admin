@@ -164,7 +164,7 @@ class PureHttp {
             });
             return;
           } else if (code == 41001) {
-            ElMessageBox.confirm("未登录，是否跳转到登录页重新登录？", "Warning", {
+            ElMessageBox.confirm("未登录，是否跳转到登录页登录？", "Warning", {
               confirmButtonText: "跳转",
               cancelButtonText: "取消",
               type: "warning"

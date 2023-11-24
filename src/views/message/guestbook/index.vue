@@ -10,6 +10,7 @@ import {
 import { getUserType } from "@/api/common";
 import ModifyModal from "./ModifyModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { scrollToContent } from "@/utils/pageUtils";
 defineOptions({
   name: "Guestbook"
 });
@@ -20,15 +21,21 @@ onBeforeMount(() => {
   });
   getData();
 });
+const contentRef = ref();
 
-const getData = () => {
-  const tempParams = {
-    ...params,
-    ...queryParams
-  };
-  getLeaveWordPage(tempParams).then((data: any) => {
-    list.value = data.list;
-    total.value = data.total;
+const getData = (): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const tempParams = {
+      ...params,
+      ...queryParams
+    };
+    getLeaveWordPage(tempParams)
+      .then((data: any) => {
+        list.value = data.list;
+        total.value = data.total;
+        resolve(null);
+      })
+      .catch(() => reject(null));
   });
 };
 
@@ -80,7 +87,7 @@ const updateStatus = (item: GuestbookDto) => {
     id: item.id,
     status: item.hidden
   };
-  updateLeaveWord(null, { data: form })
+  updateLeaveWord(form)
     .then(() => {
       ElMessage.success("修改成功！");
     })
@@ -89,12 +96,12 @@ const updateStatus = (item: GuestbookDto) => {
     });
 };
 const deleteR = (item: GuestbookDto) => {
-  ElMessageBox.confirm(`是否确认删除评论【${item.content}】？`, "Warning", {
+  ElMessageBox.confirm(`是否确认删除留言【${item.content}】？`, "Warning", {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
     type: "warning"
   }).then(() => {
-    deleteBatchLeaveWord(item.id).then(() => {
+    deleteLeaveWord(item.id).then(() => {
       getData();
       ElMessage.success("删除成功");
     });
@@ -291,6 +298,7 @@ const deleteBatch = () => {
             >批量删除</el-button
           >
         </div>
+        <span ref="contentRef"></span>
         <el-table
           border
           :data="list"
@@ -437,8 +445,8 @@ const deleteBatch = () => {
           background
           v-model:current-page="params.page"
           v-model:page-size="params.limit"
-          @update:current-page="getData()"
-          @update:page-size="getData()"
+          @update:current-page="scrollToContent(getData, contentRef)"
+          @update:page-size="scrollToContent(getData, contentRef)"
           layout="total,prev, pager, next,sizes,jumper"
           :total="total"
           :page-sizes="[10, 15, 20, 30, 50]"

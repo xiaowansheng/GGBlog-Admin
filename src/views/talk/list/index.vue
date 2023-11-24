@@ -10,6 +10,7 @@ import { formatDate } from "@/utils/myUtils";
 
 import { getAuthorConfig } from "@/api/config";
 import { Author } from "@/views/settings/author/Author";
+import { scrollToContent } from "@/utils/pageUtils";
 const { router } = useTags();
 defineOptions({
   name: "TalkList"
@@ -31,8 +32,9 @@ const author = ref<Author>({
   avatar: "",
   introduction: ""
 });
-const getData = () => {
-  const params = {
+const getData = ():Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const params = {
     ...pageParams,
     ...queryParams
   };
@@ -42,12 +44,17 @@ const getData = () => {
     });
     total.value = data.total;
     list.value = data.list;
-  });
+    resolve(null)
+  }).catch(() => {
+    reject(null)
+  })
+})
 };
 const pageParams = reactive<PageParams>({
   page: 1,
   limit: 10
 });
+const contentRef = ref()
 const dateInterval = ref<any>();
 const dateChange = (value: [Date, Date]) => {
   if (value[0] && value[1]) {
@@ -181,8 +188,11 @@ const deleteR = (item: TalkDto) => {
             />
           </div>
         </div>
+        <span ref="contentRef"></span>
         <el-empty v-if="total == 0" description="Empty~" />
-        <el-card v-else class="item" v-for="item in list" :key="item.id">
+        <div  v-else>
+          
+        <el-card class="item" v-for="item in list" :key="item.id">
           <template #header>
             <div class="item-header">
               <!-- 查询作者信息，取出头像和昵称 -->
@@ -272,13 +282,14 @@ const deleteR = (item: TalkDto) => {
             </div>
           </div>
         </el-card>
+        </div>
         <el-pagination
           :hide-on-single-page="false"
           background
           v-model:current-page="pageParams.page"
           v-model:page-size="pageParams.limit"
-          @update:current-page="getData()"
-          @update:page-size="getData()"
+          @update:current-page="scrollToContent(getData,contentRef)"
+          @update:page-size="scrollToContent(getData,contentRef)"
           layout="total,prev, pager, next,sizes,jumper"
           :total="total"
           :page-sizes="[10, 15, 20, 30, 50]"

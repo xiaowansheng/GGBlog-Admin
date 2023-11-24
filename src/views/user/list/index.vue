@@ -10,6 +10,7 @@ import {
 import { getAllSimpleRoles } from "@/api/role";
 import AddAndEditModal from "./AddAndEditModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { scrollToContent } from "@/utils/pageUtils";
 defineOptions({
   name: "UserList"
 });
@@ -22,15 +23,20 @@ onBeforeMount(() => {
   });
   getData();
 });
-
-const getData = () => {
-  const tempParams = {
-    ...params,
-    ...queryParams
-  };
-  getUserPage(tempParams).then((data: any) => {
-    list.value = data.list;
-    total.value = data.total;
+const contentRef = ref();
+const getData = (): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const tempParams = {
+      ...params,
+      ...queryParams
+    };
+    getUserPage(tempParams)
+      .then((data: any) => {
+        list.value = data.list;
+        total.value = data.total;
+        resolve(null);
+      })
+      .catch(() => reject(null));
   });
 };
 
@@ -230,6 +236,7 @@ const updateStatus = (item: UserAuthDto) => {
             >添加</el-button
           >
         </div>
+        <span ref="contentRef"></span>
         <el-table border :data="list" style="width: 100%">
           <el-table-column prop="id" :align="'center'" label="ID" width="50" />
           <el-table-column
@@ -308,7 +315,9 @@ const updateStatus = (item: UserAuthDto) => {
                 :content="row.userInfoDto.introduction"
                 placement="top-start"
               >
-                <span class="ellipsis-two">{{ row.userInfoDto.introduction }}</span>
+                <span class="ellipsis-two">{{
+                  row.userInfoDto.introduction
+                }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -375,8 +384,8 @@ const updateStatus = (item: UserAuthDto) => {
           background
           v-model:current-page="params.page"
           v-model:page-size="params.limit"
-          @update:current-page="getData()"
-          @update:page-size="getData()"
+          @update:current-page="scrollToContent(getData, contentRef)"
+          @update:page-size="scrollToContent(getData, contentRef)"
           layout="total,prev, pager, next,sizes,jumper"
           :total="total"
           :page-sizes="[10, 15, 20, 30, 50]"

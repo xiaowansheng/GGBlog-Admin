@@ -1,21 +1,27 @@
 <script setup lang="ts">
 import { onBeforeMount, reactive, ref } from "vue";
 import { LoginLogDto, getLoginLogPage } from "@/api/loginlog";
+import { scrollToContent } from "@/utils/pageUtils";
 defineOptions({
   name: "LoginLog"
 });
 onBeforeMount(() => {
   getData();
 });
-
-const getData = () => {
-  const tempParams = {
-    ...params,
-    ...queryParams
-  };
-  getLoginLogPage(tempParams).then((data: any) => {
-    list.value = data.list;
-    total.value = data.total;
+const contentRef = ref();
+const getData = (): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const tempParams = {
+      ...params,
+      ...queryParams
+    };
+    getLoginLogPage(tempParams)
+      .then((data: any) => {
+        list.value = data.list;
+        total.value = data.total;
+        resolve(null);
+      })
+      .catch(() => reject(null));
   });
 };
 
@@ -102,6 +108,7 @@ const selected = ref<LoginLogDto>();
             />
           </div>
         </div>
+        <span ref="contentRef"></span>
         <el-table border :data="list" style="width: 100%">
           <el-table-column prop="id" :align="'center'" label="ID" width="50" />
           <el-table-column
@@ -184,8 +191,8 @@ const selected = ref<LoginLogDto>();
           background
           v-model:current-page="params.page"
           v-model:page-size="params.limit"
-          @update:current-page="getData()"
-          @update:page-size="getData()"
+          @update:current-page="scrollToContent(getData, contentRef)"
+          @update:page-size="scrollToContent(getData, contentRef)"
           layout="total,prev, pager, next,sizes,jumper"
           :total="total"
           :page-sizes="[10, 15, 20, 30, 50]"

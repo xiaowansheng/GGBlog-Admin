@@ -2,22 +2,28 @@
 import { onBeforeMount, reactive, ref } from "vue";
 import { OperationDto, getOperationPage } from "@/api/operationLog";
 import OperationDetailModal from "./operationDetailModal.vue";
+import { scrollToContent } from "@/utils/pageUtils";
 defineOptions({
   name: "OperationLog"
 });
 onBeforeMount(() => {
   getData();
 });
-
-const getData = () => {
-  const tempParams = {
-    ...params,
-    ...queryParams
-  };
-  getOperationPage(tempParams).then((data: any) => {
-    // console.log(data);
-    total.value = data.total;
-    list.value = data.list;
+const contentRef = ref();
+const getData = (): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const tempParams = {
+      ...params,
+      ...queryParams
+    };
+    getOperationPage(tempParams)
+      .then((data: any) => {
+        // console.log(data);
+        total.value = data.total;
+        list.value = data.list;
+        resolve(null);
+      })
+      .catch(() => reject(null));
   });
 };
 
@@ -66,7 +72,6 @@ const show = (item: OperationDto = null) => {
             />
           </div>
           <div class="op">
-            
             <label>请求方法:</label>
             <el-select
               @change="getData()"
@@ -128,6 +133,7 @@ const show = (item: OperationDto = null) => {
             </el-select>
           </div> -->
         </div>
+        <span ref="contentRef"></span>
         <el-table border :data="list" style="width: 100%">
           <el-table-column prop="id" :align="'center'" label="ID" width="50" />
           <!-- <el-table-column
@@ -136,9 +142,13 @@ const show = (item: OperationDto = null) => {
             label="用户账号"
             width="150"
           /> -->
-          <el-table-column prop="userName" :align="'center'" label="用户名称" 
-            width="180">
-                  <template #default="{ row }">
+          <el-table-column
+            prop="userName"
+            :align="'center'"
+            label="用户名称"
+            width="180"
+          >
+            <template #default="{ row }">
               <el-tooltip
                 class="tooltip"
                 effect="light"
@@ -147,7 +157,8 @@ const show = (item: OperationDto = null) => {
               >
                 <span class="ellipsis-two">{{ row.userName }}</span>
               </el-tooltip>
-            </template></el-table-column>
+            </template></el-table-column
+          >
           <el-table-column :align="'center'" label="请求方法" width="100">
             <template #default="scope">
               <el-tag>{{ scope.row.requestMethod }}</el-tag>
@@ -248,8 +259,8 @@ const show = (item: OperationDto = null) => {
           background
           v-model:current-page="params.page"
           v-model:page-size="params.limit"
-          @update:current-page="getData()"
-          @update:page-size="getData()"
+          @update:current-page="scrollToContent(getData, contentRef)"
+          @update:page-size="scrollToContent(getData, contentRef)"
           layout="total,prev, pager, next,sizes,jumper"
           :total="total"
           :page-sizes="[8, 15, 20, 30, 50]"

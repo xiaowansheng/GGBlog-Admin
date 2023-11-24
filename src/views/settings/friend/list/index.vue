@@ -8,23 +8,28 @@ import {
 } from "@/api/friend";
 import AddAndModifyModal from "./addAndModifyModal.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import SinglePictureUpload from "@/components/upload/SinglePicture/index.vue"
+import { scrollToContent } from "@/utils/pageUtils";
+
 defineOptions({
   name: "Friend"
 });
 onBeforeMount(() => {
   getData();
 });
+const contentRef = ref();
 
-const getData = () => {
-  const tempParams = {
+const getData = ():Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const tempParams = {
     ...params,
     ...queryParams
   };
   getFriendPage(tempParams).then((data: any) => {
     list.value = data.list;
     total.value = data.total;
-  });
+    resolve(null)
+  }).catch(()=>reject(null))
+})
 };
 
 const total = ref<number>(0);
@@ -168,6 +173,7 @@ const deleteR = (item: FriendDto) => {
             >添加</el-button
           >
         </div>
+        <span ref="contentRef"></span>
         <el-table border :data="list" style="width: 100%">
           <el-table-column prop="id" :align="'center'" label="ID" width="50" />
           <el-table-column
@@ -273,8 +279,8 @@ const deleteR = (item: FriendDto) => {
           background
           v-model:current-page="params.page"
           v-model:page-size="params.limit"
-          @update:current-page="getData()"
-          @update:page-size="getData()"
+          @update:current-page="scrollToContent(getData, contentRef)"
+          @update:page-size="scrollToContent(getData, contentRef)"
           layout="total,prev, pager, next,sizes,jumper"
           :total="total"
           :page-sizes="[10, 15, 20, 30, 50]"

@@ -2,6 +2,7 @@
 import { onBeforeMount, reactive, ref } from "vue";
 import { ErrorDto, getErrorPage } from "@/api/errorLog";
 import ErrorDetailModal from "./errorDetailModal.vue";
+import { scrollToContent } from "@/utils/pageUtils";
 defineOptions({
   name: "ErrorLog"
 });
@@ -9,15 +10,21 @@ onBeforeMount(() => {
   getData();
 });
 
-const getData = () => {
-  const tempParams = {
-    ...params,
-    ...queryParams
-  };
-  getErrorPage(tempParams).then((data: any) => {
-    // console.log(data);
-    total.value = data.total;
-    list.value = data.list;
+const contentRef = ref();
+const getData = (): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const tempParams = {
+      ...params,
+      ...queryParams
+    };
+    getErrorPage(tempParams)
+      .then((data: any) => {
+        // console.log(data);
+        total.value = data.total;
+        list.value = data.list;
+        resolve(null);
+      })
+      .catch(() => reject(null));
   });
 };
 
@@ -38,9 +45,9 @@ const queryParams = reactive({
 const list = ref<ErrorDto[]>([]);
 
 const getCallMethod = (method: string) => {
-  const arr = method.split('.');
-  return arr[arr.length-2]+'.'+arr[arr.length-1]
-}
+  const arr = method.split(".");
+  return arr[arr.length - 2] + "." + arr[arr.length - 1];
+};
 
 // const detailRef = ref();
 const showDialog = ref(false);
@@ -130,6 +137,7 @@ const show = (item: ErrorDto = null) => {
             />
           </div>
         </div>
+        <span ref="contentRef"></span>
         <el-table border :data="list" style="width: 100%">
           <el-table-column prop="id" :align="'center'" label="ID" width="50" />
           <!-- <el-table-column
@@ -167,7 +175,9 @@ const show = (item: ErrorDto = null) => {
             label="调用方法"
             width="150"
           >
-            <template #default="scope">{{ getCallMethod(scope.row.callingMethod) }} </template>
+            <template #default="scope"
+              >{{ getCallMethod(scope.row.callingMethod) }}
+            </template>
           </el-table-column>
           <el-table-column
             prop="errorName"
@@ -252,8 +262,8 @@ const show = (item: ErrorDto = null) => {
           background
           v-model:current-page="params.page"
           v-model:page-size="params.limit"
-          @update:current-page="getData()"
-          @update:page-size="getData()"
+          @update:current-page="scrollToContent(getData, contentRef)"
+          @update:page-size="scrollToContent(getData, contentRef)"
           layout="total,prev, pager, next,sizes,jumper"
           :total="total"
           :page-sizes="[8, 15, 20, 30, 50]"
