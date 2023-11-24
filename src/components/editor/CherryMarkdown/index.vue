@@ -226,7 +226,7 @@ const callbacks = {
     callback: (path: string, arg: { [key: string]: any }) => void
   ) {
     console.log("上传文件：",file);
-    if (!/^image\/(jpeg|png|gif)$/i.test(file.type)) {
+    if (!/^image\/(jpeg|png|gif|webp)$/i.test(file.type)) {
       ElMessage.warning("暂时只支持图片上传！");
       return;
     }

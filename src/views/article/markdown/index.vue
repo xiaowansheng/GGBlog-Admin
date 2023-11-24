@@ -168,10 +168,11 @@ const close = () => {
             :id="`markdown${getParameter?.id}`"
             v-model:value="articleForm.content"
             :height="520"
+            :dir="'article'"
           />
-          <!-- <vditor v-if="editorId == 2" v-model:value="articleForm.content" /> -->
-          <!-- <wang-editor v-if="editorId == 3" v-model:value="articleForm.content" /> --> 
-          <!-- <tui-editor v-if="editorId == 4" v-model:value="articleForm.content" />-->
+          <!-- <vditor v-if="editorId == 2" v-model:value="articleForm.content" :dir="'article'"/> -->
+          <!-- <wang-editor v-if="editorId == 3" v-model:value="articleForm.content" :dir="'article'"/> --> 
+          <!-- <tui-editor v-if="editorId == 4" v-model:value="articleForm.content" :dir="'article'"/>-->
         </div>
       </div>
     </el-card>
