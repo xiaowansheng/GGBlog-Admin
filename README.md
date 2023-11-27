@@ -10,19 +10,15 @@
 
 **后端服务器仓库：**
 
-[Springboot-GGBlog](https://github.com/xiaowansheng/GGBlog )
+[GGBlog-Server](https://github.com/xiaowansheng/GGBlog )
 
 **后台管理仓库：**
 
-[Vue-GGBlog-Admin](https://github.com/xiaowansheng/GGBlog-Admin)
+[GGBlog-Admin](https://github.com/xiaowansheng/GGBlog-Admin)
 
 **前台系统仓库：**
 
-[Vue-GGBlog-Main（正在开发）](https://github.com/xiaowansheng/GGBlog-Main)
-
-当前版本未开发完成，可大概参考第一个版本的功能样式：[WBXNL.COM](https://wbxnl.com)
-
-
+[GGBlog-Main](https://github.com/xiaowansheng/GGBlog-Main)
 
 ## 主要依赖信息
 
