@@ -165,12 +165,14 @@ const close = () => {
             v-if="editorId == 1"
             v-model:value="articleForm.content"
             :dir="'article'"
+            :height="560"
+            @save="saveDraft()"
           />
           <cherry-markdown
             v-if="editorId == 2"
             :id="`markdown${getParameter?.id}`"
             v-model:value="articleForm.content"
-            :height="520"
+            :height="560"
             :dir="'article'"
           />
           <!-- <vditor v-if="editorId == 2" /> -->
