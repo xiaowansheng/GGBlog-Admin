@@ -4,8 +4,8 @@ import { Article, addArticleDraft, getArticleById } from "@/api/article";
 // import { NameLabelDto, getContentStatus } from "@/api/common";
 import { ElMessage } from "element-plus";
 import AddAndEditModal from "./AddAndEditModal.vue";
-// import Vditor from "@/components/editor/Markdown/index.vue";
-import CherryMarkdown from "@/components/editor/CherryMarkdown/index.vue";
+import Vditor from "@/components/editor/Vditor/index.vue";
+// import CherryMarkdown from "@/components/editor/CherryMarkdown/index.vue";
 // import WangEditor from "@/components/editor/WangEditor/index.vue";
 // import TuiEditor from "@/components/editor/TuiEditor/index.vue";
 import { useDetail } from "@/hooks/routerUtils";
@@ -14,15 +14,13 @@ import { formatDate } from "@/utils/myUtils";
 defineOptions({
   name: "ArticlePublish"
 });
-const editorId = ref<number>(1);
+const editorId = ref<number>(2);
 onBeforeMount(() => {
   if (getParameter?.id) {
     articleForm.id = Number.parseInt(getParameter.id.toString());
     // console.log("talk-id：", articleForm.id);
     getData(articleForm.id);
-  } else {
-    editorId.value = 1;
-  }
+  } 
 });
 const getData = (id: number | string) => {
   if (id) {
@@ -57,13 +55,9 @@ const getData = (id: number | string) => {
             name: tag.name
           });
         }
-
-        editorId.value = 1;
       })
       .catch(() => {
         initToDetail();
-
-        editorId.value = 1;
       });
   }
 };
@@ -145,7 +139,7 @@ const close = () => {
                 placeholder="选择编辑器"
               >
                 <el-option label="CherryMarkdown" :value="1" />
-                <!-- <el-option label="VditorMarkdown（BUG）" :value="2" /> -->
+                <el-option label="VditorMarkdown" :value="2" />
                 <!-- <el-option label="WangEditor" :value="3" /> -->
                 <!-- <el-option label="TuiEditor" :value="4" /> -->
               </el-select>
@@ -163,15 +157,20 @@ const close = () => {
           </div>
         </div>
         <div class="text">
-          <cherry-markdown
+          <!-- <cherry-markdown
             v-if="editorId == 1"
             :id="`markdown${getParameter?.id}`"
             v-model:value="articleForm.content"
             :height="520"
             :dir="'article'"
+          /> -->
+          <vditor
+            v-if="editorId == 2"
+            v-model:value="articleForm.content"
+            :dir="'article'"
           />
-          <!-- <vditor v-if="editorId == 2" v-model:value="articleForm.content" :dir="'article'"/> -->
-          <!-- <wang-editor v-if="editorId == 3" v-model:value="articleForm.content" :dir="'article'"/> --> 
+          <!-- <vditor v-if="editorId == 2" /> -->
+          <!-- <wang-editor v-if="editorId == 3" v-model:value="articleForm.content" :dir="'article'"/> -->
           <!-- <tui-editor v-if="editorId == 4" v-model:value="articleForm.content" :dir="'article'"/>-->
         </div>
       </div>
