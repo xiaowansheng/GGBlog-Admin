@@ -194,75 +194,65 @@ const init = () => {
     upload: {
       accept: "image/*,.mp3,.mp4, .wav",
       multiple: true,
-      handler(files: File[]): string | null | Promise<any> {
-        return new Promise((resolve, reject) => {
-          // 上传时编辑器禁用
-          vditor.value.disabled();
-          // 文件数量，用来判断是否上传完成
-          let number = files.length;
-          files.forEach((file, index) => {
-            beforeUpload(file)
-              .then((data: any) => {
-                const { uploadForm, info } = data;
-                let formData = new FormData();
-                for (let key in uploadForm) {
-                  formData.append(key, uploadForm[key]);
-                }
-                formData.append("file", file);
-                // resolve('');
-                // return;
-                upload(formData)
-                  .then((data: any) => {
-                    vditor.value.disabled();
-                    let str = "";
-                    // console.log('文件格式：', file.name);
-                    // console.log('文件：', file);
-                    if (file.name.indexOf(".wav") > 0) {
-                      str = `<audio controls="controls" src="${info.url}"></audio>`;
-                    } else if (file.name.indexOf(".mp4") > 0) {
-                      str = `<video src="${info.url}"></video>`;
-                    } else {
-                      str = `![${file.name}](${info.url})`;
-                    }
-                    vditor.value.insertValue(str);
+      handler(files: File[]): Promise<string | null> {
+        // 上传时编辑器禁用
+        vditor.value.disabled();
+        // 使用Promise.all简化代码
+        Promise.all(
+          files.map(async file => {
+            try {
+              const { uploadForm, info } = await beforeUpload(file);
+              const formData = new FormData();
+              for (let key in uploadForm) {
+                formData.append(key, uploadForm[key]);
+              }
+              formData.append("file", file);
 
-                    if (
-                      vditor.value.vditor.options.upload &&
-                      vditor.value.vditor.options.upload.format &&
-                      vditor.value.vditor.options.upload.filename &&
-                      contentElement
-                    ) {
-                      // vditor.value.vditor.options.upload.filename(JSON.stringify(formatData));
-                      // vditor.value.vditor.options.upload.format(files, JSON.stringify(formatData));
-                      // vditor.value.vditor.options.upload.success(wrapEl, JSON.stringify(formatData));
-                    }
-                    ElMessage.success(`素材${file.name}上传成功。`);
-                    // console.log("上传成功。", data);
-                    console.log("链接", info.url);
-                    number--;
-                    if (number <= 0) {
-                      vditor.value.enable();
-                      resolve(null);
-                    }
-                  })
-                  .catch(error => {
-                    ElMessage.error(`素材${file.name}上传失败！`);
-                    number--;
-                    if (number <= 0) {
-                      vditor.value.enable();
-                      reject(error);
-                    }
-                  });
-              })
-              .catch(error => {
-                number--;
-                if (number <= 0) {
-                  vditor.value.enable();
-                  reject(error);
-                }
-              });
+              const data = await upload(formData);
+
+              vditor.value.disabled();
+              let str = "";
+
+              if (file.name.indexOf(".wav") > 0) {
+                str = `<audio controls="controls" src="${info.url}"></audio>`;
+              } else if (file.name.indexOf(".mp4") > 0) {
+                str = `<video src="${info.url}"></video>`;
+              } else {
+                str = `![${file.name}](${info.url})`;
+                ElMessage.warning(`未知类型素材${file.name}！`);
+              }
+
+              vditor.value.insertValue(str);
+
+              if (
+                vditor.value.vditor.options.upload &&
+                vditor.value.vditor.options.upload.format &&
+                vditor.value.vditor.options.upload.filename &&
+                contentElement
+              ) {
+                // 添加相关处理逻辑
+              }
+
+              ElMessage.success(`素材${file.name}上传成功。`);
+              console.log("链接", info.url);
+            } catch (error) {
+              ElMessage.error(`素材${file.name}上传失败！`);
+              throw error; // 将错误继续抛出，使整个上传过程中断
+            }
+          })
+        )
+          .then((data: any) => {
+            // 所有文件上传完成后启用编辑器
+            vditor.value.enable();
+            return Promise.resolve(null); // 成功时返回 null
+          })
+          .catch(error => {
+            // 所有文件上传结束后启用编辑器
+            console.error(error);
+
+            vditor.value.enable();
+            return Promise.resolve(null); // 成功时返回 null
           });
-        });
       }
     },
     outline: {
@@ -314,4 +304,12 @@ onDeactivated(destroy);
 .catch(error => { ElMessage.error("图片上传失败！"); vditor.value.enable();
 reject(error); }); }) .catch(error => { vditor.value.enable(); reject(error);
 }); }); }); vditor.value.enable(); reject(error); }); }) .catch(error => {
-vditor.value.enable(); reject(error); }); }); });
+vditor.value.enable(); reject(error); }); }); }); } catch (error) { //
+处理整个上传过程的错误 vditor.value.enable(); return Promise.reject(error); //
+返回一个 rejected 的 Promise } }, } catch (error) { // 处理整个上传过程的错误
+vditor.value.enable(); return Promise.reject(error); // 返回一个 rejected 的
+Promise } }, } }, } catch (error) { // 处理整个上传过程的错误
+vditor.value.enable(); return Promise.reject(error); // 返回一个 rejected 的
+Promise } }, } }, } catch (error) { // 处理整个上传过程的错误
+vditor.value.enable(); return Promise.reject(error); // 返回一个 rejected 的
+Promise } },
