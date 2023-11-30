@@ -5,6 +5,7 @@ import {
   onBeforeUnmount,
   onDeactivated,
   unref,
+  watch,
   nextTick,
   toRefs,
   reactive
@@ -39,6 +40,16 @@ const vditor = shallowRef<Vditor | null>(null);
 const contentRef = ref();
 // 保存markdown文本
 const valueRef = ref<string>(value.value);
+// 内容太长时，会有问题
+// watch(
+//   () => props.value,
+//   v => {
+//     if (v !== valueRef.value) {
+//       instance.getVditor()?.setValue(v);
+//     }
+//     valueRef.value = v;
+//   }
+// );
 // 是否在初始化
 const initedRef = ref(false);
 function beforeUpload(file: File) {
