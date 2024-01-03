@@ -83,6 +83,7 @@ const articleForm = reactive<Article>({
   },
   tagVos: []
 });
+const isSaving = ref<boolean>(false);
 const check = (): boolean => {
   if (!articleForm.title) {
     ElMessage.warning("文章标题不能为空哦~");
@@ -95,13 +96,22 @@ const check = (): boolean => {
   return true;
 };
 const saveDraft = () => {
+  if (isSaving.value) {
+    ElMessage.warning("正在保存草稿，请勿重复提交！");
+    return;
+  }
   if (check) {
+    isSaving.value=true
     addArticleDraft(articleForm).then((data: any) => {
       if (!articleForm.id) {
         // 如果是保存新的草稿，则记录id，下次再保存就是修改
         articleForm.id = data.id;
       }
       ElMessage.success("草稿保存成功！");
+      isSaving.value=false
+    }).catch(() => {
+      isSaving.value=false
+      ElMessage.error("草稿保存失败！");
     });
   }
 };

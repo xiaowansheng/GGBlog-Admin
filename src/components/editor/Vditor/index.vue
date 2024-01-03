@@ -19,7 +19,6 @@ import axios from "axios";
 import { shallowRef } from "vue";
 import { ElMessage } from "element-plus";
 import emoji from "./emoji.ts";
-import { throttle2 } from "@/utils/myUtils";
 const ossUrl = import.meta.env.VITE_GLOB_OSS_URL;
 const props = defineProps({
   value: {
@@ -37,9 +36,9 @@ const emits = defineEmits(["change", "get", "update:value", "save"]);
 /**
  * 使用节流函数
  */
-const saveThrottle = throttle2(() => {
+const saveDraft = () => {
   emits("save", valueRef.value);
-}, 1500);
+}
 const { value, height, dir } = toRefs(props);
 // markdown实例
 const vditor = shallowRef<Vditor | null>(null);
@@ -136,7 +135,7 @@ const init = () => {
         icon: '<svg t="1701353725483" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1822" width="64" height="64"><path d="M885.44 1024H138.688a139.072 139.072 0 0 1-138.688-138.624V138.688C0.064 62.4 62.528 0 138.752 0h746.688c76.224 0 138.624 62.4 138.624 138.688v746.688A139.072 139.072 0 0 1 885.44 1024zM138.688 64A74.88 74.88 0 0 0 64.064 138.688v746.688A74.88 74.88 0 0 0 138.752 960h746.688a74.88 74.88 0 0 0 74.624-74.624V138.688A74.88 74.88 0 0 0 885.44 64H138.688z" fill="#666666" p-id="1823"></path><path d="M752.064 497.088h-480c-46.912 0-85.312-38.4-85.312-85.312V38.4c0-17.6 14.4-32 32-32h586.688c17.6 0 32 14.4 32 32v373.376c0 46.912-38.4 85.312-85.376 85.312zM250.752 70.4v341.376c0 11.712 9.6 21.312 21.312 21.312h480c11.776 0 21.376-9.6 21.376-21.312V70.4H250.688z" fill="#666666" p-id="1824"></path><path d="M652.352 378.688a32.128 32.128 0 0 1-32-32V197.312c0-17.536 14.4-32 32-32s32 14.464 32 32v149.376c0 17.6-13.888 32-32 32z" fill="#666666" p-id="1825"></path></svg>',
         click() {
           ElMessage.info("正在保存！");
-          saveThrottle();
+          saveDraft();
         }
       },
       "|",
