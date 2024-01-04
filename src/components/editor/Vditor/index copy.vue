@@ -5,17 +5,21 @@ import {
   onBeforeUnmount,
   onDeactivated,
   unref,
+  watch,
   nextTick,
   toRefs,
+  reactive
 } from "vue";
 import Vditor from "vditor";
 import "vditor/dist/index.css";
 // import "vditor/dist/js/lute/lute.min.js"
-import { uploadFile } from "@/api/upload";
-import type{ FileDto } from "@/api/upload";
+import { buildUUID } from "@pureadmin/utils";
+import { getOss } from "@/api/upload";
+import axios from "axios";
 import { shallowRef } from "vue";
 import { ElMessage } from "element-plus";
-import emoji from "./emoji";
+import emoji from "./emoji.ts";
+const ossUrl = import.meta.env.VITE_GLOB_OSS_URL;
 const props = defineProps({
   value: {
     type: String,
@@ -34,7 +38,7 @@ const emits = defineEmits(["change", "get", "update:value", "save"]);
  */
 const saveDraft = () => {
   emits("save", valueRef.value);
-};
+}
 const { value, height, dir } = toRefs(props);
 // markdown实例
 const vditor = shallowRef<Vditor | null>(null);
@@ -42,26 +46,61 @@ const vditor = shallowRef<Vditor | null>(null);
 const contentRef = ref();
 // 保存markdown文本
 const valueRef = ref<string>(value.value);
+// 内容太长时，会有问题
+// watch(
+//   () => props.value,
+//   v => {
+//     if (v !== valueRef.value) {
+//       instance.getVditor()?.setValue(v);
+//     }
+//     valueRef.value = v;
+//   }
+// );
 // 是否在初始化
 const initedRef = ref(false);
 function beforeUpload(file: File) {
+  const uploadForm: any = {
+    policy: "",
+    signature: "",
+    ossaccessKeyId: ""
+  };
+  const info = {
+    dir: "",
+    host: "",
+    expire: 0,
+    url: ""
+  };
   return new Promise((resolve, reject) => {
-    resolve(null);
+    getOss(dir.value)
+      .then((data: any) => {
+        // console.log("oss:", data);
+        // 去除默认开头斜杠/
+        data.dir = data.dir.replace(/^\//, "");
+        // console.log("oss:", data);
+        uploadForm.policy = data.policy;
+        uploadForm.signature = data.signature;
+        uploadForm.ossaccessKeyId = data.accessid;
+        uploadForm.key = data.dir + "/" + buildUUID() + `_${file.name}`;
+        //
+        info.dir = data.dir;
+        info.host = data.host;
+        info.expire = data.expire;
+        info.url = data.host + "/" + uploadForm.key;
+        // console.log(" data.host", data.host);
+        // console.log("info.url",info.url);
+
+        resolve({ uploadForm, info });
+      })
+      .catch(error => {
+        reject(error);
+      });
   });
 }
 function upload(formData: FormData): Promise<any> {
-  return new Promise((resolve, reject) => {
-    uploadFile(null, {
-      data: formData
-    })
-      .then((fileDto: any) => {
-        ElMessage.success("文件上传成功！");
-        resolve(fileDto);
-      })
-      .catch(() => {
-        console.error("文件上传失败！");
-        reject();
-      });
+  return axios({
+    method: "post",
+    url: ossUrl,
+    data: formData
   });
 }
 
@@ -196,18 +235,21 @@ const init = () => {
     upload: {
       accept: "image/*,.mp3,.mp4, .wav",
       multiple: true,
-      handler(files: File[]): Promise<string | any> {
+      handler(files: File[]): Promise<string | null> {
         // 上传时编辑器禁用
         vditor.value.disabled();
         // 使用Promise.all简化代码
         Promise.all(
           files.map(async file => {
             try {
-              await beforeUpload(file);
+              const { uploadForm, info } = await beforeUpload(file);
               const formData = new FormData();
-              formData.append("filePath", dir.value);
+              for (let key in uploadForm) {
+                formData.append(key, uploadForm[key]);
+              }
               formData.append("file", file);
-              const fileDto:FileDto = await upload(formData);
+
+              const data = await upload(formData);
 
               vditor.value.disabled();
               let str = "";
@@ -228,7 +270,7 @@ const init = () => {
                   // Add other formats as needed
                 ])
               ) {
-                str = `<audio controls="controls" src="${fileDto.link}"></audio>`;
+                str = `<audio controls="controls" src="${info.url}"></audio>`;
               } else if (
                 endsWithAnyIgnoreCase(file.name, [
                   ".mp4",
@@ -246,7 +288,7 @@ const init = () => {
                   // Add other formats as needed
                 ])
               ) {
-                str = `<video src="${fileDto.link}"></video>`;
+                str = `<video src="${info.url}"></video>`;
               } else if (
                 endsWithAnyIgnoreCase(file.name, [
                   ".jpg",
@@ -261,9 +303,9 @@ const init = () => {
                   // Add other formats as needed
                 ])
               ) {
-                str = `![${file.name}](${fileDto.link})`;
+                str = `![${file.name}](${info.url})`;
               } else {
-                str = `![${file.name}](${fileDto.link})`;
+                str = `![${file.name}](${info.url})`;
                 ElMessage.warning(`未知类型素材${file.name}！`);
               }
 
@@ -278,10 +320,10 @@ const init = () => {
                 // 添加相关处理逻辑
               }
 
-              ElMessage.success(`素材${file.name}插入成功。`);
-              console.log("链接", fileDto.link);
+              ElMessage.success(`素材${file.name}上传成功。`);
+              console.log("链接", info.url);
             } catch (error) {
-              ElMessage.error(`素材${file.name}插入失败！`);
+              ElMessage.error(`素材${file.name}上传失败！`);
               throw error; // 将错误继续抛出，使整个上传过程中断
             }
           })

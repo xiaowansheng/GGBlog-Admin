@@ -2,11 +2,15 @@
 import "cherry-markdown/dist/cherry-markdown.css";
 import Cherry from "cherry-markdown";
 import { onMounted, ref, toRefs, watch, shallowRef } from "vue";
+import { onActivated } from "vue";
+import { onDeactivated } from "vue";
+import { onBeforeMount } from "vue";
 import { onBeforeUnmount } from "vue";
+import { getOss } from "@/api/upload";
+import { reactive } from "vue";
+import { buildUUID } from "@pureadmin/utils";
 
 import { ElMessage } from "element-plus";
-import { uploadFile } from "@/api/upload";
-import type { FileDto } from "@/api/upload";
 // 使用下面这个会有跨域的问题
 // import { http } from "@/utils/http";
 // 而这个不会
@@ -184,14 +188,23 @@ const customMenuC = Cherry.createMenuHook("帮助中心", {
     }
   ]
 });
+const uploadForm: any = reactive({
+  policy: "",
+  signature: "",
+  ossaccessKeyId: ""
+});
+const info: any = reactive({
+  dir: "",
+  host: "",
+  expire: 0,
+  url: ""
+});
 /**
  * 手动上传图片等文件
  * @param formData
  */
 function upload(formData: FormData): Promise<any> {
-  return uploadFile(null, {
-    data: formData
-  });
+  return axios.post(ossUrl, formData);
   // return http.post(ossUrl, null, { data: formData });
 }
 const callbacks = {
@@ -212,26 +225,62 @@ const callbacks = {
     file: File,
     callback: (path: string, arg: { [key: string]: any }) => void
   ) {
-    console.log("上传文件：", file);
+    console.log("上传文件：",file);
     if (!/^image\/(jpeg|png|gif|webp)$/i.test(file.type)) {
       ElMessage.warning("暂时只支持图片上传！");
       return;
     }
-    let formData = new FormData();
-    formData.append("filePath", dir.value);
-    formData.append("file", file);
-    upload(formData)
-      .then((fileDto: any) => {
-        ElMessage.success(`图片[${fileDto.link}]上传成功。`);
-        callback(fileDto.link, {
-          name: `${file.name.replace(/\.[^.]+$/, "")}`,
-          isShadow: true
+    getOss(dir.value).then((data: any) => {
+      // 去除默认开头斜杠/
+      data.dir = data.dir.replace(/^\//, "");
+      // console.log("oss:", data);
+      uploadForm.policy = data.policy;
+      uploadForm.signature = data.signature;
+      uploadForm.ossaccessKeyId = data.accessid;
+      uploadForm.key = data.dir + "/" + buildUUID() + `_${file.name}`;
+      //
+      info.dir = data.dir;
+      info.host = data.host;
+      info.expire = data.expire;
+
+      // console.log("uploadForm", uploadForm);
+      // console.log("info", info);
+      info.url = data.host + "/" + uploadForm.key;
+
+      let formData = new FormData();
+      for (let key in uploadForm) {
+        formData.append(key, uploadForm[key]);
+      }
+      formData.append("file", file);
+      upload(formData)
+        .then((data: any) => {
+          ElMessage.success(`图片[${info.url}]上传成功。`);
+          callback(info.url, {
+            name: `${file.name.replace(/\.[^.]+$/, "")}`,
+            isShadow: true
+          });
+        })
+        .catch(e => {
+          ElMessage.error("图片上传失败！");
+          return;
         });
-      })
-      .catch(e => {
-        ElMessage.error("图片上传失败！");
-        return;
+    });
+    if (/video/i.test(file.type)) {
+      callback(info.url, {
+        name: `${file.name.replace(/\.[^.]+$/, "")}`,
+        poster: "/favicon.ico",
+        isBorder: true,
+        isShadow: true,
+        isRadius: true,
+        width: "300px",
+        height: "auto"
       });
+    } else {
+      callback(info.url, {
+        name: `${file.name.replace(/\.[^.]+$/, "")}`,
+        isShadow: true
+      });
+    }
   },
   afterChange: (text: string, html: string) => {
     // 是否改变
@@ -529,7 +578,7 @@ const config = {
     customMenu: {
       customMenuAName: customMenuA,
       customMenuBName: customMenuB,
-      customMenuCName: customMenuC
+      customMenuCName: customMenuC,
     }
   },
   drawioIframeUrl: window.location.origin + "/cherry/drawio_demo.html",
