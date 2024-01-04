@@ -75,7 +75,7 @@ const url = ref<string>(value.value);
 /**
  * 标记是否已经上传过
  */
-const uploaded = ref<boolean>(false);
+const uploaded = ref<boolean>(true);
 const valueOneChange = watch(value, () => {
   // 解决照片回显问题
   console.log("image-value更新");
