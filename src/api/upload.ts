@@ -22,7 +22,7 @@ export const getOss = (dir: string, params?: any, config?: any) => {
 };
 
 /**
- * 获取阿里云oss授权上传凭证
+ * 自定义上传
  * @param params
  * @param config
  * @returns
@@ -32,7 +32,6 @@ export const uploadFile = (params?: any, config?: any) => {
     headers: {
       "Content-Type": "multipart/form-data"
     },
-    ...config,
-
+    ...config
   });
 };
