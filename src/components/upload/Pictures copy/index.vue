@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { reactive, ref, toRefs, watch } from "vue";
 import { Plus } from "@element-plus/icons-vue";
-import { defineExpose, defineProps, defineEmits, defineOptions } from "vue";
+// import { UploadFilled } from "@element-plus/icons-vue";
+import { getOss } from "@/api/upload";
+import { buildUUID } from "@pureadmin/utils";
 import {
   ElMessage,
   UploadFile,
@@ -10,9 +12,7 @@ import {
   UploadRawFile
 } from "element-plus";
 import type { UploadProps, UploadUserFile } from "element-plus";
-
-import type{ FileDto} from "@/api/upload";
-import { uploadFile as upload } from "@/api/upload";
+const ossUrl = import.meta.env.VITE_GLOB_OSS_URL;
 defineOptions({
   name: "PicturesUpload"
 });
@@ -20,10 +20,6 @@ const props = defineProps({
   value: {
     type: Array<String>,
     default: []
-  },
-  auto: {
-    type: Boolean,
-    default: false
   },
   disable: {
     type: Boolean,
@@ -39,8 +35,8 @@ const props = defineProps({
   }
 });
 const emits = defineEmits(["update:value"]);
-const { value, dir, disable, showFileList, auto } = toRefs(props);
-const fileList = ref<UploadUserFile[] | any>([]);
+const { value, dir, disable, showFileList } = toRefs(props);
+const fileList = ref<UploadUserFile[]>([]);
 const getName = (url: string) => {
   if (url) {
     const arr = url.split("/");
@@ -49,6 +45,9 @@ const getName = (url: string) => {
     return url;
   }
 };
+// const addPicture=(picture: UploadUserFile) =>{
+//   fileList.value.push(picture)
+// }
 // /**
 //  * 查找第一个数组中在第二个数组里没有的数据加到第二个数组里
 //  * @param firstArray
@@ -90,15 +89,10 @@ const valueOneChange = watch(value, (newValue, oldValue) => {
     value.value.forEach((url: string) => {
       // console.log("开始：");
       console.log(url);
-      const name = getName(url);
       fileList.value.push({
-        name: name,
+        name: getName(url),
         status: "success",
-        url: url,
-        fileDto: {
-          name,
-          link: url
-        } as FileDto
+        url
       });
     });
     // 回显照片
@@ -109,6 +103,11 @@ const valueOneChange = watch(value, (newValue, oldValue) => {
   }
   // valueOneChange();
 });
+// watch(fileList, () => {
+//   console.log("图片列表变化：", fileList.value);
+
+//   emits("update:value", fileList.value);
+// });
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 /**
@@ -118,7 +117,7 @@ const dialogVisible = ref(false);
 const handleFileChange = (uploadFiles: any) => {
   const arr: string[] = [];
   fileList.value.forEach(imgInfo => {
-    arr.push(imgInfo.url);
+    arr.push(imgInfo.url!);
   });
   emits("update:value", arr);
   console.log("图片list", arr);
@@ -132,83 +131,97 @@ const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
   dialogImageUrl.value = uploadFile.url!;
   dialogVisible.value = true;
 };
-const uploadFile = (): Promise<FileDto[]> => {
-  return new Promise((resolve, reject) => {
-    // 批量上传所有文件
-    // 把所有文件加入upload上传批量处理中
-    const uploadPromises = [];
-
-    for (let i = 0; i < fileList.value.length; i++) {
-      const file = fileList.value[i];
-      if (file.status === "success") {
-        continue;
-      }
-      let form = new FormData();
-      form.append("filePath", dir.value);
-      form.append("file", file.raw);
-      // Create a promise for each file upload
-      const uploadPromise = upload(null, {
-        data: form
-      })
-        .then((fileDto: any) => {
-          ElMessage.success(`图片【${fileDto.name}】上传成功！`);
-          file.url = fileDto.link;
-          file.status = "success";
-          file.fileDto = fileDto;
-
-          return fileDto; // Return the result to be used later
-        })
-        .catch(() => {
-          console.error("文件上传失败！");
-          ElMessage.success(`图片【${file.name}】上传失败！`);
-          file.status = "error";
-          throw new Error("File upload failed");
-        });
-
-      uploadPromises.push(uploadPromise);
-    }
-
-    // Wait for all promises to settle
-    Promise.all(uploadPromises)
-      .then((results:FileDto[]) => {
-        // Check if all uploads were successful
-        if (fileList.value.every(item => item.status === "success")) {
-          // Update links array
-          const urls = fileList.value.map(item => item.url);
-          emits("update:value", urls);
-          // Resolve with all response results
-          resolve(results);
-        } else {
-          reject(new Error("Some file uploads failed"));
-        }
-      })
-      .catch(error => {
-        console.error("Error during file uploads:", error);
-        reject(error);
-      });
-  });
-};
-
+const uploadForm: any = reactive({
+  policy: "",
+  signature: "",
+  ossaccessKeyId: ""
+});
+const info: any = reactive({
+  dir: "",
+  host: "",
+  expire: 0
+  // urls: []
+});
 watch(fileList, (newList, oldList) => {
   if (fileList.value.length && newList.length > oldList.length) {
-    if (auto.value) {
-      uploadFile();
-    } else {
-      if (newList.length > oldList.length) {
-        console.log(
-          "等待上传的文件：",
-          fileList.value[fileList.value.length - 1]
-        );
-      }
-    }
+    const file = fileList.value[fileList.value.length - 1];
+    getOss(dir.value).then((data: any) => {
+      // 去除默认开头斜杠/
+      data.dir = data.dir.replace(/^\//, "");
+      console.log("oss:", data);
+
+      // uploadForm.value = data;
+      uploadForm.policy = data.policy;
+      uploadForm.signature = data.signature;
+      uploadForm.ossaccessKeyId = data.accessid;
+      uploadForm.key = data.dir + "/" + buildUUID() + `_${file.name}`;
+      //
+      info.dir = data.dir;
+      info.host = data.host;
+      info.expire = data.expire;
+
+      // console.log("uploadForm", uploadForm);
+      // console.log("info", info);
+      file.url = data.host + "/" + uploadForm.key;
+      console.log("当前上传的图片地址：", file.url);
+
+      uploadRef.value!.submit();
+    });
   }
 });
+const success = (
+  response: any,
+  uploadFile: UploadFile,
+  uploadFiles: UploadFiles
+): void => {
+  // console.log("图片上传成功", response);
+  ElMessage.success("图片上传成功！");
 
+  handleFileChange(uploadFiles);
+};
+const error = (
+  error: Error,
+  uploadFile: UploadFile,
+  uploadFiles: UploadFiles
+): void => {
+  // console.error("图片上传失败",error);
+  ElMessage.error("图片上传失败！");
+};
 const uploadRef = ref();
+// const beforeUpload:UploadProps["beforeUpload"] = (rawFile: UploadRawFile): Promise<boolean> => {
+//   // TODO element-plus的 bug，promise等待失效，上传时form为空，最新版也有这个问题，改用手动上传
+//   return new Promise((resolve, reject) => {
 
-defineExpose({
-  uploadFile
-});
+//     if (fileList.value.length) {
+//       const file = fileList.value[0];
+//       getOss(dir.value)
+//       .then((data: any) => {
+//       data.dir = data.dir.replace(/^\//, "");
+//       console.log("oss:", data);
+
+//       // uploadForm.value = data;
+//       uploadForm.policy = data.policy;
+//       uploadForm.signature = data.signature;
+//       uploadForm.ossaccessKeyId = data.accessid;
+//       uploadForm.key = data.dir + "/" + buildUUID() + `_${file.name}`;
+//       //
+//       info.dir = data.dir;
+//       info.host = data.host;
+//       info.expire = data.expire;
+
+//       console.log("uploadForm", uploadForm);
+//       console.log("info", info);
+//       info.url = data.host + "/" + uploadForm.key;
+//         resolve(true);
+//       })
+//       .catch(() => {
+//         console.error("获取oss上传凭证失败。");
+//         reject(false);
+//       });
+//     }
+
+//   });
+// };
 </script>
 
 <template>
@@ -218,11 +231,15 @@ defineExpose({
       class="pictures-uplaod"
       ref="uploadRef"
       v-model:file-list="fileList"
+      :action="ossUrl"
+      :data="uploadForm"
       :auto-upload="false"
       :drag="true"
       list-type="picture-card"
       :on-preview="handlePictureCardPreview"
       :on-remove="handleRemove"
+      :on-success="success"
+      :on-error="error"
       :disabled="disable"
       :show-file-list="showFileList"
     >

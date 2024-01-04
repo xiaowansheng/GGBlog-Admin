@@ -155,6 +155,7 @@ const resetForm = () => {
       <el-form-item label="相册封面:" prop="cover">
         <single-picture-upload
           v-model:value="form.cover"
+          :dir="'album'"
           :height="'160px'"
           :width="'320px'"
         />

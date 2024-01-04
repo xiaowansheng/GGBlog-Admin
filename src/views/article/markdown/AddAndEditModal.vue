@@ -430,7 +430,7 @@ const createTag = () => {
           <!-- <el-input v-model="form.cover" placeholder="文章封面" /> -->
           <single-picture-upload
             v-model:value="form.cover"
-            dir="article"
+            :dir="'article'"
             :width="'320px'"
             :height="'180px'"
           />

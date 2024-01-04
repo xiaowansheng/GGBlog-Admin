@@ -63,7 +63,7 @@ const uploadRef = ref();
         <single-picture-upload
           ref="uploadRef"
           v-model:value="config.value.avatar"
-          dir="avatar"
+          :dir="'avatar'"
           :width="'150px'"
           :height="'150px'"
           :disable="!open"

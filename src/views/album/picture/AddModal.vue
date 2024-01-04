@@ -69,7 +69,7 @@ const submitForm = () => {
 <template>
   <el-dialog v-model="visiable" :title="'上传图片'" class="form" style="">
     <div class="content">
-      <pictures-upload v-model:value="photos" />
+      <pictures-upload v-model:value="photos" :dir="'pictures'"/>
     </div>
     <template #footer>
       <span class="dialog-footer">

@@ -201,7 +201,7 @@ const selectEmoji = (url: string) => {
               <pictures-upload
                 class="pictures"
                 v-model:value="talkForm.images"
-                dir="talk"
+                :dir="'talk'"
                 :list-type="'text'"
                 :show-file-list="false"
               >

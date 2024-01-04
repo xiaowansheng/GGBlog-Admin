@@ -3,7 +3,7 @@ import { getRewardConfig, updateConfig } from "@/api/config";
 import { ConfigJson } from "../../config";
 import { onBeforeMount, ref } from "vue";
 import { ElMessage } from "element-plus";
-import SinglePictureUpload from '@/components/upload/singlePicture/index.vue'
+import SinglePictureUpload from '@/components/upload/SinglePicture/index.vue'
 defineOptions({
   name: "Reward"
 });
@@ -60,7 +60,7 @@ const submitData = (item: Contact) => {
       <div class="part" v-for="item in config.value" :key="item.name">
         <label>{{ item.label }}（{{item.name}}）:</label>
         <!-- <el-input :disabled="!open" v-model="item.label" size="large" /> -->
-        <SinglePictureUpload class="upload" v-model:value="item.url"  :height="'200px'" :width="'200px'"/>
+        <SinglePictureUpload class="upload" :dir="'reward'" v-model:value="item.url"  :height="'200px'" :width="'200px'"/>
       </div>
     </div>
     <div class="update">

@@ -76,17 +76,27 @@ const rules = reactive<FormRules>({
     }
   ]
 });
+const uploadRef = ref();
 const open = ref<boolean>(false);
-const loading=ref(false)
+const loading = ref(false);
 const updateData = () => {
-  loading.value=true
-  updateInformation(information).then(() => {
-    open.value = false;
-    ElMessage.success("修改成功！");
-    loading.value = false;
-  }).catch(() => {
-    loading.value = false;
-  })
+  loading.value = true;
+  uploadRef.value
+    .uploadFile((data: any) => {
+      information.avatar = data.link;
+      updateInformation(information)
+        .then(() => {
+          open.value = false;
+          ElMessage.success("修改成功！");
+          loading.value = false;
+        })
+        .catch(() => {
+          loading.value = false;
+        });
+    })
+    .catch(() => {
+      loading.value = false;
+    });
 };
 </script>
 
@@ -112,7 +122,14 @@ const updateData = () => {
         </el-form-item>
         <el-form-item label="头像:" prop="avatar">
           <!-- <el-input :disabled="!open" v-model="information.avatar" /> -->
-          <SinglePictureUpload v-model:value="information.avatar" :disable="!open" :height="'150px'" :width="'150px'"/>
+          <SinglePictureUpload
+            ref="uploadRef"
+            :dir="'avatar'"
+            v-model:value="information.avatar"
+            :disable="!open"
+            :height="'150px'"
+            :width="'150px'"
+          />
         </el-form-item>
         <el-form-item label="签名:" prop="signature">
           <el-input :disabled="!open" v-model="information.signature" />
@@ -125,7 +142,7 @@ const updateData = () => {
         </el-form-item>
         <el-form-item label="个人介绍:">
           <el-input
-          :disabled="!open"
+            :disabled="!open"
             v-model="information.introduction"
             :rows="3"
             type="textarea"
@@ -138,7 +155,11 @@ const updateData = () => {
       <el-button type="warning" @click="open = !open">{{
         open ? "关闭修改" : "开启修改"
       }}</el-button>
-      <el-button type="primary" v-loading="loading" :disabled="!open||loading" @click="updateData()"
+      <el-button
+        type="primary"
+        v-loading="loading"
+        :disabled="!open || loading"
+        @click="updateData()"
         >提交修改</el-button
       >
     </div>
@@ -146,7 +167,7 @@ const updateData = () => {
 </template>
 
 <style lang="scss" scoped>
-.el-form{
+.el-form {
   margin: 0 auto;
   max-width: 576px;
   min-width: 360px;
