@@ -64,7 +64,7 @@ const show = (item: ErrorDto = null) => {
       <template #header>
         <div class="card-header">
           <span class="title">错误日志信息</span>
-          <el-button class="button">刷新数据</el-button>
+          <el-button class="button" @click="getData()">刷新数据</el-button>
         </div>
       </template>
       <div class="content">

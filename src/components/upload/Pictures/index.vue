@@ -23,7 +23,7 @@ const props = defineProps({
   },
   auto: {
     type: Boolean,
-    default: false
+    default: true
   },
   disable: {
     type: Boolean,
